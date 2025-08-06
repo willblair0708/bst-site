@@ -1,0 +1,401 @@
+name: Bastion Protocol CI
+
+on:
+  pull_request:
+    branches: [ main, develop ]
+    paths: 
+      - 'protocols/**'
+      - 'protocol.yaml'
+      - 'protocol.yml'
+      - 'bastion.yml'
+  push:
+    branches: [ main ]
+    paths:
+      - 'protocols/**'
+      - 'protocol.yaml'
+      - 'protocol.yml'
+      - 'bastion.yml'
+
+env:
+  BASTION_API_URL: ${{ secrets.BASTION_API_URL || 'https://api.bastion.dev' }}
+  BASTION_TOKEN: ${{ secrets.BASTION_TOKEN }}
+
+jobs:
+  protocol-validation:
+    name: Protocol Validation
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        cache: 'npm'
+        
+    - name: Setup Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+        
+    - name: Install Bastion CLI
+      run: |
+        npm install -g @bastion/cli@latest
+        pip install pyyaml numpy pandas scipy matplotlib seaborn
+        
+    - name: Validate Protocol Schema
+      id: validate
+      run: |
+        echo "::group::Protocol Validation"
+        bastion validate --format json > validation_results.json
+        
+        # Extract validation status
+        VALIDATION_STATUS=$(cat validation_results.json | jq -r '.[0].passed // false')
+        ERROR_COUNT=$(cat validation_results.json | jq -r '.[0].errors | length')
+        WARNING_COUNT=$(cat validation_results.json | jq -r '.[0].warnings | length')
+        
+        echo "validation_passed=$VALIDATION_STATUS" >> $GITHUB_OUTPUT
+        echo "error_count=$ERROR_COUNT" >> $GITHUB_OUTPUT
+        echo "warning_count=$WARNING_COUNT" >> $GITHUB_OUTPUT
+        
+        if [ "$VALIDATION_STATUS" = "false" ]; then
+          echo "❌ Protocol validation failed with $ERROR_COUNT errors"
+          cat validation_results.json | jq -r '.[0].errors[].message'
+          exit 1
+        else
+          echo "✅ Protocol validation passed ($WARNING_COUNT warnings)"
+        fi
+        echo "::endgroup::"
+        
+    - name: Regulatory Compliance Check
+      id: compliance
+      run: |
+        echo "::group::Regulatory Compliance"
+        
+        # Run compliance-specific validation
+        bastion validate --rules compliance-strict --format json > compliance_results.json
+        
+        COMPLIANCE_STATUS=$(cat compliance_results.json | jq -r '.[0].passed // false')
+        COMPLIANCE_SCORE=$(cat compliance_results.json | jq -r '
+          if .[0].errors then 
+            (1 - (.[0].errors | length) / 10) * 100 
+          else 100 end
+        ')
+        
+        echo "compliance_passed=$COMPLIANCE_STATUS" >> $GITHUB_OUTPUT
+        echo "compliance_score=$COMPLIANCE_SCORE" >> $GITHUB_OUTPUT
+        
+        echo "📋 Compliance Score: $COMPLIANCE_SCORE%"
+        echo "::endgroup::"
+
+  aegis-simulation:
+    name: AEGIS Digital Twin Simulation
+    runs-on: ubuntu-latest
+    needs: protocol-validation
+    if: needs.protocol-validation.outputs.validation_passed == 'true'
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        cache: 'npm'
+        
+    - name: Setup Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+        
+    - name: Install dependencies
+      run: |
+        npm install -g @bastion/cli@latest
+        pip install -r requirements.txt || pip install numpy pandas scipy matplotlib seaborn pyyaml
+        
+    - name: Run AEGIS Light Simulation
+      id: simulation
+      run: |
+        echo "::group::AEGIS Simulation"
+        
+        # Run local simulation with protocol
+        bastion simulate --local --type AEGIS_LIGHT --participants 100 --duration 90 --output simulation_results.json
+        
+        # Extract simulation results
+        SIMULATION_STATUS=$(cat simulation_results.json | jq -r '.status // "UNKNOWN"')
+        POWER=$(cat simulation_results.json | jq -r '.metrics.power // 0')
+        AUC=$(cat simulation_results.json | jq -r '.metrics.auc // 0')
+        EFFECT_SIZE=$(cat simulation_results.json | jq -r '.metrics.effectSize // 0')
+        P_VALUE=$(cat simulation_results.json | jq -r '.metrics.pValue // 1')
+        
+        echo "simulation_status=$SIMULATION_STATUS" >> $GITHUB_OUTPUT
+        echo "power=$POWER" >> $GITHUB_OUTPUT
+        echo "auc=$AUC" >> $GITHUB_OUTPUT
+        echo "effect_size=$EFFECT_SIZE" >> $GITHUB_OUTPUT
+        echo "p_value=$P_VALUE" >> $GITHUB_OUTPUT
+        
+        # Determine pass/fail
+        POWER_PASS=$(echo "$POWER >= 0.8" | bc -l)
+        AUC_PASS=$(echo "$AUC >= 0.6" | bc -l)
+        
+        echo "🔬 Simulation Results:"
+        echo "   Status: $SIMULATION_STATUS"
+        echo "   Power: $(echo "$POWER * 100" | bc -l | cut -d. -f1)%"
+        echo "   AUC: $AUC"
+        echo "   Effect Size: $EFFECT_SIZE"
+        echo "   P-value: $P_VALUE"
+        
+        if [ "$POWER_PASS" = "1" ] && [ "$AUC_PASS" = "1" ]; then
+          echo "✅ Simulation PASSED (Power ≥ 80%, AUC ≥ 0.6)"
+          echo "simulation_passed=true" >> $GITHUB_OUTPUT
+        else
+          echo "❌ Simulation FAILED (Power < 80% or AUC < 0.6)"
+          echo "simulation_passed=false" >> $GITHUB_OUTPUT
+        fi
+        
+        echo "::endgroup::"
+        
+    - name: Upload Simulation Results
+      uses: actions/upload-artifact@v3
+      with:
+        name: simulation-results
+        path: |
+          simulation_results.json
+          simulation_results_report.md
+        retention-days: 30
+        
+    - name: Generate Power Analysis Report
+      run: |
+        echo "::group::Power Analysis"
+        
+        if [ -f "analysis/power_analysis.py" ]; then
+          python analysis/power_analysis.py --protocol protocol.yaml --output power_analysis_report.txt
+          cat power_analysis_report.txt
+        else
+          echo "ℹ️ No power analysis script found"
+        fi
+        
+        echo "::endgroup::"
+
+  deployment-validation:
+    name: Deployment Validation
+    runs-on: ubuntu-latest
+    needs: [protocol-validation, aegis-simulation]
+    if: needs.aegis-simulation.outputs.simulation_passed == 'true'
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        cache: 'npm'
+        
+    - name: Install Bastion CLI
+      run: npm install -g @bastion/cli@latest
+      
+    - name: Validate Deployment Configuration
+      id: deploy-check
+      run: |
+        echo "::group::Deployment Validation"
+        
+        # Dry-run deployment validation
+        bastion deploy --dry-run --environment staging > deployment_plan.txt
+        
+        DEPLOY_STATUS=$?
+        echo "deployment_valid=$([[ $DEPLOY_STATUS -eq 0 ]] && echo true || echo false)" >> $GITHUB_OUTPUT
+        
+        echo "📦 Deployment Plan:"
+        cat deployment_plan.txt
+        
+        if [ $DEPLOY_STATUS -eq 0 ]; then
+          echo "✅ Deployment configuration is valid"
+        else
+          echo "❌ Deployment configuration has issues"
+          exit 1
+        fi
+        
+        echo "::endgroup::"
+
+  security-scan:
+    name: Security & Compliance Scan
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Run security scan
+      run: |
+        echo "::group::Security Scan"
+        
+        # Check for sensitive data in protocols
+        echo "🔍 Scanning for sensitive data patterns..."
+        
+        # PII detection patterns
+        if grep -r -i "ssn\|social.security\|date.of.birth\|credit.card" protocols/ || true; then
+          echo "⚠️ Potential PII detected in protocol files"
+        fi
+        
+        # Check for hardcoded secrets
+        if grep -r -E "(password|secret|key|token).{0,5}[:=].{0,5}['\"][^'\"]+['\"]" . || true; then
+          echo "⚠️ Potential hardcoded secrets detected"
+        fi
+        
+        echo "✅ Security scan completed"
+        echo "::endgroup::"
+
+  generate-report:
+    name: Generate CI Report
+    runs-on: ubuntu-latest
+    needs: [protocol-validation, aegis-simulation, deployment-validation, security-scan]
+    if: always()
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Generate CI Summary Report
+      run: |
+        echo "# 🧬 Bastion Protocol CI Report" > ci_report.md
+        echo "" >> ci_report.md
+        echo "**Protocol:** $(basename $PWD)" >> ci_report.md
+        echo "**PR:** #${{ github.event.number }}" >> ci_report.md
+        echo "**Commit:** ${{ github.sha }}" >> ci_report.md
+        echo "**Triggered by:** ${{ github.actor }}" >> ci_report.md
+        echo "" >> ci_report.md
+        
+        echo "## 📋 Validation Results" >> ci_report.md
+        if [ "${{ needs.protocol-validation.outputs.validation_passed }}" = "true" ]; then
+          echo "- ✅ **Schema Validation**: PASSED" >> ci_report.md
+        else
+          echo "- ❌ **Schema Validation**: FAILED (${{ needs.protocol-validation.outputs.error_count }} errors)" >> ci_report.md
+        fi
+        
+        echo "- 📊 **Compliance Score**: ${{ needs.protocol-validation.outputs.compliance_score }}%" >> ci_report.md
+        echo "" >> ci_report.md
+        
+        echo "## 🔬 Simulation Results" >> ci_report.md
+        if [ "${{ needs.aegis-simulation.outputs.simulation_passed }}" = "true" ]; then
+          echo "- ✅ **AEGIS Simulation**: PASSED" >> ci_report.md
+        else
+          echo "- ❌ **AEGIS Simulation**: FAILED" >> ci_report.md
+        fi
+        
+        echo "- **Power**: $(echo '${{ needs.aegis-simulation.outputs.power }} * 100' | bc -l | cut -d. -f1)%" >> ci_report.md
+        echo "- **AUC**: ${{ needs.aegis-simulation.outputs.auc }}" >> ci_report.md
+        echo "- **Effect Size**: ${{ needs.aegis-simulation.outputs.effect_size }}" >> ci_report.md
+        echo "" >> ci_report.md
+        
+        echo "## 📦 Deployment" >> ci_report.md
+        if [ "${{ needs.deployment-validation.outputs.deployment_valid }}" = "true" ]; then
+          echo "- ✅ **Deployment Validation**: PASSED" >> ci_report.md
+        else
+          echo "- ❌ **Deployment Validation**: FAILED" >> ci_report.md
+        fi
+        echo "" >> ci_report.md
+        
+        echo "## 🎯 Summary" >> ci_report.md
+        if [ "${{ needs.protocol-validation.outputs.validation_passed }}" = "true" ] && [ "${{ needs.aegis-simulation.outputs.simulation_passed }}" = "true" ]; then
+          echo "🎉 **Overall Status**: READY FOR MERGE" >> ci_report.md
+          echo "" >> ci_report.md
+          echo "This protocol has passed all validation checks and simulations. It's ready for review and deployment." >> ci_report.md
+        else
+          echo "⛔ **Overall Status**: NEEDS WORK" >> ci_report.md
+          echo "" >> ci_report.md
+          echo "This protocol requires fixes before it can be merged. Please address the issues above." >> ci_report.md
+        fi
+        
+        # Display report
+        cat ci_report.md
+        
+    - name: Comment PR
+      if: github.event_name == 'pull_request'
+      uses: actions/github-script@v6
+      with:
+        script: |
+          const fs = require('fs');
+          const report = fs.readFileSync('ci_report.md', 'utf8');
+          
+          github.rest.issues.createComment({
+            issue_number: context.issue.number,
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            body: report
+          });
+
+  update-status-checks:
+    name: Update Status Checks
+    runs-on: ubuntu-latest
+    needs: [protocol-validation, aegis-simulation, deployment-validation]
+    if: always()
+    
+    steps:
+    - name: Update Protocol Validation Status
+      uses: actions/github-script@v6
+      with:
+        script: |
+          const state = '${{ needs.protocol-validation.outputs.validation_passed }}' === 'true' ? 'success' : 'failure';
+          const description = state === 'success' ? 
+            'Protocol validation passed' : 
+            'Protocol validation failed - ${{ needs.protocol-validation.outputs.error_count }} errors';
+            
+          github.rest.repos.createCommitStatus({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            sha: context.sha,
+            state: state,
+            target_url: `https://github.com/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`,
+            description: description,
+            context: 'bastion/protocol-validation'
+          });
+          
+    - name: Update AEGIS Simulation Status
+      uses: actions/github-script@v6
+      with:
+        script: |
+          const state = '${{ needs.aegis-simulation.outputs.simulation_passed }}' === 'true' ? 'success' : 'failure';
+          const power = Math.round(${{ needs.aegis-simulation.outputs.power }} * 100);
+          const auc = ${{ needs.aegis-simulation.outputs.auc }};
+          const description = state === 'success' ? 
+            `Simulation passed - Power: ${power}%, AUC: ${auc}` : 
+            `Simulation failed - Power: ${power}%, AUC: ${auc}`;
+            
+          github.rest.repos.createCommitStatus({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            sha: context.sha,
+            state: state,
+            target_url: `https://github.com/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`,
+            description: description,
+            context: 'bastion/aegis-simulation'
+          });
+          
+    - name: Update Overall Status
+      uses: actions/github-script@v6
+      with:
+        script: |
+          const validationPassed = '${{ needs.protocol-validation.outputs.validation_passed }}' === 'true';
+          const simulationPassed = '${{ needs.aegis-simulation.outputs.simulation_passed }}' === 'true';
+          const deploymentPassed = '${{ needs.deployment-validation.outputs.deployment_valid }}' === 'true';
+          
+          const allPassed = validationPassed && simulationPassed && deploymentPassed;
+          const state = allPassed ? 'success' : 'failure';
+          const description = allPassed ? 
+            'All checks passed - Ready for review' : 
+            'Some checks failed - Review required';
+            
+          github.rest.repos.createCommitStatus({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            sha: context.sha,
+            state: state,
+            target_url: `https://github.com/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`,
+            description: description,
+            context: 'bastion/overall'
+          });

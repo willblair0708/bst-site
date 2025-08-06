@@ -1,0 +1,36 @@
+# Test Protocol for λ-Trial DSL validation
+id: BASTION-TEST-P1
+title: Test Protocol for Schema Validation
+phase: 1
+version: v1.0
+
+arms:
+  - id: CONTROL
+    treatment: Placebo
+    allocation: 0.5
+  - id: ACTIVE
+    treatment: Test Drug
+    allocation: 0.5
+
+eligibility:
+  inclusion:
+    - Age 18-65 years
+    - Healthy volunteers
+  exclusion:
+    - Pregnancy
+    - Active medication
+
+endpoints:
+  primary: Safety and tolerability
+  secondary:
+    - Pharmacokinetics
+    - Biomarker response
+
+ci:
+  power_target: 0.8
+  diversity_badge: bronze
+  synthetic_twins: 50
+
+sample_size:
+  target: 30
+  per_arm: 15

@@ -1,0 +1,57 @@
+{
+  "name": "bastion-trials-platform",
+  "version": "1.0.0",
+  "description": "GitHub for Clinical Trials - ProofOS Bastion Platform",
+  "main": "index.js",
+  "scripts": {
+    "dev": "concurrently \"npm run dev:api\" \"npm run dev:web\"",
+    "dev:api": "cd services/api && npm run dev",
+    "dev:web": "cd web && npm run dev",
+    "build": "npm run build:api && npm run build:web",
+    "build:api": "cd services/api && npm run build",
+    "build:web": "cd web && npm run build",
+    "test": "npm run test:api && npm run test:web",
+    "test:api": "cd services/api && npm test",
+    "test:web": "cd web && npm test",
+    "docker:build": "docker-compose build",
+    "docker:up": "docker-compose up -d",
+    "docker:down": "docker-compose down",
+    "k8s:deploy": "kubectl apply -f k8s/",
+    "terraform:plan": "cd terraform && terraform plan",
+    "terraform:apply": "cd terraform && terraform apply"
+  },
+  "keywords": [
+    "clinical-trials",
+    "protocol-as-code",
+    "digital-twin",
+    "simulation",
+    "audit",
+    "blockchain",
+    "healthcare"
+  ],
+  "author": "ProofOS Team",
+  "license": "MIT",
+  "devDependencies": {
+    "concurrently": "^8.2.2",
+    "eslint": "^8.55.0",
+    "prettier": "^3.1.0",
+    "tailwindcss-themer": "^4.1.1",
+    "typescript": "^5.3.3"
+  },
+  "workspaces": [
+    "services/*",
+    "packages/*",
+    "web"
+  ],
+  "dependencies": {
+    "@radix-ui/react-avatar": "^1.1.10",
+    "@radix-ui/react-dialog": "^1.1.14",
+    "@radix-ui/react-dropdown-menu": "^2.1.15",
+    "@radix-ui/react-label": "^2.1.7",
+    "@radix-ui/react-select": "^2.2.5",
+    "clsx": "^2.1.1",
+    "cmdk": "^1.1.1",
+    "framer-motion": "^12.23.12",
+    "tailwind-merge": "^3.3.1"
+  }
+}

@@ -1,0 +1,245 @@
+apiVersion: bastion.dev/v1
+kind: TrialProtocol
+metadata:
+  name: "hello-world-trial"
+  version: "1.0.0"
+  phase: "PHASE_II"
+  type: "CLINICAL_TRIAL"
+  title: "Hello World Hypertension Trial"
+  description: "A simple Phase II trial demonstrating Bastion platform capabilities"
+  sponsor: "Demo Research Organization"
+  principalInvestigator:
+    name: "Dr. Demo Investigator"
+    email: "demo@example.com"
+    affiliation: "Demo Medical Center"
+  createdDate: "2024-01-01T00:00:00Z"
+  lastModified: "2024-01-01T00:00:00Z"
+  regulatoryId: "DEMO-2024-001"
+  clinicalTrialsGovId: "NCT99999999"
+
+spec:
+  # Study Design
+  design:
+    type: "Randomized Controlled Trial"
+    allocation: "Randomized"
+    intervention_model: "Parallel Assignment"
+    primary_purpose: "Treatment"
+    masking: "Double Blind (Subject, Investigator)"
+    enrollment_type: "Actual"
+    randomization_ratio: "1:1"
+
+  # Study Population
+  population:
+    target_size: 50
+    enrollment_cap: 60
+    age_range:
+      min: 18
+      max: 75
+      unit: "years"
+    
+    inclusion_criteria:
+      - "Age ≥ 18 years and ≤ 75 years"
+      - "Diagnosis of essential hypertension"
+      - "SBP 140-179 mmHg and DBP 90-109 mmHg"
+      - "On stable antihypertensive therapy for ≥ 3 months"
+      - "Signed informed consent form"
+    
+    exclusion_criteria:
+      - "Secondary hypertension"
+      - "Severe cardiovascular disease"
+      - "Pregnancy or nursing"
+      - "eGFR < 30 mL/min/1.73m²"
+      - "Active participation in another clinical trial"
+
+  # Study Objectives
+  objectives:
+    primary: "To evaluate the efficacy of investigational antihypertensive agent compared to placebo"
+    secondary:
+      - "To assess safety and tolerability"
+      - "To evaluate effect on diastolic blood pressure"
+      - "To assess quality of life"
+      - "To evaluate pharmacokinetics"
+
+  # Study Intervention
+  intervention:
+    experimental_arm:
+      name: "Investigational Antihypertensive"
+      type: "Drug"
+      description: "Novel ACE inhibitor"
+      dosage: "10mg"
+      route: "Oral"
+      frequency: "Once daily"
+      duration: "8 weeks"
+    
+    control_arm:
+      name: "Placebo"
+      type: "Placebo"
+      description: "Matching placebo tablets"
+      dosage: "Matching placebo"
+      route: "Oral"
+      frequency: "Once daily"
+      duration: "8 weeks"
+
+  # Study Endpoints
+  endpoints:
+    primary:
+      name: "Systolic Blood Pressure Change"
+      type: "efficacy"
+      timepoint: "Week 8"
+      description: "Mean change in systolic blood pressure from baseline to Week 8"
+      measurement_method: "Standard sphygmomanometry"
+      
+    secondary:
+      - name: "Diastolic Blood Pressure Change"
+        type: "efficacy"
+        timepoint: "Week 8"
+        description: "Mean change in diastolic blood pressure from baseline"
+        
+      - name: "Target Blood Pressure Achievement"
+        type: "efficacy"
+        timepoint: "Week 8"
+        description: "Proportion of patients achieving target BP (<140/90 mmHg)"
+        
+      - name: "Safety Profile"
+        type: "safety"
+        timepoint: "Throughout study"
+        description: "Incidence of adverse events and serious adverse events"
+        
+      - name: "Quality of Life"
+        type: "patient_reported"
+        timepoint: "Baseline, Week 4, Week 8"
+        description: "SF-36 quality of life questionnaire scores"
+
+  # Study Schedule
+  schedule:
+    screening_period: "14 days"
+    treatment_period: "8 weeks"
+    follow_up_period: "4 weeks"
+    
+    visits:
+      - name: "Screening"
+        timepoint: "Day -14 to -1"
+        procedures: ["Informed consent", "Medical history", "Physical exam", "Laboratory tests", "ECG"]
+        
+      - name: "Baseline"
+        timepoint: "Day 1"
+        procedures: ["Randomization", "Drug dispensing", "Baseline BP measurements", "QoL assessment"]
+        
+      - name: "Week 2"
+        timepoint: "Day 14 ± 2"
+        procedures: ["Safety assessment", "BP measurement", "Drug compliance check"]
+        
+      - name: "Week 4"
+        timepoint: "Day 28 ± 3"
+        procedures: ["Safety assessment", "BP measurement", "Drug dispensing", "QoL assessment"]
+        
+      - name: "Week 8 (End of Treatment)"
+        timepoint: "Day 56 ± 3"
+        procedures: ["Final BP measurement", "Safety assessment", "Drug return", "QoL assessment"]
+        
+      - name: "Follow-up"
+        timepoint: "Week 12 ± 1 week"
+        procedures: ["Safety follow-up", "Concomitant medications review"]
+
+  # Statistical Plan
+  statistics:
+    design_type: "Superiority"
+    alpha_level: 0.05
+    power: 0.80
+    interim_analysis: false
+    futility_analysis: false
+    
+    sample_size_calculation:
+      primary_endpoint: "Systolic Blood Pressure Change"
+      control_mean: 2.0
+      experimental_mean: 8.0
+      standard_deviation: 12.0
+      effect_size: 6.0
+      calculated_n: 44
+      dropout_rate: 0.20
+      final_n: 50
+    
+    analysis_populations:
+      - "Intent-to-treat (ITT)"
+      - "Per-protocol (PP)"
+      - "Safety population"
+
+  # Data Management
+  data_management:
+    eCRF_system: "Demo EDC System"
+    data_monitoring_committee: false
+    central_monitoring: true
+    source_data_verification: "100% for key data, 20% for other data"
+    
+    quality_assurance:
+      - "Central statistical monitoring"
+      - "Risk-based monitoring approach"
+      - "Monthly data review meetings"
+
+# Compliance and Regulatory
+compliance:
+  regulatory_framework: "FDA"
+  ethics_approval_required: true
+  informed_consent_required: true
+  data_privacy_framework: "HIPAA"
+  good_clinical_practice: true
+  
+  required_approvals:
+    - "IRB/Ethics Committee"
+    - "FDA IND (if required)"
+    - "Institutional approvals"
+  
+  data_privacy:
+    phi_handling: "De-identified data only"
+    data_retention: "25 years"
+    data_destruction: "Per regulatory requirements"
+    
+  audit_requirements:
+    internal_audit: "Quarterly"
+    external_audit: "As required by sponsor"
+    regulatory_inspection: "Prepared for inspection"
+
+# Risk Management
+risks:
+  clinical_risks:
+    - risk: "Hypotension events"
+      mitigation: "Careful dose titration and safety monitoring"
+      probability: "Low"
+      impact: "Medium"
+      
+    - risk: "Poor enrollment"
+      mitigation: "Multiple sites and patient recruitment strategies"
+      probability: "Medium"
+      impact: "High"
+      
+  operational_risks:
+    - risk: "Data quality issues"
+      mitigation: "Central monitoring and data review"
+      probability: "Low"
+      impact: "Medium"
+      
+    - risk: "Protocol deviations"
+      mitigation: "Comprehensive training and monitoring"
+      probability: "Medium"
+      impact: "Low"
+
+# Contact Information
+contacts:
+  sponsor:
+    name: "Demo Research Organization"
+    address: "123 Research Drive, Demo City, DC 12345"
+    phone: "+1-555-123-4567"
+    email: "sponsor@demo-research.com"
+    
+  principal_investigator:
+    name: "Dr. Demo Investigator"
+    institution: "Demo Medical Center"
+    address: "456 Medical Center Blvd, Demo City, DC 12345"
+    phone: "+1-555-987-6543"
+    email: "demo@medical-center.edu"
+    
+  cro:
+    name: "Demo CRO Services"
+    contact: "Demo Project Manager"
+    phone: "+1-555-246-8135"
+    email: "pm@demo-cro.com"

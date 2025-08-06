@@ -1,0 +1,116 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: bastion-ingress
+  namespace: bastion
+  labels:
+    app: bastion-ingress
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/proxy-body-size: "100m"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "600"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "600"
+    nginx.ingress.kubernetes.io/rate-limit: "100"
+    nginx.ingress.kubernetes.io/rate-limit-window: "1m"
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+    nginx.ingress.kubernetes.io/configuration-snippet: |
+      more_set_headers "X-Frame-Options: DENY";
+      more_set_headers "X-Content-Type-Options: nosniff";
+      more_set_headers "X-XSS-Protection: 1; mode=block";
+      more_set_headers "Referrer-Policy: strict-origin-when-cross-origin";
+      more_set_headers "Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:";
+spec:
+  tls:
+  - hosts:
+    - bastion.yourdomain.com
+    - api.bastion.yourdomain.com
+    secretName: bastion-tls
+  rules:
+  - host: bastion.yourdomain.com
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: bastion-ui
+            port:
+              number: 80
+  - host: api.bastion.yourdomain.com
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: bastion-api
+            port:
+              number: 80
+---
+apiVersion: cert-manager.io/v1
+kind: ClusterIssuer
+metadata:
+  name: letsencrypt-prod
+  namespace: bastion
+spec:
+  acme:
+    server: https://acme-v02.api.letsencrypt.org/directory
+    email: admin@yourdomain.com
+    privateKeySecretRef:
+      name: letsencrypt-prod
+    solvers:
+    - http01:
+        ingress:
+          class: nginx
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: bastion-config
+  namespace: bastion
+data:
+  api-url: "https://api.bastion.yourdomain.com"
+  frontend-url: "https://bastion.yourdomain.com"
+  blockchain-endpoint: "http://blockchain:8545"
+  github-client-id: "your-github-client-id"
+  environment: "production"
+  log-level: "info"
+  session-timeout: "24h"
+  max-upload-size: "100MB"
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: bastion-secrets
+  namespace: bastion
+type: Opaque
+stringData:
+  database-url: "postgresql://bastion:PASSWORD_PLACEHOLDER@postgres:5432/bastion"
+  redis-url: "redis://redis:6379"
+  jwt-secret: "JWT_SECRET_PLACEHOLDER"
+  postgres-password: "PASSWORD_PLACEHOLDER"
+  github-client-id: "GITHUB_CLIENT_ID_PLACEHOLDER"
+  github-client-secret: "GITHUB_CLIENT_SECRET_PLACEHOLDER"
+  blockchain-private-key: "BLOCKCHAIN_PRIVATE_KEY_PLACEHOLDER"
+  encryption-key: "ENCRYPTION_KEY_PLACEHOLDER"
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: bastion-ingress-policy
+  namespace: bastion
+spec:
+  podSelector:
+    matchLabels:
+      app: nginx-ingress
+  policyTypes:
+  - Ingress
+  ingress:
+  - from: []
+    ports:
+    - protocol: TCP
+      port: 80
+    - protocol: TCP
+      port: 443

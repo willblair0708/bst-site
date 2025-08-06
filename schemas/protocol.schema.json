@@ -1,0 +1,326 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://bastion.health/schemas/protocol.schema.json",
+  "title": "Clinical Trial Protocol Schema",
+  "description": "JSON Schema for Bastion's declarative clinical trial protocol YAML format",
+  "type": "object",
+  "required": ["meta", "study", "population", "endpoints", "design"],
+  "additionalProperties": false,
+  "properties": {
+    "meta": {
+      "type": "object",
+      "description": "Trial metadata and identification",
+      "required": ["id", "title", "version", "sponsor"],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^CTP-[A-Z0-9]{6}$",
+          "description": "Clinical Trial Protocol identifier (e.g., CTP-ABC123)"
+        },
+        "title": {
+          "type": "string",
+          "minLength": 10,
+          "maxLength": 200,
+          "description": "Full trial title"
+        },
+        "version": {
+          "type": "string",
+          "pattern": "^v\\d+\\.\\d+(\\.\\d+)?$",
+          "description": "Protocol version (e.g., v2.1)"
+        },
+        "sponsor": {
+          "type": "string",
+          "description": "Sponsoring organization"
+        },
+        "phase": {
+          "type": "string",
+          "enum": ["Preclinical", "Phase I", "Phase I/II", "Phase II", "Phase II/III", "Phase III", "Phase IV"],
+          "description": "Clinical trial phase"
+        },
+        "indication": {
+          "type": "string",
+          "description": "Primary indication or disease being studied"
+        },
+        "drug": {
+          "type": "object",
+          "properties": {
+            "name": { "type": "string" },
+            "class": { "type": "string" },
+            "mechanism": { "type": "string" },
+            "formulation": { "type": "string" }
+          }
+        }
+      }
+    },
+    "study": {
+      "type": "object",
+      "description": "Study design and methodology",
+      "required": ["type", "randomization", "blinding"],
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": ["interventional", "observational", "expanded_access"],
+          "description": "Study type"
+        },
+        "randomization": {
+          "type": "string",
+          "enum": ["randomized", "non_randomized"],
+          "description": "Randomization approach"
+        },
+        "blinding": {
+          "type": "string",
+          "enum": ["open_label", "single_blind", "double_blind", "triple_blind"],
+          "description": "Blinding strategy"
+        },
+        "allocation": {
+          "type": "string",
+          "enum": ["sequential", "parallel", "crossover", "factorial"],
+          "description": "Treatment allocation"
+        },
+        "control": {
+          "type": "string",
+          "enum": ["placebo", "active_comparator", "no_intervention", "historical"],
+          "description": "Control group type"
+        },
+        "duration": {
+          "type": "object",
+          "properties": {
+            "treatment": { "type": "string", "description": "Treatment duration" },
+            "followup": { "type": "string", "description": "Follow-up duration" },
+            "total": { "type": "string", "description": "Total study duration" }
+          }
+        }
+      }
+    },
+    "population": {
+      "type": "object",
+      "description": "Study population and eligibility criteria",
+      "required": ["target_size", "inclusion", "exclusion"],
+      "properties": {
+        "target_size": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "Target enrollment number"
+        },
+        "age": {
+          "type": "object",
+          "properties": {
+            "min": { "type": "integer", "minimum": 0 },
+            "max": { "type": "integer", "maximum": 120 },
+            "unit": { "type": "string", "enum": ["years", "months", "weeks", "days"] }
+          }
+        },
+        "inclusion": {
+          "type": "array",
+          "items": { "type": "string" },
+          "minItems": 1,
+          "description": "Inclusion criteria"
+        },
+        "exclusion": {
+          "type": "array", 
+          "items": { "type": "string" },
+          "description": "Exclusion criteria"
+        },
+        "stratification": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "factor": { "type": "string" },
+              "levels": { "type": "array", "items": { "type": "string" } }
+            }
+          }
+        }
+      }
+    },
+    "endpoints": {
+      "type": "object",
+      "description": "Study endpoints and outcomes",
+      "required": ["primary"],
+      "properties": {
+        "primary": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["name", "description", "timepoint"],
+            "properties": {
+              "name": { "type": "string" },
+              "description": { "type": "string" },
+              "timepoint": { "type": "string" },
+              "type": { 
+                "type": "string", 
+                "enum": ["safety", "efficacy", "pharmacokinetic", "pharmacodynamic", "biomarker"]
+              }
+            }
+          },
+          "minItems": 1
+        },
+        "secondary": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["name", "description", "timepoint"],
+            "properties": {
+              "name": { "type": "string" },
+              "description": { "type": "string" },
+              "timepoint": { "type": "string" },
+              "type": { 
+                "type": "string", 
+                "enum": ["safety", "efficacy", "pharmacokinetic", "pharmacodynamic", "biomarker", "quality_of_life"]
+              }
+            }
+          }
+        },
+        "exploratory": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "name": { "type": "string" },
+              "description": { "type": "string" },
+              "timepoint": { "type": "string" }
+            }
+          }
+        }
+      }
+    },
+    "design": {
+      "type": "object",
+      "description": "Statistical design and analysis plan",
+      "required": ["power_analysis"],
+      "properties": {
+        "power_analysis": {
+          "type": "object",
+          "required": ["alpha", "power", "effect_size"],
+          "properties": {
+            "alpha": { 
+              "type": "number", 
+              "minimum": 0, 
+              "maximum": 1,
+              "description": "Type I error rate (alpha)"
+            },
+            "power": { 
+              "type": "number", 
+              "minimum": 0, 
+              "maximum": 1,
+              "description": "Statistical power (1-beta)"
+            },
+            "effect_size": { 
+              "type": "number",
+              "minimum": 0,
+              "description": "Expected effect size"
+            },
+            "test": {
+              "type": "string",
+              "enum": ["t_test", "chi_square", "survival", "wilcoxon", "fisher_exact"],
+              "description": "Statistical test"
+            }
+          }
+        },
+        "interim_analysis": {
+          "type": "object",
+          "properties": {
+            "enabled": { "type": "boolean" },
+            "timepoints": { "type": "array", "items": { "type": "string" } },
+            "stopping_rules": { "type": "array", "items": { "type": "string" } }
+          }
+        },
+        "randomization_scheme": {
+          "type": "object",
+          "properties": {
+            "method": { 
+              "type": "string",
+              "enum": ["simple", "block", "stratified", "adaptive"]
+            },
+            "block_size": { "type": "integer", "minimum": 2 },
+            "allocation_ratio": { "type": "string", "pattern": "^\\d+:\\d+(:\\d+)*$" }
+          }
+        }
+      }
+    },
+    "sites": {
+      "type": "array",
+      "description": "Participating clinical sites",
+      "items": {
+        "type": "object",
+        "required": ["id", "name", "principal_investigator"],
+        "properties": {
+          "id": { "type": "string" },
+          "name": { "type": "string" },
+          "country": { "type": "string" },
+          "region": { "type": "string" },
+          "principal_investigator": { "type": "string" },
+          "target_enrollment": { "type": "integer", "minimum": 0 },
+          "contact": {
+            "type": "object",
+            "properties": {
+              "email": { "type": "string", "format": "email" },
+              "phone": { "type": "string" }
+            }
+          }
+        }
+      }
+    },
+    "safety": {
+      "type": "object",
+      "description": "Safety monitoring and reporting",
+      "properties": {
+        "dsmb": {
+          "type": "object",
+          "properties": {
+            "required": { "type": "boolean" },
+            "meeting_frequency": { "type": "string" },
+            "members": { "type": "array", "items": { "type": "string" } }
+          }
+        },
+        "adverse_event_reporting": {
+          "type": "object",
+          "properties": {
+            "sae_timeline": { "type": "string", "description": "SAE reporting timeline" },
+            "susar_timeline": { "type": "string", "description": "SUSAR reporting timeline" }
+          }
+        },
+        "dose_limiting_toxicity": {
+          "type": "object",
+          "properties": {
+            "definition": { "type": "string" },
+            "assessment_period": { "type": "string" }
+          }
+        }
+      }
+    },
+    "compliance": {
+      "type": "object",
+      "description": "Regulatory compliance requirements",
+      "properties": {
+        "gcp": { 
+          "type": "boolean",
+          "description": "Good Clinical Practice compliance required"
+        },
+        "part11": {
+          "type": "boolean",
+          "description": "21 CFR Part 11 electronic records compliance"
+        },
+        "hipaa": {
+          "type": "boolean", 
+          "description": "HIPAA compliance required"
+        },
+        "gdpr": {
+          "type": "boolean",
+          "description": "GDPR compliance required"
+        },
+        "regulatory_submissions": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "authority": { "type": "string" },
+              "submission_type": { "type": "string" },
+              "submission_id": { "type": "string" }
+            }
+          }
+        }
+      }
+    }
+  }
+}

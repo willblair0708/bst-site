@@ -1,0 +1,67 @@
+# Example: Preventing costly amendment scenarios with λ-Trial DSL
+
+# SCENARIO 1: Copy-paste SAP error (wrong alpha level)
+# ❌ Old way: Free text "alpha = 0.01" gets copy-pasted incorrectly
+# ✅ λ-Trial way: Schema-enforced enum prevents errors
+
+id: PREVENT-AMEND-P3
+title: Amendment Prevention Demo
+phase: 3
+
+ci:
+  alpha: 0.05  # ← JSON Schema validates this is 0.01, 0.05, or 0.1 only
+  power_target: 0.80  # ← Must be between 0.0 and 1.0
+  diversity_badge: gold  # ← Enum: bronze/silver/gold only
+
+# SCENARIO 2: Inconsistent eligibility criteria
+# ❌ Old way: Protocol says "Age 18-65" but EDC configured as "18-64" 
+# ✅ λ-Trial way: Single source of truth → compiled to EDC/FHIR
+
+eligibility:
+  inclusion:
+    - "Age ≥18 and ≤65 years"  # ← Canonical definition
+    - "ECOG PS 0-1"
+    - "Adequate organ function per lab_criteria_v2.1"
+  exclusion:
+    - "Pregnancy (serum β-hCG positive)"
+    - "Prior anti-PD1 therapy"
+
+# SCENARIO 3: Unit conversion errors
+# ❌ Old way: "Creatinine <1.5 mg/dL" vs "<133 μmol/L" inconsistency
+# ✅ λ-Trial way: Structured data with units
+
+lab_criteria:
+  creatinine:
+    max_value: 1.5
+    unit: "mg/dL"
+    si_equivalent: 
+      max_value: 133
+      unit: "μmol/L"
+
+# SCENARIO 4: Missing diversity planning
+# ❌ Old way: Diversity considerations added as amendment after FDA feedback
+# ✅ λ-Trial way: Diversity badge required before CI passes
+
+arms:
+  - id: CONTROL
+    treatment: "Standard of Care"
+    allocation: 0.5
+  - id: EXPERIMENTAL  
+    treatment: "Investigational Drug + SOC"
+    allocation: 0.5
+
+endpoints:
+  primary: "Overall Survival at 24 months"
+  secondary:
+    - "Progression-free survival"
+    - "Quality of life (EORTC QLQ-C30)"
+    - "Safety and tolerability"
+
+# CI enforcement: This protocol CANNOT be merged until diversity badge >= silver
+sample_size:
+  target: 800
+  per_arm: 400
+  diversity_requirement: 
+    min_sites: 25
+    geographic_coverage: 0.75  # 75% of major metropolitan areas
+    ethnic_diversity_target: 0.40  # 40% non-white enrollment

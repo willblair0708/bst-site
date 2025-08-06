@@ -1,0 +1,245 @@
+@import "tailwindcss";
+
+@layer base {
+  :root {
+    /* Runix Hub Light Theme */
+    --background: 60 2% 96%; /* Sand Paper #F4F4F2 */
+    --foreground: 220 20% 8%; /* Proof Black #0F1116 */
+    --card: 60 2% 96%;
+    --card-foreground: 220 20% 8%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 220 20% 8%;
+    --primary: 228 100% 51%; /* Graph Deep Blue #0436FF */
+    --primary-foreground: 0 0% 100%;
+    --secondary: 60 2% 96%;
+    --secondary-foreground: 220 20% 8%;
+    --muted: 60 2% 96%;
+    --muted-foreground: 220 14% 67%; /* Oxide Grey #9CA3AF */
+    --accent: 173 75% 51%; /* Quantum Teal #18E0C8 */
+    --accent-foreground: 220 20% 8%;
+    --destructive: 347 77% 64%; /* Alert Red #FF4664 */
+    --destructive-foreground: 0 0% 100%;
+    --success: 173 75% 51%; /* Quantum Teal for success */
+    --success-foreground: 0 0% 100%;
+    --border: 220 14% 67%; /* Oxide Grey */
+    --input: 60 2% 96%;
+    --ring: 228 100% 51%;
+    --radius: 0.5rem;
+    --chart-1: 12 76% 61%;
+    --chart-2: 173 58% 39%;
+    --chart-3: 197 37% 24%;
+    --chart-4: 43 74% 66%;
+    --chart-5: 27 87% 67%;
+  }
+
+  .dark {
+    /* Runix Hub Dark Theme */
+    --background: 220 20% 8%; /* Proof Black #0F1116 */
+    --foreground: 60 2% 96%; /* Sand Paper #F4F4F2 */
+    --card: 220 20% 8%;
+    --card-foreground: 60 2% 96%;
+    --popover: 220 20% 8%;
+    --popover-foreground: 60 2% 96%;
+    --primary: 228 100% 51%; /* Graph Deep Blue #0436FF */
+    --primary-foreground: 0 0% 100%;
+    --secondary: 220 20% 12%; /* Darker variant of Proof Black */
+    --secondary-foreground: 60 2% 96%;
+    --muted: 220 20% 12%;
+    --muted-foreground: 220 14% 67%; /* Oxide Grey */
+    --accent: 173 75% 51%; /* Quantum Teal */
+    --accent-foreground: 220 20% 8%;
+    --destructive: 347 77% 64%; /* Alert Red */
+    --destructive-foreground: 0 0% 100%;
+    --success: 173 75% 51%; /* Quantum Teal */
+    --success-foreground: 220 20% 8%;
+    --border: 220 20% 20%; /* Slightly lighter than background */
+    --input: 220 20% 12%;
+    --ring: 228 100% 51%;
+    --chart-1: 220 70% 50%;
+    --chart-2: 160 60% 45%;
+    --chart-3: 30 80% 55%;
+    --chart-4: 280 65% 60%;
+    --chart-5: 340 75% 55%;
+  }
+
+  * {
+    border-color: hsl(var(--border));
+  }
+  
+  body {
+    background-color: hsl(var(--background));
+    color: hsl(var(--foreground));
+    font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    line-height: 1.6;
+    font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
+  }
+
+  /* Typography - Runix Hub Style */
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Satoshi', 'Inter', system-ui, sans-serif;
+    letter-spacing: -0.025em;
+    font-weight: 400;
+    line-height: 1.2;
+  }
+
+  h1 {
+    font-weight: 300;
+    letter-spacing: -0.035em;
+  }
+
+  h2 {
+    font-weight: 350;
+  }
+
+  /* Code and hash typography */
+  code, .hash, .checksum {
+    font-family: 'JetBrains Mono', 'Menlo', 'Monaco', 'Consolas', monospace;
+    font-feature-settings: 'zero' off, 'liga' off; /* Slashed zero and ligatures off for clarity */
+  }
+
+  /* Smooth scrolling and enhanced focus states */
+  * {
+    scroll-behavior: smooth;
+  }
+
+  /* Runix Hub Transitions */
+  button, a {
+    transition: all 0.25s cubic-bezier(0.22, 0.61, 0.36, 1);
+  }
+
+  /* Fast micro-interactions */
+  .transition-fast {
+    transition-duration: 100ms;
+    transition-timing-function: cubic-bezier(0.22, 0.61, 0.36, 1);
+  }
+
+  .transition-medium {
+    transition-duration: 250ms;
+    transition-timing-function: cubic-bezier(0.22, 0.61, 0.36, 1);
+  }
+
+  /* Enhanced focus rings */
+  button:focus-visible,
+  a:focus-visible,
+  input:focus-visible {
+    outline: 2px solid hsl(var(--ring));
+    outline-offset: 2px;
+  }
+
+  /* Runix Hub Component Effects */
+  
+  /* Checksum ribbon that unfurls on hover */
+  .checksum-ribbon {
+    position: relative;
+    overflow: hidden;
+  }
+
+  .checksum-ribbon::before {
+    content: attr(data-hash);
+    position: absolute;
+    top: 0;
+    right: -100%;
+    background: hsl(var(--accent));
+    color: hsl(var(--accent-foreground));
+    padding: 0.25rem 0.5rem;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.75rem;
+    transform: rotate(45deg) translateX(100%);
+    transition: transform 0.25s cubic-bezier(0.22, 0.61, 0.36, 1);
+    z-index: 10;
+  }
+
+  .checksum-ribbon:hover::before {
+    transform: rotate(45deg) translateX(0);
+  }
+
+  /* Progress ring for run buttons */
+  .progress-ring {
+    transform: rotate(-90deg);
+    transition: stroke-dasharray 0.25s cubic-bezier(0.22, 0.61, 0.36, 1);
+  }
+
+  /* DAG node glow effects */
+  .dag-node {
+    transition: all 0.25s cubic-bezier(0.22, 0.61, 0.36, 1);
+  }
+
+  .dag-node:hover {
+    box-shadow: 0 0 20px hsl(var(--accent) / 0.3);
+  }
+
+  .dag-node.success {
+    animation: pulse-once 0.6s ease-out;
+  }
+
+  .dag-node.failed {
+    animation: shake 0.5s ease-in-out;
+    background-color: hsl(var(--destructive) / 0.1);
+    border-color: hsl(var(--destructive));
+  }
+
+  /* Paper-cut layer effect */
+  .paper-layers {
+    box-shadow: 
+      0 1px 3px rgba(0, 0, 0, 0.1),
+      0 4px 6px rgba(0, 0, 0, 0.05),
+      inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  }
+
+  .font-mono {
+    font-family: 'IBM Plex Mono', monospace;
+  }
+}
+
+/* Ant Design Dark Theme Customizations */
+@layer components {
+  .antd-search-dark .ant-input {
+    background-color: hsl(215, 20%, 18%) !important;
+    border-color: hsl(215, 20%, 25%) !important;
+    color: hsl(210, 40%, 98%) !important;
+  }
+  
+  .antd-search-dark .ant-input::placeholder {
+    color: hsl(215, 28%, 65%) !important;
+  }
+  
+  .antd-search-dark .ant-input:focus,
+  .antd-search-dark .ant-input-focused {
+    border-color: hsl(210, 100%, 56%) !important;
+    box-shadow: 0 0 0 2px rgba(25, 167, 206, 0.2) !important;
+  }
+
+  /* Ant Design Menu Dark Theme */
+  .ant-menu-dark .ant-menu-item:hover,
+  .ant-menu-dark .ant-menu-item-active,
+  .ant-menu-dark .ant-menu-submenu-title:hover {
+    background-color: hsl(215, 20%, 18%) !important;
+    color: hsl(210, 100%, 56%) !important;
+  }
+  
+  .ant-menu-dark .ant-menu-item-selected {
+    background-color: hsl(215, 20%, 18%) !important;
+    color: hsl(210, 100%, 56%) !important;
+    border-bottom: 2px solid hsl(210, 100%, 56%) !important;
+  }
+
+  /* Dropdown customizations */
+  .ant-dropdown {
+    background-color: hsl(215, 20%, 18%) !important;
+    border: 1px solid hsl(215, 20%, 25%) !important;
+    border-radius: 6px !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5) !important;
+  }
+  
+  .ant-dropdown .ant-dropdown-menu {
+    background-color: transparent !important;
+    border: none !important;
+  }
+  
+  .ant-dropdown .ant-dropdown-menu-item:hover {
+    background-color: hsl(215, 20%, 18%) !important;
+    color: hsl(210, 100%, 56%) !important;
+  }
+}

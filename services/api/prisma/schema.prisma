@@ -1,0 +1,492 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// User management and authentication
+model User {
+  id              String   @id @default(uuid())
+  email           String   @unique
+  username        String   @unique
+  name            String
+  avatar          String?
+  githubId        String?  @unique
+  role            Role     @default(RESEARCHER)
+  isActive        Boolean  @default(true)
+  lastLogin       DateTime?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  // Relationships
+  repositories    Repository[]
+  collaborations  RepositoryCollaborator[]
+  pullRequests    PullRequest[]
+  comments        Comment[]
+  auditLogs       AuditLog[]
+  apiKeys         ApiKey[]
+
+  @@map("users")
+}
+
+enum Role {
+  ADMIN
+  DATA_STEWARD
+  CLINICAL_OPS
+  BIOSTATS
+  RESEARCHER
+  REGULATOR
+  VIEWER
+}
+
+// API Key management
+model ApiKey {
+  id          String   @id @default(uuid())
+  name        String
+  key         String   @unique
+  userId      String
+  permissions Json
+  lastUsed    DateTime?
+  expiresAt   DateTime?
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("api_keys")
+}
+
+// Organization and team management
+model Organization {
+  id          String   @id @default(uuid())
+  name        String
+  slug        String   @unique
+  description String?
+  avatar      String?
+  settings    Json     @default("{}")
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  teams        Team[]
+  repositories Repository[]
+
+  @@map("organizations")
+}
+
+model Team {
+  id             String   @id @default(uuid())
+  name           String
+  slug           String
+  description    String?
+  organizationId String
+  permissions    Json     @default("{}")
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  members      TeamMember[]
+
+  @@unique([organizationId, slug])
+  @@map("teams")
+}
+
+model TeamMember {
+  id     String @id @default(uuid())
+  teamId String
+  userId String
+  role   String @default("member")
+
+  team Team @relation(fields: [teamId], references: [id], onDelete: Cascade)
+
+  @@unique([teamId, userId])
+  @@map("team_members")
+}
+
+// Repository and protocol management
+model Repository {
+  id             String   @id @default(uuid())
+  name           String
+  slug           String
+  description    String?
+  isPrivate      Boolean  @default(false)
+  defaultBranch  String   @default("main")
+  gitUrl         String
+  settings       Json     @default("{}")
+  organizationId String?
+  ownerId        String
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  owner          User                     @relation(fields: [ownerId], references: [id])
+  organization   Organization?            @relation(fields: [organizationId], references: [id])
+  collaborators  RepositoryCollaborator[]
+  protocols      Protocol[]
+  pullRequests   PullRequest[]
+  branches       Branch[]
+  webhooks       Webhook[]
+  packages       Package[]
+
+  @@unique([ownerId, slug])
+  @@unique([organizationId, slug])
+  @@map("repositories")
+}
+
+model RepositoryCollaborator {
+  id           String @id @default(uuid())
+  repositoryId String
+  userId       String
+  permission   String @default("read") // read, write, admin
+
+  repository Repository @relation(fields: [repositoryId], references: [id], onDelete: Cascade)
+  user       User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([repositoryId, userId])
+  @@map("repository_collaborators")
+}
+
+model Branch {
+  id           String   @id @default(uuid())
+  name         String
+  repositoryId String
+  commitSha    String
+  isProtected  Boolean  @default(false)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  repository Repository @relation(fields: [repositoryId], references: [id], onDelete: Cascade)
+
+  @@unique([repositoryId, name])
+  @@map("branches")
+}
+
+// Protocol as Code
+model Protocol {
+  id           String        @id @default(uuid())
+  name         String
+  version      String
+  description  String?
+  type         ProtocolType
+  phase        Phase
+  status       Status        @default(DRAFT)
+  content      Json          // YAML/JSON protocol definition
+  schema       Json          // Validation schema
+  repositoryId String
+  branch       String        @default("main")
+  filePath     String
+  checksum     String
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+
+  repository  Repository   @relation(fields: [repositoryId], references: [id], onDelete: Cascade)
+  simulations Simulation[]
+  deployments Deployment[]
+  auditLogs   AuditLog[]
+
+  @@unique([repositoryId, name, version])
+  @@map("protocols")
+}
+
+enum ProtocolType {
+  CLINICAL_TRIAL
+  OBSERVATIONAL
+  REGISTRY
+  REAL_WORLD_EVIDENCE
+}
+
+enum Phase {
+  PRECLINICAL
+  PHASE_I
+  PHASE_II
+  PHASE_III
+  PHASE_IV
+  POST_MARKET
+}
+
+enum Status {
+  DRAFT
+  REVIEW
+  APPROVED
+  ACTIVE
+  PAUSED
+  COMPLETED
+  TERMINATED
+}
+
+// Pull Request system
+model PullRequest {
+  id           String    @id @default(uuid())
+  number       Int
+  title        String
+  description  String?
+  status       PRStatus  @default(OPEN)
+  sourceBranch String
+  targetBranch String
+  repositoryId String
+  authorId     String
+  mergeable    Boolean   @default(true)
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+  mergedAt     DateTime?
+  closedAt     DateTime?
+
+  repository Repository       @relation(fields: [repositoryId], references: [id], onDelete: Cascade)
+  author     User             @relation(fields: [authorId], references: [id])
+  comments   Comment[]
+  reviews    PullRequestReview[]
+  checks     StatusCheck[]
+
+  @@unique([repositoryId, number])
+  @@map("pull_requests")
+}
+
+enum PRStatus {
+  OPEN
+  MERGED
+  CLOSED
+}
+
+model PullRequestReview {
+  id           String      @id @default(uuid())
+  pullRequestId String
+  reviewerId   String
+  status       ReviewStatus
+  body         String?
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+
+  pullRequest PullRequest @relation(fields: [pullRequestId], references: [id], onDelete: Cascade)
+
+  @@map("pull_request_reviews")
+}
+
+enum ReviewStatus {
+  PENDING
+  APPROVED
+  CHANGES_REQUESTED
+  DISMISSED
+}
+
+model Comment {
+  id           String   @id @default(uuid())
+  body         String
+  pullRequestId String?
+  authorId     String
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  pullRequest PullRequest? @relation(fields: [pullRequestId], references: [id], onDelete: Cascade)
+  author      User         @relation(fields: [authorId], references: [id])
+
+  @@map("comments")
+}
+
+// CI/CD and Status Checks
+model StatusCheck {
+  id           String      @id @default(uuid())
+  name         String
+  status       CheckStatus
+  conclusion   String?
+  output       Json?
+  pullRequestId String
+  startedAt    DateTime    @default(now())
+  completedAt  DateTime?
+
+  pullRequest PullRequest @relation(fields: [pullRequestId], references: [id], onDelete: Cascade)
+
+  @@map("status_checks")
+}
+
+enum CheckStatus {
+  PENDING
+  IN_PROGRESS
+  COMPLETED
+  FAILED
+}
+
+// Simulation and Digital Twin
+model Simulation {
+  id         String           @id @default(uuid())
+  name       String
+  protocolId String
+  version    String
+  type       SimulationType
+  status     SimulationStatus @default(QUEUED)
+  config     Json
+  results    Json?
+  metrics    Json?
+  startedAt  DateTime?
+  completedAt DateTime?
+  createdAt  DateTime         @default(now())
+  updatedAt  DateTime         @updatedAt
+
+  protocol Protocol @relation(fields: [protocolId], references: [id], onDelete: Cascade)
+  logs     SimulationLog[]
+
+  @@map("simulations")
+}
+
+enum SimulationType {
+  AEGIS_LIGHT
+  AEGIS_FULL
+  POWER_ANALYSIS
+  SAFETY_ANALYSIS
+  EFFICACY_PREDICTION
+}
+
+enum SimulationStatus {
+  QUEUED
+  RUNNING
+  COMPLETED
+  FAILED
+  CANCELLED
+}
+
+model SimulationLog {
+  id           String   @id @default(uuid())
+  simulationId String
+  level        String   // info, warn, error
+  message      String
+  metadata     Json?
+  timestamp    DateTime @default(now())
+
+  simulation Simulation @relation(fields: [simulationId], references: [id], onDelete: Cascade)
+
+  @@map("simulation_logs")
+}
+
+// Package Registry
+model Package {
+  id           String      @id @default(uuid())
+  name         String
+  version      String
+  description  String?
+  type         PackageType
+  content      Json
+  downloadUrl  String?
+  repositoryId String?
+  authorId     String?
+  isPublic     Boolean     @default(false)
+  downloads    Int         @default(0)
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+
+  repository Repository? @relation(fields: [repositoryId], references: [id])
+
+  @@unique([name, version])
+  @@map("packages")
+}
+
+enum PackageType {
+  PROTOCOL_TEMPLATE
+  CONTROL_ARM
+  ENDPOINT_ANALYTICS
+  SIMULATION_MODEL
+}
+
+// Deployment and Execution
+model Deployment {
+  id         String           @id @default(uuid())
+  protocolId String
+  version    String
+  status     DeploymentStatus @default(PENDING)
+  environment String
+  config     Json
+  vigil_id   String?
+  startedAt  DateTime?
+  completedAt DateTime?
+  createdAt  DateTime         @default(now())
+  updatedAt  DateTime         @updatedAt
+
+  protocol Protocol @relation(fields: [protocolId], references: [id], onDelete: Cascade)
+
+  @@map("deployments")
+}
+
+enum DeploymentStatus {
+  PENDING
+  DEPLOYING
+  ACTIVE
+  PAUSED
+  COMPLETED
+  FAILED
+}
+
+// Audit and Compliance
+model AuditLog {
+  id         String   @id @default(uuid())
+  action     String
+  resource   String
+  resourceId String
+  userId     String?
+  protocolId String?
+  metadata   Json
+  ipAddress  String?
+  userAgent  String?
+  blockHash  String?  // Blockchain hash
+  timestamp  DateTime @default(now())
+
+  user     User?     @relation(fields: [userId], references: [id])
+  protocol Protocol? @relation(fields: [protocolId], references: [id])
+
+  @@map("audit_logs")
+}
+
+model ModelCard {
+  id          String   @id @default(uuid())
+  protocolId  String
+  version     String
+  content     Json
+  checksum    String
+  blockHash   String?
+  publishedAt DateTime @default(now())
+
+  @@unique([protocolId, version])
+  @@map("model_cards")
+}
+
+// Webhooks and Integrations
+model Webhook {
+  id           String   @id @default(uuid())
+  name         String
+  url          String
+  secret       String?
+  events       String[] // Array of event types
+  repositoryId String
+  isActive     Boolean  @default(true)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  repository Repository @relation(fields: [repositoryId], references: [id], onDelete: Cascade)
+  deliveries WebhookDelivery[]
+
+  @@map("webhooks")
+}
+
+model WebhookDelivery {
+  id         String   @id @default(uuid())
+  webhookId  String
+  event      String
+  payload    Json
+  response   Json?
+  status     Int?
+  deliveredAt DateTime @default(now())
+
+  webhook Webhook @relation(fields: [webhookId], references: [id], onDelete: Cascade)
+
+  @@map("webhook_deliveries")
+}
+
+// Metrics and Analytics
+model Metric {
+  id        String   @id @default(uuid())
+  name      String
+  value     Float
+  labels    Json     @default("{}")
+  timestamp DateTime @default(now())
+
+  @@index([name, timestamp])
+  @@map("metrics")
+}

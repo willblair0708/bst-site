@@ -1,0 +1,34 @@
+name: Quality Gates
+
+on:
+  pull_request:
+    paths:
+      - 'protocol/**.yaml'
+      - 'schemas/**.json'
+
+jobs:
+  validate-protocol:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+      - name: Install dependencies
+        run: pip install PyYAML jsonschema
+      - name: Validate protocol YAML files
+        run: |
+          python - <<'PY'
+          import json, yaml, pathlib, sys
+          from jsonschema import validate, ValidationError
+          schema = json.load(open('schemas/protocol.schema.json'))
+          for path in pathlib.Path('protocol').glob('*.yaml'):
+              data = yaml.safe_load(open(path))
+              try:
+                  validate(data, schema)
+                  print(f"{path} ✓ valid")
+              except ValidationError as e:
+                  print(f"{path} ✗ invalid: {e.message}")
+                  sys.exit(1)
+          PY

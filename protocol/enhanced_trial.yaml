@@ -1,0 +1,53 @@
+# λ-Trial DSL v0.1 - Enhanced Protocol
+id: BASTION-NSCLC-P3
+title: Bastion NSCLC Phase III Trial
+phase: 3
+version: v2.0
+
+arms:
+  - id: SOC
+    treatment: Standard Of Care (carboplatin + paclitaxel)
+    allocation: 0.5
+  - id: SOC_AEGIS
+    treatment: SOC + AEGIS-mAb (experimental)
+    allocation: 0.5
+
+eligibility:
+  inclusion:
+    - Age 18-75 years
+    - Histologically confirmed NSCLC
+    - ECOG Performance Status 0-1
+    - Adequate organ function
+    - Life expectancy ≥ 12 weeks
+  exclusion:
+    - Prior immunotherapy
+    - Active autoimmune disease
+    - Pregnancy or nursing
+    - Active brain metastases
+
+endpoints:
+  primary: 12-month overall survival
+  secondary:
+    - Objective response rate (ORR)
+    - Progression-free survival (PFS)
+    - Quality of life (EORTC QLQ-C30)
+    - Safety and tolerability
+
+ci:
+  power_target: 0.80
+  alpha: 0.05
+  diversity_badge: silver
+  synthetic_twins: 1500
+  interim_analyses: 2
+
+sample_size:
+  target: 450
+  per_arm: 225
+  dropout_rate: 0.15
+
+fhir_mapping:
+  patient_resource: "Patient"
+  condition_code: "C78.0"  # Malignant neoplasm of lung
+  medication_codes:
+    - "carboplatin_snomed"
+    - "paclitaxel_snomed"

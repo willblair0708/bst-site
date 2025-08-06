@@ -1,0 +1,157 @@
+meta:
+  id: CTP-ABC123
+  title: "NSCLC Phase I Safety and Efficacy Trial"
+  version: v2.1
+  sponsor: "Oncology Research Institute"
+  phase: "Phase I"
+  indication: "Advanced Non-Small Cell Lung Cancer"
+  drug:
+    name: "XYZ-789"
+    class: "Targeted Therapy"
+    mechanism: "EGFR/ALK Dual Inhibitor"
+    formulation: "Oral Capsule"
+
+study:
+  type: interventional
+  randomization: non_randomized
+  blinding: open_label
+  allocation: sequential
+  control: historical
+  duration:
+    treatment: "28 days per cycle, up to 12 cycles"
+    followup: "30 days post-treatment"
+    total: "approximately 18 months"
+
+population:
+  target_size: 36
+  age:
+    min: 18
+    max: 120
+    unit: years
+  inclusion:
+    - "Age ≥18 years"
+    - "Histologically confirmed advanced NSCLC"
+    - "ECOG performance status 0-1"
+    - "Adequate organ function (ANC ≥1500, PLT ≥100K, Hgb ≥9.0)"
+    - "Life expectancy ≥12 weeks"
+    - "Signed informed consent"
+  exclusion:
+    - "Prior treatment with EGFR/ALK dual inhibitors"
+    - "Active CNS metastases (unless treated and stable)"
+    - "Significant cardiac dysfunction (LVEF <50%)"
+    - "Uncontrolled intercurrent illness"
+    - "Pregnant or nursing women"
+    - "Unable to swallow oral medications"
+  stratification:
+    - factor: "EGFR mutation status"
+      levels: ["positive", "negative", "unknown"]
+    - factor: "Prior lines of therapy"
+      levels: ["0-1", "2-3", "≥4"]
+
+endpoints:
+  primary:
+    - name: "Maximum Tolerated Dose (MTD)"
+      description: "Highest dose with DLT rate ≤33% in first cycle"
+      timepoint: "Cycle 1 (28 days)"
+      type: safety
+    - name: "Recommended Phase II Dose (RP2D)"
+      description: "Dose selected based on safety, PK, and preliminary efficacy"
+      timepoint: "End of dose escalation"
+      type: safety
+  secondary:
+    - name: "Overall Response Rate (ORR)"
+      description: "Proportion of patients with CR or PR per RECIST v1.1"
+      timepoint: "Every 8 weeks until progression"
+      type: efficacy
+    - name: "Progression-Free Survival (PFS)"
+      description: "Time from first dose to progression or death"
+      timepoint: "From treatment start until progression"
+      type: efficacy
+    - name: "Pharmacokinetic Profile"
+      description: "Cmax, AUC, T1/2, clearance of XYZ-789"
+      timepoint: "Cycle 1 Days 1, 8, 15, 22"
+      type: pharmacokinetic
+    - name: "Safety Profile"
+      description: "Incidence and severity of adverse events"
+      timepoint: "Continuous throughout study"
+      type: safety
+  exploratory:
+    - name: "Biomarker Analysis"
+      description: "Correlation of response with tumor mutations"
+      timepoint: "Baseline and progression"
+    - name: "Quality of Life"
+      description: "EORTC QLQ-C30 and QLQ-LC13 questionnaires"
+      timepoint: "Baseline, every 8 weeks, end of treatment"
+
+design:
+  power_analysis:
+    alpha: 0.05
+    power: 0.80
+    effect_size: 0.3
+    test: "t_test"
+  interim_analysis:
+    enabled: true
+    timepoints: ["After 18 patients", "After 27 patients"]
+    stopping_rules:
+      - "≥6 DLTs in any dose level"
+      - "Futility based on response rate <10%"
+  randomization_scheme:
+    method: "simple"
+    allocation_ratio: "1:1"
+
+sites:
+  - id: "001"
+    name: "Memorial Sloan Kettering Cancer Center"
+    country: "United States"
+    region: "New York"
+    principal_investigator: "Dr. Sarah Johnson, MD"
+    target_enrollment: 12
+    contact:
+      email: "sarah.johnson@mskcc.org"
+      phone: "+1-212-639-2000"
+  - id: "002"
+    name: "MD Anderson Cancer Center"
+    country: "United States"
+    region: "Texas"
+    principal_investigator: "Dr. Michael Chen, MD, PhD"
+    target_enrollment: 12
+    contact:
+      email: "mchen@mdanderson.org"
+      phone: "+1-713-792-2121"
+  - id: "003"
+    name: "Dana-Farber Cancer Institute"
+    country: "United States"
+    region: "Massachusetts"
+    principal_investigator: "Dr. Emily Rodriguez, MD"
+    target_enrollment: 12
+    contact:
+      email: "emily_rodriguez@dfci.harvard.edu"
+      phone: "+1-617-632-3000"
+
+safety:
+  dsmb:
+    required: true
+    meeting_frequency: "After every 6 patients or monthly"
+    members:
+      - "Dr. James Wilson, MD (Chair)"
+      - "Dr. Lisa Thompson, MD"
+      - "Dr. Robert Kim, PhD (Statistician)"
+  adverse_event_reporting:
+    sae_timeline: "24 hours"
+    susar_timeline: "7 days"
+  dose_limiting_toxicity:
+    definition: "Grade 3+ non-hematologic or Grade 4+ hematologic toxicity in Cycle 1"
+    assessment_period: "28 days from first dose"
+
+compliance:
+  gcp: true
+  part11: true
+  hipaa: true
+  gdpr: false
+  regulatory_submissions:
+    - authority: "FDA"
+      submission_type: "IND"
+      submission_id: "IND-123456"
+    - authority: "IRB"
+      submission_type: "Initial Review"
+      submission_id: "IRB-2024-001"

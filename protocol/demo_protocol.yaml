@@ -1,0 +1,6 @@
+id: CTP-ABC123
+title: Example Phase I Trial
+version: v1.0
+inclusionCriteria:
+  - Age 18-75
+  - Confirmed NSCLC diagnosis

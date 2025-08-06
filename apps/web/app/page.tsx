@@ -1,10 +1,6 @@
-"use client"
+"use client";
 
 import {
-  Shield,
-  Zap,
-  Users,
-  BarChart3,
   GitBranch,
   CheckCircle2,
   Star,
@@ -13,11 +9,16 @@ import {
   Beaker,
   Globe,
   Lock,
+  ArrowRight,
+  Database,
+  ShieldCheck,
+  Zap,
 } from "lucide-react";
 import Link from "next/link";
 import { AnimatedHero } from "@/components/ui/animated-hero";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 
 interface Repository {
   name: string;
@@ -35,451 +36,313 @@ interface Repository {
 
 const featuredRepositories: Repository[] = [
   {
-    name: "mitochondrial-ros-sensor",
-    owner: "oncology-research",
-    description:
-      "Computable plasmid construct protocols + SimPy model for mitochondrial ROS detection",
+    name: "MitoROS-Sensor",
+    owner: "genentech-research",
+    description: "Computable plasmid construct protocols for mitochondrial ROS detection using SimPy.",
     language: "Python",
-    stars: 47,
-    forks: 12,
-    isPrivate: false,
-    updatedAt: "2 hours ago",
-    hash: "a1b2c3d4e5f6g7h8i9j0k1l2m3n4o5p6q7r8s9t0u1v2w3x4y5z6",
-    verified: true,
-    reproducibility: 94.2,
-  },
-  {
-    name: "faers-safety-digest",
-    owner: "fda-collab",
-    description:
-      "OpenFDA pharmacovigilance signal detection pipeline with real-time monitoring",
-    language: "R",
-    stars: 128,
-    forks: 23,
+    stars: 88,
+    forks: 21,
     isPrivate: false,
     updatedAt: "4 hours ago",
-    hash: "b2c3d4e5f6g7h8i9j0k1l2m3n4o5p6q7r8s9t0u1v2w3x4y5z6a1",
+    hash: "a1b2c3d4e5f6g7h8",
     verified: true,
-    reproducibility: 97.8,
+    reproducibility: 95.8,
   },
   {
-    name: "CTP-ABC123",
-    owner: "mskcc",
-    description:
-      "NSCLC Phase I Safety and Efficacy Trial - Multicenter dose-escalation study",
-    language: "YAML",
-    stars: 23,
-    forks: 3,
-    isPrivate: true,
+    name: "FAERS-Signal-Detection",
+    owner: "fda-collaborate",
+    description: "OpenFDA pharmacovigilance pipeline with real-time adverse event monitoring.",
+    language: "R",
+    stars: 256,
+    forks: 45,
+    isPrivate: false,
     updatedAt: "1 day ago",
-    hash: "c3d4e5f6g7h8i9j0k1l2m3n4o5p6q7r8s9t0u1v2w3x4y5z6a1b2",
+    hash: "b2c3d4e5f6g7h8i9",
     verified: true,
-    reproducibility: 96.5,
+    reproducibility: 98.2,
+  },
+  {
+    name: "OncoSim-NSCLC",
+    owner: "broad-institute",
+    description: "Agent-based model simulating tumor microenvironment in non-small cell lung cancer.",
+    language: "Julia",
+    stars: 102,
+    forks: 18,
+    isPrivate: true,
+    updatedAt: "3 days ago",
+    hash: "c3d4e5f6g7h8i9j0",
+    verified: false,
+    reproducibility: 89.1,
   },
 ];
 
 const features = [
   {
-    icon: Shield,
-    title: "Regulatory Compliance",
-    description:
-      "Built-in FDA, ICH-GCP, and 21 CFR Part 11 compliance with automated audit trails and validation",
-  },
-  {
     icon: GitBranch,
-    title: "Version Control",
-    description:
-      "Git-based protocol versioning with amendment tracking, approval workflows, and branch management",
+    title: "Git-Based Provenance",
+    description: "Every dataset, model, and result is a verifiable commit in a content-addressed repository.",
   },
   {
-    icon: BarChart3,
-    title: "Synthetic Controls",
-    description:
-      "AI-powered synthetic control arm generation with real-world data integration and bias correction",
+    icon: ShieldCheck,
+    title: "Verifiable Pipelines",
+    description: "Execute research workflows in secure, reproducible environments, from anywhere.",
   },
   {
-    icon: Users,
-    title: "Collaborative Research",
-    description:
-      "Multi-site collaboration tools with role-based permissions and real-time protocol synchronization",
-  },
-  {
-    icon: Beaker,
-    title: "Simulation Engine",
-    description:
-      "Monte Carlo trial simulations with adaptive design optimization and endpoint prediction",
-  },
-  {
-    icon: Lock,
-    title: "Data Security",
-    description:
-      "Enterprise-grade encryption, HIPAA compliance, and secure multi-party computation",
+    icon: Database,
+    title: "Interoperable Data",
+    description: "Connect disparate datasets and models into a single, computable graph of knowledge.",
   },
 ];
 
-const stats = [
-  { label: "Active Trials", value: "1,247", growth: "+12%" },
-  { label: "Researchers", value: "8,900", growth: "+23%" },
-  { label: "Protocols", value: "3,456", growth: "+34%" },
-  { label: "Publications", value: "89", growth: "+67%" },
+const sections = [
+  {
+    title: "From Static Papers to Dynamic Pipelines",
+    description: "Runix Hub transforms static research papers into forkable, runnable, and verifiable pipelines. We provide the infrastructure for scientists to build, share, and collaborate on computable research, ensuring that every claim is backed by auditable data and code.",
+    icon: Zap,
+  },
+  {
+    title: "A New Foundation for Scientific Collaboration",
+    description: "Built on a decentralized architecture, Runix Hub provides a new foundation for scientific collaboration. Our platform enables researchers to work together on complex projects, share results in real-time, and build upon each other's work with confidence and trust.",
+    icon: Globe,
+  }
 ];
 
-const containerVariants = {
-  hidden: { opacity: 0 },
-  visible: {
-    opacity: 1,
-    transition: {
-      staggerChildren: 0.1,
-      delayChildren: 0.3,
-    },
-  },
-};
-
-const cardVariants = {
-  hidden: { opacity: 0, y: 30 },
-  visible: { opacity: 1, y: 0 },
-  hover: { y: -8, scale: 1.02 },
+const fadeInUp = {
+  initial: { opacity: 0, y: 40 },
+  animate: { opacity: 1, y: 0 },
 };
 
 export default function LandingPage() {
   return (
-    <div className="min-h-screen bg-background relative isolate overflow-hidden">
-        <div
-        className="hidden sm:absolute sm:-top-10 sm:right-1/2 sm:-z-10 sm:mr-10 sm:block sm:transform-gpu sm:blur-3xl"
-        aria-hidden="true"
-      >
-        <div
-          className="aspect-[1097/845] w-[68.5625rem] bg-gradient-to-tr from-[#3b82f6] to-[#1e40af] opacity-20"
-          style={{
-            clipPath:
-              'polygon(74.1% 44.1%, 100% 61.6%, 97.5% 26.9%, 85.5% 0.1%, 80.7% 2%, 72.5% 32.5%, 60.2% 62.4%, 52.4% 68.1%, 47.5% 58.3%, 45.2% 34.5%, 27.5% 76.7%, 0.1% 64.9%, 17.9% 100%, 27.6% 76.8%, 76.1% 97.7%, 74.1% 44.1%)',
-          }}
-        />
-      </div>
-      <div
-        className="absolute -top-52 left-1/2 -z-10 -translate-x-1/2 transform-gpu blur-3xl sm:top-[-28rem] sm:ml-16 sm:translate-x-0 sm:transform-gpu"
-        aria-hidden="true"
-      >
-        <div
-          className="aspect-[1097/845] w-[68.5625rem] bg-gradient-to-tr from-[#3b82f6] to-[#1e40af] opacity-20"
-          style={{
-            clipPath:
-              'polygon(74.1% 44.1%, 100% 61.6%, 97.5% 26.9%, 85.5% 0.1%, 80.7% 2%, 72.5% 32.5%, 60.2% 62.4%, 52.4% 68.1%, 47.5% 58.3%, 45.2% 34.5%, 27.5% 76.7%, 0.1% 64.9%, 17.9% 100%, 27.6% 76.8%, 76.1% 97.7%, 74.1% 44.1%)',
-          }}
-        />
-      </div>
+    <div className="bg-background text-foreground font-body antialiased">
       {/* Hero Section */}
-      <AnimatedHero />
-
-      {/* Featured Pipelines */}
-      <div className="bg-card py-20">
-        <div className="max-w-6xl mx-auto px-6 lg:px-8">
-          <motion.div
-            initial={{ opacity: 0, y: 50 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, amount: 0.3 }}
-            transition={{
-              duration: 0.8,
-              ease: [0.25, 0.46, 0.45, 0.94],
+      <div className="relative isolate pt-14">
+        <div
+          className="absolute inset-x-0 -top-40 -z-10 transform-gpu overflow-hidden blur-3xl sm:-top-80"
+          aria-hidden="true"
+        >
+          <div
+            className="relative left-[calc(50%-11rem)] aspect-[1155/678] w-[36.125rem] -translate-x-1/2 rotate-[30deg] bg-gradient-to-tr from-primary to-accent opacity-20 sm:left-[calc(50%-30rem)] sm:w-[72.1875rem]"
+            style={{
+              clipPath:
+                'polygon(74.1% 44.1%, 100% 61.6%, 97.5% 26.9%, 85.5% 0.1%, 80.7% 2%, 72.5% 32.5%, 60.2% 62.4%, 52.4% 68.1%, 47.5% 58.3%, 45.2% 34.5%, 27.5% 76.7%, 0.1% 64.9%, 17.9% 100%, 27.6% 76.8%, 76.1% 97.7%, 74.1% 44.1%)',
             }}
-            className="text-center mb-16"
-          >
-            <h2 className="text-4xl font-display font-light text-foreground mb-4">Featured Pipelines</h2>
-            <p className="text-lg text-muted-foreground font-light">Verified, reproducible research workflows ready to fork and run</p>
-          </motion.div>
-          
-          <motion.div 
-            className="grid md:grid-cols-3 gap-8"
-            variants={containerVariants}
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, amount: 0.2 }}
-          >
-            {featuredRepositories.map((repo, index) => (
-              <motion.div
-                key={index}
-                variants={cardVariants}
-                whileHover="hover"
-                transition={{ duration: 0.6 }}
-                className="block"
-              >
-                <Link 
-                  href={`/repo/${repo.owner}/${repo.name}`}
-                  className="block bg-background rounded-2xl border border-border p-8 checksum-ribbon paper-layers group transition-shadow duration-300"
-                  data-hash={repo.hash.substring(0, 8)}
-                >
-                  <div className="flex items-start justify-between mb-6">
-                    <div className="flex items-center space-x-3">
-                      <motion.div 
-                        className="w-8 h-8 bg-muted/50 rounded-lg flex items-center justify-center transition-medium group-hover:bg-accent/20"
-                        whileHover={{ rotate: 5 }}
-                      >
-                        {repo.isPrivate ? 
-                          <Lock className="w-4 h-4 text-muted-foreground group-hover:text-accent transition-medium" /> : 
-                          <Globe className="w-4 h-4 text-muted-foreground group-hover:text-accent transition-medium" />
-                        }
-                      </motion.div>
-                      <span className="text-sm text-muted-foreground font-medium">{repo.owner}</span>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <span className="text-xs text-primary bg-primary/10 px-2 py-1 rounded-md font-mono">
-                        {repo.language}
-                      </span>
-                      {repo.verified && (
-                        <motion.div 
-                          className="relative"
-                          whileHover={{ scale: 1.1 }}
-                        >
-                          <div className="w-6 h-6 bg-accent rounded-full flex items-center justify-center" title={`Verified reproducible (${repo.reproducibility}%)`}>
-                            <CheckCircle2 className="w-4 h-4 text-background" />
-                          </div>
-                          <motion.div 
-                            className="absolute -top-1 -right-1 w-3 h-3 bg-primary rounded-full border-2 border-background"
-                            animate={{ scale: [1, 1.2, 1] }}
-                            transition={{ duration: 2, repeat: Infinity }}
-                          />
-                        </motion.div>
-                      )}
-                    </div>
-                  </div>
-                  
-                  <h3 className="text-xl font-display font-medium text-foreground mb-3 group-hover:text-primary transition-medium">
-                    {repo.name}
-                  </h3>
-                  <p className="text-sm text-muted-foreground mb-6 line-clamp-2 leading-relaxed">
-                    {repo.description}
-                  </p>
-                  
-                  {/* Hash preview */}
-                  <motion.div 
-                    className="mb-4 p-3 bg-muted/30 rounded-lg border border-border/50"
-                    whileHover={{ backgroundColor: "hsl(var(--muted)/0.5)" }}
-                  >
-                    <div className="text-2xs text-muted-foreground mb-1">Pipeline Hash (SHA-256)</div>
-                    <div className="font-mono text-xs text-foreground break-all leading-relaxed">
-                      {repo.hash}
-                    </div>
-                  </motion.div>
-                  
-                  <div className="flex items-center justify-between text-xs text-muted-foreground">
-                    <div className="flex items-center space-x-4">
-                      <div className="flex items-center space-x-1">
-                        <Star className="w-3 h-3" />
-                        <span className="font-mono">{repo.stars}</span>
-                      </div>
-                      <div className="flex items-center space-x-1">
-                        <GitFork className="w-3 h-3" />
-                        <span className="font-mono">{repo.forks}</span>
-                      </div>
-                      <div className="flex items-center space-x-1" title="Reproducibility rate">
-                        <Activity className="w-3 h-3 text-accent" />
-                        <span className="font-mono text-accent">{repo.reproducibility}%</span>
-                      </div>
-                    </div>
-                    <span>Updated {repo.updatedAt}</span>
-                  </div>
-                </Link>
-              </motion.div>
-            ))}
-          </motion.div>
+          />
         </div>
+        <AnimatedHero />
       </div>
 
-      {/* Features Section */}
-      <div className="bg-background py-20">
-        <div className="max-w-6xl mx-auto px-6 lg:px-8">
+      {/* Featured Repositories */}
+      <section className="py-24 sm:py-32">
+        <div className="mx-auto max-w-7xl px-6 lg:px-8">
           <motion.div 
-            initial={{ opacity: 0, y: 50 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, amount: 0.3 }}
-            transition={{ duration: 0.8, ease: [0.25, 0.46, 0.45, 0.94] }}
-            className="text-center mb-16"
-          >
-            <h2 className="text-4xl font-display font-light text-foreground mb-4">Why Researchers Trust Runix</h2>
-            <p className="text-lg text-muted-foreground font-light">Enterprise-grade reproducibility for the next generation of science</p>
-          </motion.div>
-          
-          <motion.div 
-            className="grid md:grid-cols-3 gap-8"
-            variants={containerVariants}
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, amount: 0.2 }}
-          >
-            {features.map((feature, index) => {
-              const Icon = feature.icon
-              return (
-                <motion.div 
-                  key={index} 
-                  variants={cardVariants}
-                  whileHover={{
-                    y: -8,
-                    scale: 1.02
-                  }}
-                  transition={{ duration: 0.3 }}
-                  className="bg-card rounded-2xl p-8 hover:bg-background transition-medium group border border-border paper-layers dag-node"
-                >
-                  <motion.div 
-                    className="w-12 h-12 bg-accent/10 rounded-xl flex items-center justify-center mb-6 group-hover:bg-accent/20 transition-medium"
-                    whileHover={{ 
-                      scale: 1.1,
-                      rotate: 5,
-                      transition: { duration: 0.2 }
-                    }}
-                  >
-                    <Icon className="w-6 h-6 text-accent" />
-                  </motion.div>
-                  <h3 className="text-xl font-display font-medium text-foreground mb-4">{feature.title}</h3>
-                  <p className="text-muted-foreground leading-relaxed">{feature.description}</p>
-                </motion.div>
-              )
-            })}
-          </motion.div>
-        </div>
-      </div>
-
-      {/* CTA Section */}
-      <div className="bg-foreground py-20">
-        <motion.div 
-          className="max-w-4xl mx-auto px-6 lg:px-8 text-center"
-          initial={{ opacity: 0, y: 50 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, amount: 0.3 }}
-          transition={{ duration: 0.8, ease: "easeOut" }}
-        >
-          <motion.h2 
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
+            className="mx-auto max-w-2xl text-center"
+            initial="initial"
+            whileInView="animate"
+            variants={fadeInUp}
             viewport={{ once: true }}
-            transition={{ delay: 0.2, duration: 0.6 }}
-            className="text-4xl font-display font-light text-background mb-6"
+            transition={{ duration: 0.6, ease: "easeOut" }}
           >
-            Make Science Reproducible
-          </motion.h2>
-          <motion.p 
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ delay: 0.4, duration: 0.6 }}
-            className="text-lg text-background/80 mb-12 font-light"
-          >
-            Join researchers turning claims into <span className="text-accent font-mono">runnable artifacts</span>
-          </motion.p>
-          <motion.div 
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ delay: 0.6, duration: 0.6 }}
-            className="flex flex-col sm:flex-row gap-4 justify-center"
-          >
-            <motion.div
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-            >
-              <Button size="lg" className="px-8 py-3 text-base bg-accent text-background hover:bg-accent/90 rounded-lg font-medium transition-medium">
-                Fork Your First Pipeline
-              </Button>
-            </motion.div>
-            <motion.div
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-            >
-              <Button size="lg" variant="outline" className="px-8 py-3 text-base border-background/20 text-background hover:bg-background/10 rounded-lg font-medium transition-medium">
-                View Documentation
-              </Button>
-            </motion.div>
+            <h2 className="font-headline text-3xl tracking-tight sm:text-4xl">
+              Featured Research Pipelines
+            </h2>
+            <p className="mt-6 text-lg leading-8 text-muted-foreground text-balance">
+              Explore verifiable, reproducible research pipelines ready to be forked and executed.
+            </p>
           </motion.div>
-        </motion.div>
-      </div>
-
-      {/* Footer */}
-      <footer className="bg-card border-t border-border py-12">
-        <motion.div 
-          className="max-w-6xl mx-auto px-6 lg:px-8"
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.8 }}
-        >
-          <div className="grid md:grid-cols-4 gap-8">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: 0.1, duration: 0.6 }}
-            >
-              <div className="flex items-center space-x-2 mb-4">
-                <div className="bg-foreground p-2 rounded-lg">
-                  <Shield className="w-4 h-4 text-background" />
-                </div>
-                <span className="font-display font-medium text-foreground">Runix Hub</span>
-              </div>
-              <p className="text-sm text-muted-foreground">
-                Making scientific research reproducible, one pipeline at a time.
-              </p>
-            </motion.div>
-            
-            {[
-              { 
-                title: 'Product', 
-                links: [
-                  { label: 'Features', href: '#' },
-                  { label: 'Pricing', href: '#' },
-                  { label: 'Security', href: '#' },
-                  { label: 'API', href: '#' }
-                ]
-              },
-              { 
-                title: 'Resources', 
-                links: [
-                  { label: 'Documentation', href: '#' },
-                  { label: 'Tutorials', href: '#' },
-                  { label: 'Blog', href: '#' },
-                  { label: 'Support', href: '#' }
-                ]
-              },
-              { 
-                title: 'Company', 
-                links: [
-                  { label: 'Mission', href: '/mission' },
-                  { label: 'About', href: '#' },
-                  { label: 'Careers', href: '#' },
-                  { label: 'Contact', href: '#' }
-                ]
-              }
-            ].map((section, index) => (
+          <div className="mx-auto mt-16 grid max-w-2xl grid-cols-1 gap-8 lg:mx-0 lg:max-w-none lg:grid-cols-3">
+            {featuredRepositories.map((repo) => (
               <motion.div
-                key={section.title}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
+                key={repo.name}
+                initial="initial"
+                whileInView="animate"
+                variants={fadeInUp}
                 viewport={{ once: true }}
-                transition={{ delay: 0.2 + index * 0.1, duration: 0.6 }}
+                transition={{ duration: 0.6, ease: "easeOut", delay: 0.2 }}
+                className="flex flex-col rounded-lg bg-card paper-layers"
               >
-                <h4 className="font-medium text-foreground mb-4">{section.title}</h4>
-                <ul className="space-y-2 text-sm text-muted-foreground">
-                  {section.links.map((link, linkIndex) => (
-                    <li key={linkIndex}>
-                      <Link href={link.href} className="hover:text-foreground transition-medium">
-                        {link.label}
-                      </Link>
-                    </li>
-                  ))}
-                </ul>
+                <div className="p-6">
+                    <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-x-2">
+                          {repo.isPrivate ? <Lock className="h-4 w-4 text-muted-foreground" strokeWidth={1.5} /> : <Globe className="h-4 w-4 text-muted-foreground" strokeWidth={1.5} />}
+                          <Link href={`/repo/${repo.owner}/${repo.name}`} className="text-sm font-medium hover:text-primary">{repo.owner} / <span className="font-bold">{repo.name}</span></Link>
+                        </div>
+                        <Badge variant={repo.verified ? 'default' : 'secondary'} className="flex items-center gap-x-1">
+                          {repo.verified ? <CheckCircle2 className="h-3 w-3" strokeWidth={1.5} /> : <Activity className="h-3 w-3" strokeWidth={1.5} />}
+                          {repo.verified ? 'Verified' : 'Unverified'}
+                        </Badge>
+                    </div>
+                    <p className="mt-4 text-sm text-muted-foreground h-12">
+                        {repo.description}
+                    </p>
+                    <div className="mt-4 font-mono text-xs text-muted-foreground truncate border-t border-dashed border-border pt-4">
+                        {repo.hash}
+                    </div>
+                </div>
+                <div className="flex flex-1 items-end rounded-b-lg bg-muted/30 p-6 mt-auto border-t border-border">
+                  <div className="flex w-full items-center text-sm text-muted-foreground">
+                      <div className="flex items-center gap-x-1">
+                          <Star className="h-4 w-4" strokeWidth={1.5} />
+                          <span className="font-mono">{repo.stars}</span>
+                      </div>
+                      <div className="ml-4 flex items-center gap-x-1">
+                          <GitFork className="h-4 w-4" strokeWidth={1.5} />
+                          <span className="font-mono">{repo.forks}</span>
+                      </div>
+                      <div className="ml-auto flex items-center gap-x-1">
+                         <div className={`h-2 w-2 rounded-full ${repo.language === 'Python' ? 'bg-blue-500' : repo.language === 'R' ? 'bg-purple-500' : 'bg-orange-500'}`}/>
+                         <span>{repo.language}</span>
+                      </div>
+                  </div>
+                </div>
               </motion.div>
             ))}
           </div>
-          
-          <motion.div 
-            className="border-t border-border mt-12 pt-8 text-center text-sm text-muted-foreground"
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-            viewport={{ once: true }}
-            transition={{ delay: 0.8, duration: 0.6 }}
-          >
-            <span className="font-mono">© 2024 Runix Hub. All rights reserved.</span>
-          </motion.div>
-        </motion.div>
+        </div>
+      </section>
+
+      {/* Core Features */}
+      <section className="bg-muted/50 py-24 sm:py-32">
+          <div className="mx-auto max-w-7xl px-6 lg:px-8">
+              <motion.div 
+                className="mx-auto max-w-2xl text-center"
+                initial="initial"
+                whileInView="animate"
+                variants={fadeInUp}
+                viewport={{ once: true }}
+                transition={{ duration: 0.6, ease: "easeOut" }}
+              >
+                  <h2 className="font-headline text-3xl tracking-tight sm:text-4xl">
+                      A New Operating System for Science
+                  </h2>
+                  <p className="mt-6 text-lg leading-8 text-muted-foreground text-balance">
+                      Runix Hub provides the core infrastructure for the next generation of reproducible, collaborative, and transparent scientific research.
+                  </p>
+              </motion.div>
+              <div className="mx-auto mt-16 max-w-2xl sm:mt-20 lg:mt-24 lg:max-w-none">
+                  <dl className="grid max-w-xl grid-cols-1 gap-x-8 gap-y-16 lg:max-w-none lg:grid-cols-3">
+                      {features.map((feature) => {
+                          const Icon = feature.icon;
+                          return (
+                            <motion.div 
+                                key={feature.title} 
+                                className="flex flex-col"
+                                initial="initial"
+                                whileInView="animate"
+                                variants={fadeInUp}
+                                viewport={{ once: true }}
+                                transition={{ duration: 0.6, ease: "easeOut", delay: 0.4 }}
+                            >
+                                <dt className="flex items-center gap-x-3 text-base font-semibold leading-7 text-foreground">
+                                    <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10">
+                                        <Icon className="h-6 w-6 text-primary" aria-hidden="true" strokeWidth={1.5} />
+                                    </div>
+                                    {feature.title}
+                                </dt>
+                                <dd className="mt-4 flex flex-auto flex-col text-base leading-7 text-muted-foreground">
+                                    <p className="flex-auto">{feature.description}</p>
+                                </dd>
+                            </motion.div>
+                          )
+                        })}
+                  </dl>
+              </div>
+          </div>
+      </section>
+
+      {/* Manifesto Sections */}
+      <section className="py-24 sm:py-32">
+          <div className="mx-auto max-w-7xl px-6 lg:px-8">
+              <div className="mx-auto grid max-w-2xl grid-cols-1 gap-x-8 gap-y-16 sm:gap-y-20 lg:mx-0 lg:max-w-none lg:grid-cols-2">
+                  {sections.map((section, index) => {
+                      const Icon = section.icon;
+                      return (
+                        <motion.div 
+                            key={section.title} 
+                            className={`lg:pt-4 ${index === 0 ? 'lg:pr-8' : 'sm:order-first lg:pl-8'}`}
+                            initial="initial"
+                            whileInView="animate"
+                            variants={fadeInUp}
+                            viewport={{ once: true }}
+                            transition={{ duration: 0.8, ease: "easeOut" }}
+                        >
+                            <div className="lg:max-w-lg">
+                                <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-accent/10">
+                                    <Icon className="h-6 w-6 text-accent" aria-hidden="true" strokeWidth={1.5} />
+                                </div>
+                                <h2 className="mt-8 font-headline text-3xl tracking-tight text-foreground sm:text-4xl">
+                                    {section.title}
+                                </h2>
+                                <p className="mt-6 text-lg leading-8 text-muted-foreground">
+                                    {section.description}
+                                </p>
+                                <dl className="mt-10 max-w-xl space-y-8 text-base leading-7 text-muted-foreground lg:max-w-none">
+                                    {/* Additional points can be added here */}
+                                </dl>
+                            </div>
+                        </motion.div>
+                      )
+                    })}
+              </div>
+          </div>
+      </section>
+      
+      {/* CTA Section */}
+      <section className="bg-primary/5 py-24 sm:py-32">
+          <div className="mx-auto max-w-7xl px-6 lg:px-8">
+              <motion.div 
+                className="relative isolate overflow-hidden bg-primary shadow-2xl rounded-2xl px-6 py-24 text-center sm:px-16"
+                initial="initial"
+                whileInView="animate"
+                variants={fadeInUp}
+                viewport={{ once: true }}
+                transition={{ duration: 0.8, ease: "easeOut" }}
+              >
+                  <h2 className="mx-auto max-w-2xl font-display text-3xl font-bold tracking-tight text-primary-foreground sm:text-4xl">
+                      Ready to bring your research to life?
+                  </h2>
+                  <p className="mx-auto mt-6 max-w-xl text-lg leading-8 text-primary-foreground/80">
+                      Start building your first verifiable research pipeline today.
+                  </p>
+                  <div className="mt-10 flex items-center justify-center gap-x-6">
+                      <Button asChild size="lg">
+                          <Link href="/auth/signup">Get Started for Free</Link>
+                      </Button>
+                      <Button asChild variant="link" size="lg" className="text-primary-foreground">
+                          <Link href="/docs">View Documentation <span aria-hidden="true">→</span></Link>
+                      </Button>
+                  </div>
+                  <svg
+                      viewBox="0 0 1024 1024"
+                      className="absolute left-1/2 top-1/2 -z-10 h-[64rem] w-[64rem] -translate-x-1/2 [mask-image:radial-gradient(closest-side,white,transparent)]"
+                      aria-hidden="true"
+                  >
+                      <circle cx={512} cy={512} r={512} fill="url(#8d958450-c69f-4251-94bc-4e091a323369)" fillOpacity="0.7" />
+                      <defs>
+                          <radialGradient id="8d958450-c69f-4251-94bc-4e091a323369">
+                              <stop stopColor="#18E0C8" />
+                              <stop offset={1} stopColor="#0436FF" />
+                          </radialGradient>
+                      </defs>
+                  </svg>
+              </motion.div>
+          </div>
+      </section>
+
+      {/* Footer */}
+      <footer className="bg-background border-t border-border">
+          <div className="mx-auto max-w-7xl overflow-hidden px-6 py-20 sm:py-24 lg:px-8">
+              <nav className="-mb-6 columns-2 sm:flex sm:justify-center sm:space-x-12" aria-label="Footer">
+                  {/* Footer links can be added here */}
+              </nav>
+              <div className="mt-10 flex justify-center space-x-10">
+                  {/* Social links can be added here */}
+              </div>
+              <p className="mt-10 text-center text-xs leading-5 text-muted-foreground">
+                  &copy; {new Date().getFullYear()} Runix Hub, Inc. All rights reserved.
+              </p>
+          </div>
       </footer>
     </div>
-  )
+  );
 }

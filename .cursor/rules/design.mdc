@@ -2,168 +2,226 @@
 description: Runix Hub Design Vision 0.2 — production-ready design system (+ gap audit & add-ons)
 alwaysApply: false
 ---
-# Runix Hub · Design Vision 0.2
+---
+description: Runix Hub · Design Vision 0.3 — “Nova”  
+alwaysApply: false
+---
 
+# Runix Hub · Design Vision **0.3 “Nova”**  
 *Turning every scientific claim into a runnable, fork-able, verifiable artefact.*
 
 ---
 
-### Design Vision 0.2 
+## 0 · The Three Pillars (North-star)  
 
-| #     | What to Add                                          | Why It Matters                                                                                    | Quick Spec Snippet                                                                                                         |
-| ----- | ---------------------------------------------------- | ------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------- |
-| **1** | **Zero-State & Onboarding Patterns**                 | First-time visitors need a guided path from *empty repo* → *first discovery commit*.              | *Empty Repo* → full-width illustration + “Run Quick-Start Notebook” CTA. Progress bar shows “→ Fork → Run → Verify”.       |
-| **2** | **Data-Viz Palette & Chart Kit**                     | Reproducibility scores, lineage graphs, and notebook metrics need consistent colors & typography. | Extend tokens: `viz-blue-200 #BBE1FF`, `viz-orange-500 #FF9A3C`. Use **nivo** for React charts with `Inter` mono numerals. |
-| **3** | **Spatial / 3D Cheatsheet**                          | Future “lab view” or DAG explorer benefits from depth cues & lighting tokens.                     | `elevation-0 … elevation-4` shadow scale; `z-depth` guidelines; three.js shader template for glassy nodes.                 |
-| **4** | **Microcopy & Tone Guide**                           | Keeps voice consistent across product, docs, and error states.                                    | Style: *present tense, verb-first, no gerunds.*<br>Good → “Verify run”.<br>Bad → “Verification is running…”.               |
-| **5** | **Sound & Haptics Palette** (optional but visionary) | Quick, subtle audio cues reinforce success/failure; haptics on mobile make “snap” tangible.       | `snap.wav` 60 ms click; `verify_success.wav` 120 ms soft chime; Vibration API: `navigator.vibrate([20,50,20])` on fork.    |
+| Emoji | Pillar                | What It Means in the UI |
+|-------|-----------------------|-------------------------|
+| 🗂️    | **Versioned Knowledge**   | Immutable Git-grade history for data, protocols, results |
+| 🛠️    | **Composable Models & Tools** | Plug-and-play foundation models, simulators, workflows |
+| 🤝    | **Human–AI Collaboration**   | Live agent suggestions, social review, lineage graphs |
 
----
-
-## 1 · Brand Essence
-
-| Axis                | Trait                         | Why                                                                       |
-| ------------------- | ----------------------------- | ------------------------------------------------------------------------- |
-| **Personality**     | *Scientific-punk optimism*    | We’re tearing down irreproducibility, but with hopeful energy.            |
-| **Voice**           | *Crisp, evidence-first*       | Every sentence earns its byte—mirrors the rigor of hash-based provenance. |
-| **Visual metaphor** | *Layered paper & light beams* | Paper → research lineage; light beams → verification.                     |
-| **Motion motif**    | *Snap → verify → pulse*       | Snap (commit), verify (ring), pulse (shared).                             |
+> **Design rule:** every primary surface is tagged to one dominant pillar; use matching accent, icon & motion.
 
 ---
 
-## 2 · Color System (Design Tokens v2)
+## 1 · Brand Essence  
 
-> **Principles**
-> *One heroic hue (blue) + one success hue (teal)*. Everything else is neutral so hashes, charts, and data stand out.
->
-> | House Spirit           | Borrowed Principle                       | Runix Hub Manifestation                                            |
-> | ---------------------- | ---------------------------------------- | ------------------------------------------------------------------ |
-> | **Apple**              | *Relentless simplicity + tactile delight* | Ultra-clean layouts, intuitive touch targets, subtle depth, and delightful micro-interactions. |
-> | **OpenAI**             | *Clarity over flair; API-first*           | One accent color, minimal chrome, every UI action maps to a documented endpoint. |
-> | **GitHub**             | *Social coding rituals + version control* | Fork → verify → merge workflows for scientific protocols.         |
-> | **Linear**             | *Minimalist focus + motion polish*        | Clean cards, smooth hover states, purposeful animations.          |
-> | **Vercel**             | *Performance obsession + developer UX*    | Sub-second loads; every action feels instant.                     |
-> | **Observable**         | *Notebook-driven exploration*             | Interactive data views; every chart links to underlying code.     |
-> | **Papers With Code**   | *Reproducibility as first principle*      | Verification badges; hash ribbons; reproducibility scores.
-
-### 2.1 Core Palette
-
-| Token             | Hex         | HSL        | Usage                          |
-| ----------------- | ----------- | ---------- | ------------------------------ |
-| `primary-500`     | **#0436FF** | 228 100 51 | CTA buttons, links             |
-| `primary-600`     | #002BCC     | 228 100 40 | Hover / active                 |
-| `accent-500`      | **#18E0C8** | 173 75 51  | Success badges, verified rings |
-| `destructive-500` | **#FF4664** | 347 77 64  | Error states                   |
-| `neutral-900`     | #0F1116     | 220 20 8   | Dark text                      |
-| `neutral-100`     | #F4F4F2     | 60 2 96    | Light canvas                   |
-
-> **Theme switch** is a 1-line CSS-var swap; all tokens derive from these six roots.
-
-### 2.2 Extended Tokens (for data viz & alerts)
-
-| Semantic  | Light   | Dark    | Notes                         |
-| --------- | ------- | ------- | ----------------------------- |
-| `warn-bg` | #FFF7E6 | #4D3900 | Low-severity compute warnings |
-| `info-bg` | #E5F0FF | #08254A | Queue / running pipeline      |
-
-#### 2.3 Data-Viz Palette
-
-| Token            | Hex     | Usage                        |
-| ---------------- | ------- | ---------------------------- |
-| `viz-blue-200`   | #BBE1FF | Confidence intervals         |
-| `viz-blue-500`   | #4DA3FF | Primary lines                |
-| `viz-orange-500` | #FF9A3C | Warnings / experimental runs |
-| `viz-green-400`  | #34D399 | Success series               |
-| `viz-purple-500` | #A855F7 | Secondary series             |
-
-> **Rule:** never mix UI accent teal with viz greens to avoid semantic clash.
+| Axis                | Trait                         | Why It Matters |
+|---------------------|-------------------------------|----------------|
+| **Personality**     | *Scientific-punk optimism*    | Rebellion against irreproducibility, yet solution-oriented |
+| **Voice**           | *Crisp, evidence-first*       | Mirrors rigor of SHA-256 provenance |
+| **Visual metaphor** | *Layered paper ＋ light beams* | Paper = lineage • Light = verification |
+| **Motion motif**    | *Snap → Verify → Pulse*       | Commit → run → share |
 
 ---
 
-## 3 · Typography
+## 2 · Color Tokens v2  
 
-| Style        | Font             | Size / Line-height             | Tracking |
-| ------------ | ---------------- | ------------------------------ | -------- |
-| **Display**  | *Satoshi* 700    | clamp(3.5rem, 5vw, 5.5rem) / 1 | -0.03em  |
-| **Headline** | *Satoshi* 500    | 2 rem / 1.25                   | -0.02em  |
-| **Body**     | *Inter* Variable | 1 rem / 1.6                    | normal   |
-| **Code**     | *JetBrains Mono* | 0.95 rem / 1.5                 | +0.01em  |
+### 2.1 Core Palette  
 
-> **OpenType features** (`cv02`, `cv03`, `ss01`) enabled for Inter—makes numerals & hashes distinct.
+| Token             | Hex       | Usage                                      |
+|-------------------|-----------|--------------------------------------------|
+| `primary-500`     | **#0436FF** | CTAs, links (🗂️ pillar)                   |
+| `primary-600`     | #002BCC   | Hover/active                               |
+| `accent-500`      | **#18E0C8** | Success, verified rings (🛠️ pillar)       |
+| `destructive-500` | **#FF4664** | Errors                                     |
+| `neutral-900`     | #0F1116   | Primary text                               |
+| `neutral-100`     | #F4F4F2   | Canvas                                     |
 
----
+> **Theme swap:** one CSS var root switch.  
 
-## 4 · Component Library Highlights
+### 2.2 System Neutrals & Alerts  
 
-| Component               | Key States                         | Motion                                     |
-| ----------------------- | ---------------------------------- | ------------------------------------------ |
-| **Verification Badge**  | *pending → running → success/fail* | 120° progress ring spin → pulse on success |
-| **Dataset Diff Viewer** | Old ∆ New with inline bars         | Column fade-in, changed cells flash 200 ms |
-| **Commit Timeline**     | Vertical rail w/ hash chips        | On scroll, chips “slide-up-and-lock”       |
-| **Fork Button**         | Idle / Hover / Click               | Hover scale 1.05, click ripple             |
+| Token      | Light  | Dark   | Purpose                        |
+|------------|--------|--------|--------------------------------|
+| `warn-bg`  | #FFF7E6| #4D3900| Low-severity queue warnings    |
+| `info-bg`  | #E5F0FF| #08254A| Pipeline running               |
 
----
+### 2.3 Data-Viz Palette  
 
-## 5 · Layout System
+| Token            | Hex     | Pillar Context |
+|------------------|---------|----------------|
+| `viz-blue-500`   | #4DA3FF | 🗂️ graphs      |
+| `viz-orange-500` | #FF9A3C | 🛠️ warnings    |
+| `viz-green-400`  | #34D399 | 🤝 success     |
+| `viz-purple-500` | #A855F7 | Secondary      |
 
-| Breakpoint     | Columns | Max-width | Gutter |
-| -------------- | ------- | --------- | ------ |
-| `xs` < 640 px  | 1       | 100 %     | 16 px  |
-| `sm` ≥ 640 px  | 2       | 600 px    | 20 px  |
-| `md` ≥ 960 px  | 12      | 960 px    | 24 px  |
-| `lg` ≥ 1280 px | 12      | 1280 px   | 32 px  |
-
-Use CSS Grid with `grid-template-columns: repeat(12, 1fr)` above `md`.
+*Never mix accent-teal with viz-green to keep semantics clear.*
 
 ---
 
-## 6 · Motion Grammar
+## 3 · Typography  
 
-| Purpose               | Duration    | Curve                                 | Example                          |
-| --------------------- | ----------- | ------------------------------------- | -------------------------------- |
-| **Navigate**          | 250 ms      | `cubic-bezier(.22,.61,.36,1)`         | Switching tabs                   |
-| **Confirm Success**   | 400 ms      | spring (Framer Motion, stiffness 150) | Verification pulse               |
-| **Draw Attention**    | 800 ms loop | linear                                | Live pipeline spinner            |
-| **Negative Feedback** | 80 ms × 3   | `ease-out`                            | Shake for failed reproducibility |
+| Style        | Font (fallback) | Size / LH | Tracking |
+|--------------|-----------------|-----------|----------|
+| **Display**  | Satoshi 700     | clamp(3.5rem, 5vw, 5.5rem)/1 | -0.03 em |
+| **Headline** | Satoshi 500     | 2 rem/1.25 | -0.02 em |
+| **Body**     | Inter Variable  | 1 rem/1.6 | normal |
+| **Code**     | JetBrains Mono  | 0.95 rem/1.5 | +0.01 em |
 
-Respect `prefers-reduced-motion`: replace animations with opacity fades.
-
----
-
-## 7 · Iconography
-
-* Source: **Lucide** set, stroke 1.5 px, 24 × 24 grid.
-* Custom additions:
-
-  * `hash` glyph → stylised 16-char chip
-  * `flask-run` glyph → beaker with play triangle
-  * `merge-hypothesis` glyph → branch icon + Δ symbol
+OpenType: `cv02 cv03 ss01` enabled for Inter numerals.
 
 ---
 
-## 8 · Illustration & Imagery
+## 4 · Component Library Highlights  
 
-* Style: **Monoline + subtle gradients** (neutral-100 → neutral-50)
-* Subject: layered research papers, agent silhouettes, light rays (verification).
-* Use Lottie for hero animation (\~120 KB gzipped).
-
----
-
-## 9 · Accessibility Matrix
-
-| Requirement       | Technique                                                          |
-| ----------------- | ------------------------------------------------------------------ |
-| Screen-reader nav | landmarks (`<header>`, `<nav>`, `<main>`, `<aside>`, `<footer>`)   |
-| Focus order       | Logical DOM order; visible `outline: 2px solid var(--primary-500)` |
-| Color contrast    | All text min 4.5:1; verification rings 3:1 against bg              |
-| Keyboard          | Tab into every control; `space/enter` triggers                     |
+| Component | Pillar | State Variants | Motion |
+|-----------|--------|----------------|--------|
+| **Verification Badge** | 🗂️ | pending → running → success/fail | 120° ring spin → spring pulse |
+| **Dataset Diff Viewer** | 🗂️ | cell add/del/change | fade-in + 200 ms flash |
+| **Model Tile** | 🛠️ | idle / hover / select | teal *spark-glow* |
+| **Agent Card** | 🤝 | suggestion / accepted | handshake bounce |
 
 ---
 
-## 10 · Implementation Cheatsheet (React + Tailwind)
+## 5 · Layout System  
+
+*CSS Grid above `md`: `repeat(12,1fr)`, 24 px gutters.*
+
+| Breakpoint | Cols | Max-W | Gutter |
+|------------|------|-------|--------|
+| xs < 640   | 1   | 100%  | 16 px |
+| sm ≥ 640   | 2   | 600 px| 20 px |
+| md ≥ 960   | 12  | 960 px| 24 px |
+| lg ≥ 1280  | 12  |1280 px| 32 px |
 
 ---
 
-## 11 · Add-Ons & Patterns
+## 6 · Motion Grammar  
 
-### 11.1 Zero-State & Onboarding
+| Purpose | Token | Duration | Curve |
+|---------|-------|----------|-------|
+| Snap commit | `snap` | 70 ms | ease-out |
+| Verify ring | `verify_ring_spin` | 1.6 s | linear |
+| Success pulse | `pulse_success` | 400 ms | spring 150 |
+| Live spinner | `loop_spinner` | 800 ms | linear |
+| Error shake | `shake_fail` | 3× 80 ms | ease-out |
+
+*Respect `prefers-reduced-motion`—replace with opacity.*
+
+---
+
+## 7 · Iconography  
+
+**Lucide** + custom:
+
+* `hash` chip  
+* `flask-run` (beaker ＋ play)  
+* `merge-hypothesis` (branch + Δ)
+
+Stroke 1.5 px, 24 × 24 grid.
+
+---
+
+## 8 · Illustration & Imagery  
+
+Monoline outlines + pastel gradient fills (neutral-100→50).  
+Hero Lottie (≤ 120 KB) shows paper stack → light beam → teal pulse.
+
+---
+
+## 9 · Accessibility Matrix  
+
+| Check | Technique |
+|-------|-----------|
+| Screen reader landmarks | semantic tags |
+| Focus rings | `outline:2px solid var(--primary-500)` |
+| Contrast | ≥ 4.5 : 1 text; 3 : 1 ring vs bg |
+| Keyboard | Tab/Shift-Tab, Space/Enter |
+
+---
+
+## 10 · Pillar-Specific Patterns
+
+### 10.1 Navigation
+
+**Primary Pillars:**  
+- 🗂️ Repos  
+- 🛠️ Models  
+- 🤝 Collab Hub  
+- 🔍 Explore  
+- 👤 Profile
+
+**Actions:**  
+- Copy  
+- Edit
+
+---
+
+### 10.2 Zero-State Flow (“Proof Runway”)
+
+| Step    | Pillar | Microcopy                                   | Motion         |
+|---------|--------|---------------------------------------------|---------------|
+| 1 Fork  | 🗂️     | Create your *versioned* workspace.          | `snap`        |
+| 2 Model | 🛠️     | Drop in a model or simulator.               | `spark_glow`  |
+| 3 Review| 🤝     | Merge results with agents & peers.           | `pulse_success`|
+
+---
+
+## 11 · Copy/Tone Cheatsheet
+
+| Situation | Good                                               | Bad                                 |
+|-----------|----------------------------------------------------|-------------------------------------|
+| CTA       | *Run & Verify*                                     | Start running your verification…    |
+| Success   | *Reproduced in 4.2 s · 96 %*                       | Verification complete!              |
+| Empty     | *No discovery commits—be the first to prove a claim.* | There are currently no commits.  |
+
+---
+
+## 12 · Sound & Haptics (Opt-in)
+
+| Action  | Sound                   | Vibration        |
+|---------|-------------------------|------------------|
+| Snap    | `snap.wav` 60 ms        | 10 ms            |
+| Success | `verify_success.wav` 120 ms | [20,50,20]   |
+| Fail    | `fail.wav` 90 ms        | [30,30,30]       |
+
+*Toggle in* **Settings → Accessibility**.
+
+---
+
+## 13 · Developer Cheatsheet (React + Tailwind)
+
+```js
+// tailwind.config.js
+extend: {
+  colors: {
+    primary:   { 500:'#0436FF', 600:'#002BCC' },
+    accent:    { 500:'#18E0C8' },
+    destructive:{ 500:'#FF4664' },
+    neutral:   { 100:'#F4F4F2', 900:'#0F1116' },
+    viz: {
+      blue:   { 200:'#BBE1FF', 500:'#4DA3FF' },
+      orange: { 500:'#FF9A3C' },
+      green:  { 400:'#34D399' },
+      purple: { 500:'#A855F7' },
+    },
+  },
+  boxShadow: {
+    'elevation-1':'0 1px 4px rgba(0,0,0,0.03)',
+    'elevation-4':'0 12px 32px rgba(0,0,0,0.12)',
+  },
+  transitionTimingFunction:{
+    runix:'cubic-bezier(.22,.61,.36,1)',
+  }
+}

@@ -159,7 +159,7 @@ export function AnimatedHero() {
               <Link href="/explore">
                 <Button 
                   size="lg" 
-                  className="group bg-primary-500 hover:bg-primary-600 text-white transition-all duration-200"
+                  className="group bg-primary-500 hover:bg-primary-600 text-primary-foreground transition-all duration-200"
                   onClick={() => trackEvent('cta_run_verify_clicked')}
                 >
                   <FlaskConical className={`w-4 h-4 mr-2 ${!prefersReducedMotion && 'group-hover:animate-snap'}`} strokeWidth={1.5} aria-hidden="true" />

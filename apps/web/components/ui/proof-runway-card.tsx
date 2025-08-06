@@ -73,7 +73,7 @@ export function ProofRunwayCard({ step, index, totalSteps }: ProofRunwayCardProp
           {step.title}
         </span>
       </h3>
-      <p className="text-sm text-muted-foreground max-w-xs mx-auto leading-relaxed">
+      <p className="text-sm text-muted-foreground mx-auto leading-relaxed">
         {step.description}
       </p>
       

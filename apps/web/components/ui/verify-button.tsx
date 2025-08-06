@@ -20,14 +20,22 @@ export function VerifyButton({
   className,
   children = "Run & Verify"
 }: VerifyButtonProps) {
-  
+  // Fix: convert MOTION.pulse_success to a valid animate+transition pair
+  // Framer Motion expects scale to be mutable, not readonly
+  const animate = isVerified
+    ? { scale: [...MOTION.pulse_success.scale] as number[] }
+    : {}
+  const transition = isVerified
+    ? { type: MOTION.pulse_success.type, stiffness: MOTION.pulse_success.stiffness }
+    : MOTION.snap
+
   return (
     <motion.button
       onClick={onVerify}
       disabled={isVerifying || isVerified}
       className={cn(
         // Design.mdc v0.4 Soft-UI 2.0 - tactile shadows + haptic
-        "soft-ui bg-primary-500 text-white",
+        "soft-ui bg-primary-500 text-primary-foreground",
         "px-6 py-3 rounded-lg font-medium",
         "transition-all duration-150",
         "hover:bg-primary-600 active:translate-y-px",
@@ -38,8 +46,8 @@ export function VerifyButton({
         className
       )}
       whileTap={!isVerifying && !isVerified ? { scale: 0.98 } : {}}
-      animate={isVerified ? MOTION.pulse_success : {}}
-      transition={MOTION.snap}
+      animate={animate}
+      transition={transition}
     >
       <span className="flex items-center gap-2">
         {isVerifying ? (

@@ -1,128 +1,244 @@
 "use client"
 
 import React from 'react'
-import { motion } from 'framer-motion'
+import { motion, useMotionValue, useTransform, Variants } from 'framer-motion'
 import { 
-  Shield,
-  Zap,
+  Hash,
+  FlaskConical,
+  Sparkles,
   ArrowRight,
+  Zap,
 } from 'lucide-react'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 
-const containerVariants = {
+const containerVariants: Variants = {
   hidden: { opacity: 0 },
   visible: {
     opacity: 1,
     transition: {
       staggerChildren: 0.1,
-      delayChildren: 0.3
+      delayChildren: 0.2
     }
   }
 }
 
-const itemVariants = {
-  hidden: { opacity: 0, y: 20 },
-  visible: { opacity: 1, y: 0 }
+const itemVariants: Variants = {
+  hidden: { opacity: 0, y: 30 },
+  visible: { 
+    opacity: 1, 
+    y: 0
+  }
+}
+
+const PaperStack = () => {
+  const mouseX = useMotionValue(0)
+  const mouseY = useMotionValue(0)
+  
+  const rotateX = useTransform(mouseY, [-100, 100], [2, -2])
+  const rotateY = useTransform(mouseX, [-100, 100], [-2, 2])
+
+  const handleMouseMove = (e: React.MouseEvent) => {
+    const rect = e.currentTarget.getBoundingClientRect()
+    const x = e.clientX - rect.left - rect.width / 2
+    const y = e.clientY - rect.top - rect.height / 2
+    mouseX.set(x)
+    mouseY.set(y)
+  }
+
+  return (
+    <motion.div 
+      className="relative w-32 h-32"
+      onMouseMove={handleMouseMove}
+      onMouseLeave={() => {
+        mouseX.set(0)
+        mouseY.set(0)
+      }}
+      style={{
+        rotateX,
+        rotateY,
+        transformStyle: 'preserve-3d'
+      }}
+    >
+      {/* Paper layers */}
+      {[0, 1, 2].map((i) => (
+        <motion.div
+          key={i}
+          className="absolute inset-0 bg-card border border-border rounded-lg shadow-elevation-1"
+          style={{
+            transform: `translateZ(${i * 15}px) translateY(${i * -5}px)`,
+            opacity: 1 - i * 0.2
+          }}
+          initial={{ scale: 0 }}
+          animate={{ scale: 1 }}
+          transition={{ 
+            delay: 0.5 + i * 0.1,
+            duration: 0.3,
+            ease: "easeOut"
+          }}
+        />
+      ))}
+      
+      {/* Light beam effect */}
+      <motion.div
+        className="absolute inset-0 rounded-lg overflow-hidden"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 1, duration: 0.8 }}
+      >
+        <div className="absolute inset-0 bg-gradient-to-t from-transparent via-primary/10 to-accent/20 blur-xl" />
+      </motion.div>
+      
+      {/* Hash icon */}
+      <motion.div
+        className="absolute inset-0 flex items-center justify-center"
+        initial={{ scale: 0, rotate: -180 }}
+        animate={{ scale: 1, rotate: 0 }}
+        transition={{ 
+          delay: 1.2,
+          duration: 0.7,
+          type: "spring",
+          stiffness: 150,
+          damping: 12
+        }}
+      >
+        <Hash className="w-12 h-12 text-primary" strokeWidth={1.5} />
+      </motion.div>
+    </motion.div>
+  )
 }
 
 export function AnimatedHero() {
   return (
-    <div className="relative overflow-hidden py-24 sm:py-32">
-      <div className="max-w-6xl mx-auto px-6 lg:px-8">
+    <div className="relative overflow-hidden py-20 sm:py-28">
+      <div className="max-w-7xl mx-auto px-6 lg:px-8">
         <motion.div 
-          className="text-center"
+          className="grid lg:grid-cols-12 gap-12 items-center"
           variants={containerVariants}
           initial="hidden"
           animate="visible"
-          transition={{ staggerChildren: 0.1, delayChildren: 0.3 }}
         >
-          <motion.div 
-            variants={itemVariants}
-            transition={{ duration: 0.6 }}
-            className="flex justify-center mb-12"
-          >
+          {/* Left content */}
+          <div className="lg:col-span-7">
             <motion.div 
-              className="bg-foreground p-3 rounded-xl paper-layers"
-              whileHover={{ 
-                scale: 1.1, 
-                rotate: 5,
-                transition: { duration: 0.3 }
-              }}
-              whileTap={{ scale: 0.95 }}
+              variants={itemVariants}
+              transition={{ duration: 0.6 }}
             >
-              <Shield className="w-8 h-8 text-background" />
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-border bg-card/50 backdrop-blur-sm mb-6">
+                <Sparkles className="w-4 h-4 text-accent animate-pulse" />
+                <span className="text-sm font-medium">Scientific-punk optimism</span>
+              </div>
             </motion.div>
-          </motion.div>
-          
-          <motion.h1 
-            variants={itemVariants}
-            transition={{ duration: 0.6 }}
-            className="text-4xl font-bold tracking-tight text-foreground sm:text-6xl"
-          >
-            Every Scientific Claim<br />
-            <motion.span 
-              className="text-primary font-bold"
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 0.8, duration: 0.6 }}
+            
+            <motion.h1 
+              variants={itemVariants}
+              transition={{ duration: 0.7 }}
+              className="text-display font-display tracking-tight text-foreground"
             >
-              Becomes Runnable
-            </motion.span>
-          </motion.h1>
-          
-          <motion.p 
-            variants={itemVariants}
-            transition={{ duration: 0.6 }}
-            className="mt-6 text-lg leading-8 text-muted-foreground"
-          >
-            <span className="font-display font-medium text-foreground">Runix Hub</span> turns research into 
-            reproducible pipelines. Fork, verify, and build upon any scientific workflow with git-based protocols 
-            and automated reproducibility checking.
-          </motion.p>
-          
-          <motion.div 
-            variants={itemVariants}
-            transition={{ duration: 0.6 }}
-            className="mt-10 flex items-center justify-center gap-x-6"
-          >
-            <motion.div
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
+              Every scientific claim
+              <br />
+              <span className="text-primary">becomes runnable</span>
+            </motion.h1>
+            
+            <motion.p 
+              variants={itemVariants}
+              transition={{ duration: 0.8 }}
+              className="mt-6 text-lg leading-8 text-muted-foreground max-w-2xl"
             >
-              <Link href="/repo/mskcc/CTP-ABC123">
-                <Button size="lg" className="px-8 py-3 text-base bg-primary hover:bg-primary/90 text-primary-foreground border-0 rounded-lg font-medium transition-medium group">
-                  <div className="flex items-center">
-                    <motion.div 
-                      className="w-5 h-5 mr-2 relative"
-                      animate={{ rotate: [0, 360] }}
-                      transition={{ duration: 3, repeat: Infinity, ease: "linear" }}
-                    >
-                      <svg className="w-5 h-5 progress-ring" viewBox="0 0 20 20">
-                        <circle cx="10" cy="10" r="8" fill="none" stroke="currentColor" strokeWidth="2" opacity="0.3" />
-                        <circle cx="10" cy="10" r="8" fill="none" stroke="currentColor" strokeWidth="2" 
-                                strokeDasharray="50.26" strokeDashoffset="0" 
-                                className="group-hover:animate-progress-ring" />
-                      </svg>
-                      <Zap className="w-3 h-3 absolute inset-1 text-current" />
-                    </motion.div>
-                    Run Demo Pipeline
-                  </div>
-                </Button>
-              </Link>
-            </motion.div>
-            <motion.div
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
+              Turn static papers into <span className="font-semibold text-foreground">versioned, forkable, verifiable</span> artefacts. 
+              Git-grade provenance meets AI-accelerated discovery.
+            </motion.p>
+            
+            <motion.div 
+              variants={itemVariants}
+              transition={{ duration: 0.9 }}
+              className="mt-10 flex flex-wrap items-center gap-4"
             >
               <Link href="/explore">
-                <Button variant="outline" size="lg" className="px-8 py-3 text-base border-border text-foreground hover:bg-muted rounded-lg font-medium transition-medium">
-                  Explore Pipelines
+                <Button 
+                  size="lg" 
+                  className="group bg-primary hover:bg-primary-600 text-primary-foreground transition-all duration-200 btn-primary-glow"
+                >
+                  <FlaskConical className="w-4 h-4 mr-2 group-hover:animate-snap" strokeWidth={1.5} />
+                  Run & Verify
+                  <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" strokeWidth={1.5} />
+                </Button>
+              </Link>
+              
+              <Link href="/docs">
+                <Button 
+                  variant="outline" 
+                  size="lg"
+                  className="group hover:shadow-elevation-2 transition-all duration-200"
+                >
+                  View Documentation
                 </Button>
               </Link>
             </motion.div>
+            
+            {/* Stats */}
+            <motion.div 
+              variants={itemVariants}
+              transition={{ duration: 1 }}
+              className="mt-12 grid grid-cols-3 gap-6 max-w-md"
+            >
+              <div>
+                <div className="text-2xl font-mono font-bold text-foreground">1.2K+</div>
+                <div className="text-sm text-muted-foreground">Pipelines</div>
+              </div>
+              <div>
+                <div className="text-2xl font-mono font-bold text-foreground">98.2%</div>
+                <div className="text-sm text-muted-foreground">Reproducible</div>
+              </div>
+              <div>
+                <div className="text-2xl font-mono font-bold text-foreground">
+                  <span className="inline-flex items-center gap-1">
+                    <span>256</span>
+                    <Zap className="w-4 h-4 text-accent animate-pulse" />
+                  </span>
+                </div>
+                <div className="text-sm text-muted-foreground">Running now</div>
+              </div>
+            </motion.div>
+          </div>
+          
+          {/* Right visual */}
+          <motion.div 
+            className="lg:col-span-5 flex justify-center lg:justify-end"
+            variants={itemVariants}
+            transition={{ duration: 0.8, delay: 0.2 }}
+          >
+            <PaperStack />
           </motion.div>
         </motion.div>
+      </div>
+      
+      {/* Background effects */}
+      <div className="absolute inset-0 -z-10 overflow-hidden" aria-hidden="true">
+        <motion.div 
+          className="absolute -top-40 -right-40 w-[500px] h-[500px] rounded-full bg-gradient-to-tr from-primary/10 to-accent/10 blur-3xl"
+          animate={{
+            opacity: [0.5, 0.3, 0.5],
+            scale: [1, 1.1, 1],
+          }}
+          transition={{
+            duration: 8,
+            repeat: Infinity,
+            ease: "easeInOut"
+          }}
+        />
+        <motion.div 
+          className="absolute -bottom-40 -left-40 w-[500px] h-[500px] rounded-full bg-gradient-to-bl from-accent/10 to-primary/10 blur-3xl"
+          animate={{
+            opacity: [0.3, 0.5, 0.3],
+            scale: [1, 1.2, 1],
+          }}
+          transition={{
+            duration: 10,
+            repeat: Infinity,
+            ease: "easeInOut"
+          }}
+        />
       </div>
     </div>
   )

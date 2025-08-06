@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useMemo } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence, useScroll, useTransform, useSpring } from 'framer-motion';
 import { 
   Brain,
   Sparkles,
@@ -43,6 +43,111 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import Link from 'next/link';
+
+// Animation variants for enhanced micro-interactions
+const pageVariants = {
+  initial: { opacity: 0, y: 20 },
+  animate: { 
+    opacity: 1, 
+    y: 0,
+    transition: {
+      duration: 0.6,
+      staggerChildren: 0.1,
+      delayChildren: 0.2
+    }
+  },
+  exit: { opacity: 0, y: -20, transition: { duration: 0.3 } }
+};
+
+const containerVariants = {
+  initial: { opacity: 0 },
+  animate: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.08,
+      delayChildren: 0.1
+    }
+  }
+};
+
+const itemVariants = {
+  initial: { opacity: 0, y: 20, scale: 0.95 },
+  animate: { 
+    opacity: 1, 
+    y: 0, 
+    scale: 1,
+    transition: {
+      duration: 0.5,
+      ease: "easeOut"
+    }
+  },
+  hover: {
+    y: -8,
+    scale: 1.02,
+    transition: {
+      duration: 0.3,
+      ease: "easeOut"
+    }
+  },
+  tap: { scale: 0.98 }
+};
+
+const cardVariants = {
+  initial: { opacity: 0, y: 30, rotateY: -15 },
+  animate: { 
+    opacity: 1, 
+    y: 0, 
+    rotateY: 0,
+    transition: {
+      duration: 0.6,
+      ease: "easeOut"
+    }
+  },
+  hover: {
+    y: -12,
+    rotateY: 5,
+    scale: 1.03,
+    boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.25)",
+    transition: {
+      duration: 0.4,
+      ease: "easeOut"
+    }
+  }
+};
+
+const statsVariants = {
+  initial: { opacity: 0, scale: 0.8, rotateX: -45 },
+  animate: { 
+    opacity: 1, 
+    scale: 1, 
+    rotateX: 0,
+    transition: {
+      duration: 0.7,
+      ease: "easeOut"
+    }
+  },
+  hover: {
+    scale: 1.05,
+    rotateX: 5,
+    transition: {
+      duration: 0.3,
+      ease: "easeOut"
+    }
+  }
+};
+
+const heroVariants = {
+  initial: { opacity: 0, y: 40 },
+  animate: { 
+    opacity: 1, 
+    y: 0,
+    transition: {
+      duration: 0.8,
+      ease: "easeOut",
+      staggerChildren: 0.2
+    }
+  }
+};
 
 // Enhanced models data with AI-first metrics
 const models = [
@@ -215,6 +320,18 @@ export default function ModelsPage() {
   const [selectedFramework, setSelectedFramework] = useState('All');
   const [sortBy, setSortBy] = useState('trending');
   const [viewMode, setViewMode] = useState('all');
+  const [isLoading, setIsLoading] = useState(false);
+
+  // Enhanced scroll animations
+  const { scrollY } = useScroll();
+  const heroY = useTransform(scrollY, [0, 300], [0, -50]);
+  const heroOpacity = useTransform(scrollY, [0, 300], [1, 0.8]);
+  const backgroundY = useTransform(scrollY, [0, 500], [0, -100]);
+  
+  // Spring animations for smooth interactions
+  const springConfig = { stiffness: 300, damping: 30 };
+  const heroSpring = useSpring(heroY, springConfig);
+  const opacitySpring = useSpring(heroOpacity, springConfig);
   const [showFilters, setShowFilters] = useState(false);
 
   const filteredModels = useMemo(() => {
@@ -257,11 +374,20 @@ export default function ModelsPage() {
   };
 
   return (
-    <div className="min-h-screen bg-background relative overflow-hidden">
-      {/* Subtle gradient overlay following design system */}
-      <div className="absolute inset-0 bg-gradient-to-br from-background via-background to-muted/10" />
+    <motion.div 
+      className="min-h-screen bg-background relative overflow-hidden"
+      variants={pageVariants}
+      initial="initial"
+      animate="animate"
+      exit="exit"
+    >
+      {/* Enhanced gradient overlay with parallax */}
+      <motion.div 
+        className="absolute inset-0 bg-gradient-to-br from-background via-background to-muted/10"
+        style={{ y: backgroundY }}
+      />
       
-      {/* Floating geometric elements */}
+      {/* Enhanced floating geometric elements with physics */}
       <motion.div
         className="absolute w-80 h-80 rounded-full opacity-5"
         style={{ 
@@ -294,38 +420,72 @@ export default function ModelsPage() {
       />
 
       <div className="max-w-7xl mx-auto px-6 py-8 relative z-10">
-        {/* Hero Section - Following Design Constitution */}
+        {/* Enhanced Hero Section with Parallax */}
         <motion.div 
           className="text-center mb-16"
-          initial={{ opacity: 0, y: 20 }}
+          style={{ y: heroSpring, opacity: opacitySpring }}
+          initial={{ opacity: 0, y: 40 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, ease: "easeOut" }}
+          transition={{ duration: 0.8, ease: "easeOut", staggerChildren: 0.2 }}
         >
           <motion.div
             className="flex items-center justify-center gap-4 mb-8"
-            initial={{ scale: 0.95 }}
-            animate={{ scale: 1 }}
-            transition={{ duration: 0.6, delay: 0.1 }}
+            initial={{ opacity: 0, y: 20, scale: 0.95 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            transition={{ duration: 0.5, ease: "easeOut" }}
           >
-            <div className="relative">
-              <Brain size={48} className="text-primary" />
+            <motion.div 
+              className="relative"
+              animate={{
+                y: [-2, 2, -2],
+                rotate: [-2, 2, -2]
+              }}
+              transition={{
+                duration: 4,
+                repeat: Infinity,
+                ease: "easeInOut"
+              }}
+            >
+              <Brain size={48} className="text-primary drop-shadow-lg" />
               <motion.div
                 className="absolute -top-1 -right-1 w-3 h-3 bg-accent rounded-full"
-                animate={{ scale: [1, 1.2, 1] }}
-                transition={{ duration: 2, repeat: Infinity }}
+                animate={{ 
+                  scale: [1, 1.4, 1],
+                  opacity: [0.7, 1, 0.7]
+                }}
+                transition={{ 
+                  duration: 2, 
+                  repeat: Infinity,
+                  ease: "easeInOut"
+                }}
               />
-            </div>
-            <h1 
+            </motion.div>
+            <motion.h1 
               className="text-5xl md:text-6xl font-light tracking-tight bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent m-0"
               style={{ 
                 fontWeight: 300,
                 letterSpacing: '-0.035em',
                 lineHeight: 1
               }}
+              initial={{ opacity: 0, y: 20, scale: 0.95 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              transition={{ duration: 0.5, ease: "easeOut", delay: 0.1 }}
             >
               Scientific Models
-            </h1>
-            <Sparkles size={24} className="text-accent" />
+            </motion.h1>
+            <motion.div
+              animate={{
+                y: [-2, 2, -2],
+                rotate: [-2, 2, -2]
+              }}
+              transition={{
+                duration: 4,
+                repeat: Infinity,
+                ease: "easeInOut"
+              }}
+            >
+              <Sparkles size={24} className="text-accent drop-shadow-lg" />
+            </motion.div>
           </motion.div>
           
           <motion.div
@@ -341,17 +501,20 @@ export default function ModelsPage() {
             </p>
           </motion.div>
 
-          {/* Stats Cards - Custom UI Components */}
+          {/* Enhanced Stats Cards with Stagger Animation */}
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.5 }}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ staggerChildren: 0.08, delayChildren: 0.1 }}
             className="mb-12"
           >
             <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
               <motion.div
-                whileHover={{ scale: 1.02 }}
-                transition={{ duration: 0.25, ease: [0.22, 0.61, 0.36, 1] }}
+                initial={{ opacity: 0, scale: 0.8, rotateX: -45 }}
+                animate={{ opacity: 1, scale: 1, rotateX: 0 }}
+                whileHover={{ scale: 1.05, rotateX: 5 }}
+                whileTap={{ scale: 0.98 }}
+                transition={{ duration: 0.7, ease: "easeOut" }}
               >
                 <Card className="text-center h-32 bg-card/50 backdrop-blur border-border/50 hover:shadow-lg transition-all duration-300">
                   <CardContent className="p-6 flex flex-col items-center justify-center h-full">
@@ -367,51 +530,72 @@ export default function ModelsPage() {
               </motion.div>
               
               <motion.div
-                whileHover={{ scale: 1.02 }}
-                transition={{ duration: 0.25, ease: [0.22, 0.61, 0.36, 1] }}
+                initial={{ opacity: 0, scale: 0.8, rotateX: -45 }}
+                animate={{ opacity: 1, scale: 1, rotateX: 0 }}
+                whileHover={{ scale: 1.05, rotateX: 5 }}
+                whileTap={{ scale: 0.98 }}
+                transition={{ duration: 0.7, ease: "easeOut", delay: 0.1 }}
               >
                 <Card className="text-center h-32 bg-card/50 backdrop-blur border-border/50 hover:shadow-lg transition-all duration-300">
                   <CardContent className="p-6 flex flex-col items-center justify-center h-full">
-                    <div className="flex items-center justify-center gap-2 mb-1">
+                    <motion.div 
+                      className="flex items-center justify-center gap-2 mb-1"
+                      whileHover={{ scale: 1.1 }}
+                      transition={{ duration: 0.2 }}
+                    >
                       <Download className="text-accent text-lg" />
                       <span className="text-2xl font-bold text-accent font-mono">
                         {formatNumber(models.reduce((sum, m) => sum + m.downloads, 0))}
                       </span>
-                    </div>
+                    </motion.div>
                     <span className="text-muted-foreground text-sm">Downloads</span>
                   </CardContent>
                 </Card>
               </motion.div>
               
               <motion.div
-                whileHover={{ scale: 1.02 }}
-                transition={{ duration: 0.25, ease: [0.22, 0.61, 0.36, 1] }}
+                initial={{ opacity: 0, scale: 0.8, rotateX: -45 }}
+                animate={{ opacity: 1, scale: 1, rotateX: 0 }}
+                whileHover={{ scale: 1.05, rotateX: 5 }}
+                whileTap={{ scale: 0.98 }}
+                transition={{ duration: 0.7, ease: "easeOut", delay: 0.2 }}
               >
                 <Card className="text-center h-32 bg-card/50 backdrop-blur border-border/50 hover:shadow-lg transition-all duration-300">
                   <CardContent className="p-6 flex flex-col items-center justify-center h-full">
-                    <div className="flex items-center justify-center gap-2 mb-1">
+                    <motion.div 
+                      className="flex items-center justify-center gap-2 mb-1"
+                      whileHover={{ scale: 1.1 }}
+                      transition={{ duration: 0.2 }}
+                    >
                       <Trophy className="text-primary text-lg" />
                       <span className="text-2xl font-bold text-primary font-mono">
                         {formatNumber(models.reduce((sum, m) => sum + (m.citations || 0), 0))}
                       </span>
-                    </div>
+                    </motion.div>
                     <span className="text-muted-foreground text-sm">Citations</span>
                   </CardContent>
                 </Card>
               </motion.div>
               
               <motion.div
-                whileHover={{ scale: 1.02 }}
-                transition={{ duration: 0.25, ease: [0.22, 0.61, 0.36, 1] }}
+                initial={{ opacity: 0, scale: 0.8, rotateX: -45 }}
+                animate={{ opacity: 1, scale: 1, rotateX: 0 }}
+                whileHover={{ scale: 1.05, rotateX: 5 }}
+                whileTap={{ scale: 0.98 }}
+                transition={{ duration: 0.7, ease: "easeOut", delay: 0.3 }}
               >
                 <Card className="text-center h-32 bg-card/50 backdrop-blur border-border/50 hover:shadow-lg transition-all duration-300">
                   <CardContent className="p-6 flex flex-col items-center justify-center h-full">
-                    <div className="flex items-center justify-center gap-2 mb-1">
+                    <motion.div 
+                      className="flex items-center justify-center gap-2 mb-1"
+                      whileHover={{ scale: 1.1 }}
+                      transition={{ duration: 0.2 }}
+                    >
                       <Shield className="text-accent text-lg" />
                       <span className="text-2xl font-bold text-accent font-mono">
                         98.5%
                       </span>
-                    </div>
+                    </motion.div>
                     <span className="text-muted-foreground text-sm">Verified</span>
                   </CardContent>
                 </Card>
@@ -638,6 +822,6 @@ export default function ModelsPage() {
           </div>
         )}
       </div>
-    </div>
+    </motion.div>
   );
 }

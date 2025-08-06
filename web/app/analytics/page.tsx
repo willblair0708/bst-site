@@ -21,23 +21,23 @@ const kpiData = [
     { title: "SAE Rate", value: "1.2%", trend: "+0.5% vs last week", status: "alert" }
 ]
 
-const Card = ({ children, className }) => (
+const Card = ({ children, className }: { children: React.ReactNode; className?: string }) => (
     <div className={`bg-card border border-border rounded-lg ${className}`}>
         {children}
     </div>
 );
 
-const CardHeader = ({ children }) => (
+const CardHeader = ({ children }: { children: React.ReactNode }) => (
     <div className="p-4 border-b border-border flex items-center justify-between">
         {children}
     </div>
 )
 
-const CardTitle = ({ children }) => (
+const CardTitle = ({ children }: { children: React.ReactNode }) => (
     <h2 className="text-base font-semibold text-foreground">{children}</h2>
 )
 
-const KpiCard = ({ title, value, trend, status }) => (
+const KpiCard = ({ title, value, trend, status }: { title: string; value: string; trend: string; status: string }) => (
     <Card>
         <div className="p-4">
             <p className="text-sm text-muted-foreground">{title}</p>

@@ -155,6 +155,7 @@ const pullRequests: PullRequest[] = [
     deletions: 34,
     files: 3,
     labels: ["synthetic-twins", "parameters"],
+    reviewers: ["Dr. Smith", "Data Scientist"],
     branch: { from: "feature/twin-params", to: "main" },
     checks: {
       validation: "success",

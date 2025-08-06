@@ -127,11 +127,13 @@ const DigitalTwinExplorerPage = () => {
                 width: undefined,
                 height: undefined,
                 autosize: true,
-                title: 'Digital Twin vs. Real-World Cohort',
+                title: {
+                  text: 'Digital Twin vs. Real-World Cohort'
+                },
                 scene: {
-                  xaxis: { title: xAxis },
-                  yaxis: { title: yAxis },
-                  zaxis: { title: zAxis },
+                  xaxis: { title: { text: xAxis } },
+                  yaxis: { title: { text: yAxis } },
+                  zaxis: { title: { text: zAxis } },
                 }
               }}
               useResizeHandler={true}

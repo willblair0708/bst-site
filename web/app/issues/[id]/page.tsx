@@ -124,7 +124,8 @@ const typeColors = {
   safety: 'text-orange-600 bg-orange-100'
 }
 
-export default function IssueDetailPage({ params }: { params: { id: string } }) {
+export default function IssueDetailPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = React.use(params);
   const [newComment, setNewComment] = useState("")
 
   const handleAddComment = () => {

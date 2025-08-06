@@ -276,10 +276,10 @@ export default function TrialsPage() {
                     {trial.isPrivate && (
                       <Badge variant="outline" className="text-xs">Private</Badge>
                     )}
-                    <Badge className={phaseColors[trial.phase]} variant="outline">
+                    <Badge className={phaseColors[trial.phase as keyof typeof phaseColors]} variant="outline">
                       {trial.phase}
                     </Badge>
-                    <Badge className={statusColors[trial.status]} variant="outline">
+                    <Badge className={statusColors[trial.status as keyof typeof statusColors]} variant="outline">
                       <Activity className="w-3 h-3 mr-1" />
                       {trial.status}
                     </Badge>

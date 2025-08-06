@@ -139,6 +139,7 @@ export default function RepositoryPage({ params }: { params: Promise<{ owner: st
           <div className="lg:col-span-3 space-y-6">
             {/* DAG Graph */}
             <DAGGraph 
+              nodes={[]}
               onNodeClick={(node) => console.log('Node clicked:', node)}
               onRunPipeline={() => console.log('Run pipeline')}
             />

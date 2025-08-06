@@ -1,213 +1,421 @@
 "use client"
 
 import React from 'react'
+import {
+  AlertTriangle,
+  Beaker,
+  Book,
+  Bot,
+  CheckCircle2,
+  GitBranch,
+  GitCommit,
+  Github,
+  GitPullRequest,
+  Heart,
+  LifeBuoy,
+  MessageSquare,
+  Plus,
+  Scale,
+  Search,
+  Settings,
+  Star,
+  Users,
+  LucideProps,
+} from "lucide-react"
+import { motion, Variants } from "framer-motion"
+import Link from "next/link"
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { 
-  Plus,
-  Star,
-  GitFork,
-  Clock,
-  AlertTriangle,
-  CheckCircle2,
-  GitCommit,
-  FileText,
-  MessageSquare,
-  Eye
-} from 'lucide-react'
-import Link from 'next/link'
-import { formatRelativeTime } from '@/lib/utils'
+import { Card } from '@/components/ui/card'
+import { AnimatedStatCard } from '@/components/ui/animated-stat-card'
+import { ModelCard } from "@/components/ui/model-card"
 
-const recentTrials = [
+const containerVariants: Variants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.1,
+    },
+  },
+}
+
+const itemVariants: Variants = {
+  hidden: { opacity: 0, y: 20 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      duration: 0.5,
+      ease: [0.25, 0.46, 0.45, 0.94],
+    },
+  },
+}
+
+interface Trial {
+  name: string;
+  title: string;
+  status: string;
+  owner: string;
+  pipeline: string;
+  lastUpdate: string;
+  patientEnrollment: number;
+  totalPatients: number;
+  alerts: number;
+}
+
+interface Activity {
+    type: string;
+    user: string;
+    repo: string;
+    details: string;
+    time: string;
+    Icon: React.ElementType;
+}
+
+interface Model {
+    name: string;
+    version: string;
+    description: string;
+    provider: string;
+    Icon: React.ElementType;
+    stars: number;
+    forks: number;
+}
+
+interface Discussion {
+    title: string;
+    repo: string;
+    user: string;
+    time: string;
+}
+
+interface Stat {
+    label: string;
+    value: string;
+    change: string;
+    changeType: string;
+    icon: React.ElementType;
+}
+
+const trials: Trial[] = [
   {
     name: "CTP-ABC123",
-    title: "NSCLC Phase I Safety Trial",
-    owner: "bastion-research",
+    title: "NSCLC Phase I Safety and Efficacy Trial",
     status: "Active",
-    lastUpdated: "2024-08-15T15:30:00Z",
-    stars: 128,
-    forks: 12,
-    language: "YAML"
+    owner: "MSKCC",
+    pipeline: "mitochondrial-ros-sensor",
+    lastUpdate: "3 hours ago",
+    patientEnrollment: 8,
+    totalPatients: 20,
+    alerts: 1,
   },
   {
-    name: "CTP-XYZ789", 
+    name: "CTP-XYZ789",
     title: "CAR-T Optimization Study",
-    owner: "bastion-research",
-    status: "Planning",
-    lastUpdated: "2024-08-14T09:45:00Z",
-    stars: 72,
-    forks: 3,
-    language: "YAML"
+    status: "Enrolling",
+    owner: "UCSF",
+    pipeline: "faers-safety-digest",
+    lastUpdate: "1 day ago",
+    patientEnrollment: 2,
+    totalPatients: 15,
+    alerts: 0,
   },
-  {
-    name: "CTP-BIO007", 
-    title: "Next-Gen Sequencing Biomarker Validation",
-    owner: "genomics-guild",
-    status: "Active",
-    lastUpdated: "2024-08-15T11:00:00Z",
-    stars: 345,
-    forks: 48,
-    language: "YAML"
-  }
-]
+];
 
-const recentActivity = [
+const activity: Activity[] = [
     {
-        type: "COMMIT",
-        actor: "Dr. Chen",
-        action: "pushed 2 commits to",
-        target: "main",
-        timestamp: "2024-08-15T14:30:00Z",
-        trial: "CTP-ABC123"
+      type: "COMMIT",
+      user: "Dr. Anya Sharma",
+      repo: "CTP-ABC123",
+      details: "pushed a discovery commit with updates to the patient stratification logic.",
+      time: "2h ago",
+      Icon: GitCommit,
     },
     {
-        type: "PR_OPENED",
-        actor: "Dr. Valenti",
-        action: "opened pull request #15",
-        description: "Feat: Add adaptive randomization arm",
-        timestamp: "2024-08-15T11:45:00Z",
-        trial: "CTP-ABC123"
+      type: "PULL_REQUEST",
+      user: "Dr. Ben Carter",
+      repo: "CTP-XYZ789",
+      details: "opened a hypothesis merge to add a new cohort for dose escalation.",
+      time: "1d ago",
+      Icon: GitPullRequest,
+    },
+];
+
+const models: Model[] = [
+    {
+      name: "ToxicityPredict",
+      version: "v1.2",
+      description: "Predicts adverse event probability from patient data.",
+      provider: "OpenAI",
+      Icon: Bot,
+      stars: 128,
+      forks: 12,
     },
     {
-        type: "COMMENT",
-        actor: "regulators:fda",
-        action: "commented on issue #8",
-        description: "Clarification requested on primary endpoint definition.",
-        timestamp: "2024-08-14T18:00:00Z",
-        trial: "CTP-XYZ789"
+      name: "SurvivalRate",
+      version: "v2.0",
+      description: "Estimates patient survival rates based on genomic markers.",
+      provider: "Anthropic",
+      Icon: Bot,
+      stars: 72,
+      forks: 3,
+    },
+];
+
+const discussions: Discussion[] = [
+    {
+      title: "New RECIST 1.1 guidance",
+      repo: "Oncology-Working-Group",
+      user: "Dr. Li Wei",
+      time: "5h ago",
     },
     {
-        type: "SAFETY_ALERT",
-        actor: "vigil-bot",
-        action: "reported a Grade 3 safety alert",
-        description: "AE-089: Neutropenia reported for patient P-042 at MSKCC.",
-        timestamp: "2024-08-15T09:15:00Z",
-        trial: "CTP-BIO007"
-    }
-]
+      title: "Potential for synthetic control arm in CTP-ABC123",
+      repo: "CTP-ABC123",
+      user: "Dr. Sarah Johnson",
+      time: "2d ago",
+    },
+];
 
-
-const Card = ({ children, className }: { children: React.ReactNode, className?: string }) => (
-    <div className={`bg-card border border-border rounded-lg ${className}`}>
-        {children}
-    </div>
-);
-
-const CardHeader = ({ children }: { children: React.ReactNode }) => (
-    <div className="p-4 border-b border-border flex items-center justify-between">
-        {children}
-    </div>
-)
-
-const CardTitle = ({ children }: { children: React.ReactNode }) => (
-    <h2 className="text-base font-semibold text-foreground">{children}</h2>
-)
-
-const ActivityIcon = ({ type }: { type: string }) => {
-    switch (type) {
-        case 'COMMIT': return <GitCommit className="w-4 h-4 text-muted-foreground" />;
-        case 'PR_OPENED': return <GitFork className="w-4 h-4 text-muted-foreground" />;
-        case 'COMMENT': return <MessageSquare className="w-4 h-4 text-muted-foreground" />;
-        case 'SAFETY_ALERT': return <AlertTriangle className="w-4 h-4 text-destructive" />;
-        default: return <CheckCircle2 className="w-4 h-4 text-muted-foreground" />;
-    }
-}
+const stats: Stat[] = [
+    {
+      label: "Active Repositories",
+      value: "3",
+      change: "+1 this week",
+      changeType: "increase",
+      icon: Beaker,
+    },
+    {
+        label: "Pending Reviews",
+        value: "2",
+        change: "Urgent",
+        changeType: "alert",
+        icon: GitPullRequest,
+    },
+    {
+        label: "Safety Alerts",
+        value: "1",
+        change: "Grade 3",
+        changeType: "decrease",
+        icon: AlertTriangle,
+    },
+];
 
 export default function DashboardPage() {
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <motion.div
+      className="min-h-screen bg-background text-foreground"
+      variants={containerVariants}
+      initial="hidden"
+      animate="visible"
+    >
+      <div className="max-w-8xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+        {/* Header */}
+        <motion.div
+          className="flex flex-col md:flex-row justify-between items-start mb-10"
+          variants={itemVariants}
+        >
+          <div>
+            <h1 className="text-4xl font-display font-light text-foreground">
+              Welcome back, Will
+            </h1>
+            <p className="text-lg text-muted-foreground mt-2">
+              Here's a look at your research landscape today.
+            </p>
+          </div>
+          <div className="flex items-center space-x-2 mt-4 md:mt-0">
+            <Button variant="outline">
+              <Search className="w-4 h-4 mr-2" />
+              Search Repositories
+            </Button>
+            <Button>
+              <Plus className="w-4 h-4 mr-2" />
+              New Repository
+            </Button>
+          </div>
+        </motion.div>
+    
+        {/* Main Content */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            <div className="lg:col-span-2 space-y-8">
-                <Card>
-                    <CardHeader>
-                        <CardTitle>My Trials</CardTitle>
-                        <Button variant="ghost" size="sm" asChild>
-                            <Link href="/new/trial"><Plus className="w-4 h-4 mr-2" />New Trial</Link>
-                        </Button>
-                    </CardHeader>
-                    <div className="divide-y divide-border">
-                        {recentTrials.map((trial) => (
-                            <div key={trial.name} className="p-4 hover:bg-secondary/50">
-                                <div className="flex items-center justify-between">
-                                    <div>
-                                        <div className="flex items-center gap-2 mb-1">
-                                            <Link href={`/${trial.owner}/${trial.name.toLowerCase()}`} className="font-semibold text-primary hover:underline">
-                                                {trial.owner} / {trial.name}
-                                            </Link>
-                                            <Badge variant={trial.status === 'Active' ? 'default' : 'secondary'} className="text-xs">{trial.status}</Badge>
-                                        </div>
-                                        <p className="text-muted-foreground text-sm">{trial.title}</p>
-                                    </div>
-                                    <div className="flex items-center gap-4 text-sm text-muted-foreground">
-                                        <div className="flex items-center gap-1">
-                                            <Star className="w-4 h-4" />
-                                            <span>{trial.stars}</span>
-                                        </div>
-                                        <div className="flex items-center gap-1">
-                                            <GitFork className="w-4 h-4" />
-                                            <span>{trial.forks}</span>
-                                        </div>
-                                        <span>Updated {formatRelativeTime(trial.lastUpdated)}</span>
-                                    </div>
-                                </div>
-                            </div>
-                        ))}
-                    </div>
-                </Card>
-                 <Card>
-                    <CardHeader>
-                        <CardTitle>Recent Activity</CardTitle>
-                         <Button variant="ghost" size="sm" asChild>
-                            <Link href="/activity">View all</Link>
-                        </Button>
-                    </CardHeader>
-                    <div className="divide-y divide-border">
-                        {recentActivity.map((activity, index) => (
-                           <div key={index} className="p-4 flex items-start gap-4">
-                               <ActivityIcon type={activity.type} />
-                               <div className="flex-1 text-sm">
-                                   <p className="text-foreground">
-                                        <span className={activity.type === 'SAFETY_ALERT' ? 'font-bold text-destructive' : 'font-semibold'}>{activity.actor}</span> {activity.action} {activity.trial && <Link href={`/${activity.trial}`} className="font-semibold text-primary hover:underline">{activity.trial}</Link>}
-                                   </p>
-                                   {activity.description && <p className="text-muted-foreground mt-1">{activity.description}</p>}
-                                   <p className="text-xs text-muted-foreground mt-1">{formatRelativeTime(activity.timestamp)}</p>
-                               </div>
-                           </div>
-                        ))}
-                    </div>
-                </Card>
+          {/* Left Column */}
+          <motion.div className="lg:col-span-2 space-y-8" variants={itemVariants}>
+            {/* Stat Cards */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                {stats.map((stat, index) => (
+                    <AnimatedStatCard
+                    key={index}
+                    label={stat.label}
+                    value={stat.value}
+                    growth={stat.change}
+                    index={index}
+                    />
+                ))}
             </div>
-            <div className="space-y-8">
-                 <Card>
-                    <CardHeader><CardTitle>Inbox</CardTitle></CardHeader>
-                     <div className="p-4 text-center text-sm text-muted-foreground">
-                         <p>You're all caught up!</p>
-                     </div>
-                 </Card>
-                 <Card>
-                    <CardHeader><CardTitle>Watching</CardTitle></CardHeader>
-                     <div className="divide-y divide-border">
-                         {recentTrials.slice(0,2).map(trial => (
-                            <div key={trial.name} className="p-4 flex justify-between items-center hover:bg-secondary/50">
-                                <div>
-                                    <Link href={`/${trial.owner}/${trial.name}`} className="font-semibold text-foreground hover:text-primary hover:underline text-sm">{trial.owner}/{trial.name}</Link>
-                                    <p className="text-xs text-muted-foreground">{trial.stars} stars</p>
-                                </div>
-                                 <Button variant="outline" size="sm"><Eye className="w-4 h-4 mr-2" />Watch</Button>
-                            </div>
-                         ))}
-                     </div>
-                 </Card>
-                 <Card>
-                     <CardHeader><CardTitle>Documentation</CardTitle></CardHeader>
-                     <div className="p-4 space-y-2">
-                        <Link href="/docs/quickstart" className="block text-sm text-primary hover:underline">Getting Started with Bastion</Link>
-                        <Link href="/docs/protocol-as-code" className="block text-sm text-primary hover:underline">Protocol-as-Code Tutorial</Link>
-                        <Link href="/docs/cli" className="block text-sm text-primary hover:underline">CLI Reference</Link>
-                     </div>
-                 </Card>
-            </div>
+            
+            {/* Active Repositories */}
+            <DashboardCard
+              title="Active Repositories"
+              icon={Beaker}
+              action={{ label: "View All Repositories", href: "/repositories" }}
+            >
+              <div className="space-y-4">
+                {trials.map((repository) => (
+                  <RepositoryCard key={repository.name} repository={repository} />
+                ))}
+              </div>
+            </DashboardCard>
+
+            {/* Recent Activity */}
+            <DashboardCard
+              title="Recent Activity"
+              icon={GitBranch}
+              action={{ label: "View Full History", href: "/history" }}
+            >
+              <ul className="space-y-4">
+                {activity.map((item, index) => (
+                  <ActivityItem key={index} item={item} />
+                ))}
+              </ul>
+            </DashboardCard>
+          </motion.div>
+
+          {/* Right Column */}
+          <motion.div className="space-y-8" variants={itemVariants}>
+            {/* Favorite Models */}
+            <DashboardCard
+              title="Favorite Models"
+              icon={Star}
+              action={{ label: "Explore Models", href: "/models" }}
+            >
+              <div className="space-y-4">
+                {models.map((model) => (
+                  <ModelCard key={model.name} model={model} variants={itemVariants} />
+                ))}
+              </div>
+            </DashboardCard>
+
+            {/* Discussions */}
+            <DashboardCard
+              title="Discussions"
+              icon={MessageSquare}
+              action={{ label: "View All", href: "/discussions" }}
+            >
+              <ul className="space-y-3">
+                {discussions.map((discussion, index) => (
+                  <DiscussionItem key={index} discussion={discussion} />
+                ))}
+              </ul>
+            </DashboardCard>
+
+            {/* Learn & Contribute */}
+            <DashboardCard title="Learn & Contribute" icon={LifeBuoy} action={null}>
+              <div className="space-y-3">
+                <ResourceLink
+                  icon={Book}
+                  title="Protocol-as-Code Docs"
+                  href="#"
+                />
+                <ResourceLink
+                  icon={Scale}
+                  title="Regulatory Guidelines"
+                  href="#"
+                />
+                <ResourceLink
+                  icon={Github}
+                  title="Contribute on GitHub"
+                  href="#"
+                />
+              </div>
+            </DashboardCard>
+          </motion.div>
         </div>
-    </div>
+      </div>
+    </motion.div>
   )
 }
+
+// Sub-components
+const DashboardCard = ({ title, icon: Icon, action, children }: { title: string, icon: React.ElementType, action: {label: string, href: string} | null, children: React.ReactNode }) => (
+    <motion.div
+      className="bg-card border border-border rounded-xl shadow-sm"
+      variants={itemVariants}
+      whileHover={{ y: -5, boxShadow: "0px 10px 20px rgba(0,0,0, 0.05)" }}
+      transition={{ duration: 0.3 }}
+    >
+      <div className="p-5 border-b border-border flex items-center justify-between">
+        <div className="flex items-center space-x-3">
+          <Icon className="w-5 h-5 text-muted-foreground" />
+          <h2 className="text-lg font-semibold text-foreground">{title}</h2>
+        </div>
+        {action && (
+          <Button variant="ghost" size="sm" asChild>
+            <Link href={action.href}>{action.label}</Link>
+          </Button>
+        )}
+      </div>
+      <div className="p-5">{children}</div>
+    </motion.div>
+);
+
+const RepositoryCard = ({ repository }: { repository: Trial }) => (
+    <div className="bg-background/50 p-4 rounded-lg border border-border/70 hover:bg-muted/30 transition-colors">
+      <div className="flex justify-between items-start">
+        <div>
+          <div className="flex items-center space-x-3 mb-2">
+            <Link href={`/repositories/${repository.name}`}>
+              <span className="font-semibold text-primary hover:underline">{repository.name}</span>
+            </Link>
+            <Badge
+              variant={repository.status === "Active" ? "default" : "secondary"}
+              className="capitalize"
+            >
+              {repository.status}
+            </Badge>
+          </div>
+          <p className="text-sm text-muted-foreground">{repository.title}</p>
+        </div>
+        <div className="text-right">
+          <p className="text-sm font-medium text-foreground">{repository.patientEnrollment} / {repository.totalPatients}</p>
+          <p className="text-xs text-muted-foreground">Patients</p>
+        </div>
+      </div>
+      <div className="mt-4 flex items-center justify-between text-xs text-muted-foreground">
+        <div className="flex items-center space-x-2">
+          <Users className="w-3 h-3" />
+          <span>{repository.owner}</span>
+        </div>
+        <p>Last update: {repository.lastUpdate}</p>
+      </div>
+    </div>
+  );
+
+const ActivityItem = ({ item }: { item: Activity }) => (
+    <li className="flex items-start space-x-4">
+      <item.Icon className="w-4 h-4 mt-1 text-muted-foreground" />
+      <div className="flex-1 text-sm">
+        <p className="text-foreground">
+          <span className="font-semibold">{item.user}</span> {item.details}
+        </p>
+        <p className="text-xs text-muted-foreground mt-1">{item.time}</p>
+      </div>
+    </li>
+);
+
+const DiscussionItem = ({ discussion }: { discussion: Discussion }) => (
+    <li className="text-sm">
+      <Link href="#">
+        <p className="text-foreground hover:text-primary transition-colors truncate">{discussion.title}</p>
+      </Link>
+      <p className="text-xs text-muted-foreground">
+        in {discussion.repo} by {discussion.user}
+      </p>
+    </li>
+);
+
+const ResourceLink = ({ icon: Icon, title, href }: { icon: React.ElementType, title: string, href: string }) => (
+    <Link href={href} className="flex items-center space-x-3 p-2 rounded-md hover:bg-muted/30 transition-colors">
+        <Icon className="w-4 h-4 text-muted-foreground" />
+        <span className="text-sm text-foreground">{title}</span>
+    </Link>
+);

@@ -485,24 +485,6 @@ export function NotificationCenter() {
                 </div>
               )}
             </div>
-
-                    {/* Enhanced Footer */}
-        <DropdownMenuSeparator />
-        <div className="p-3 bg-background">
-          <div className="flex items-center justify-between space-x-2">
-            <DropdownMenuItem className="flex-1 justify-center text-xs font-medium hover:bg-accent/10 rounded-md">
-              <Archive className="w-3 h-3 mr-2" />
-              View All
-            </DropdownMenuItem>
-            
-            <div className="flex items-center space-x-1 text-2xs text-muted-foreground/60">
-              <span>⌘K</span>
-              <span className="font-mono">for shortcuts</span>
-            </div>
-          </div>
-          
-
-    </div>
       </DropdownMenuContent>
     </DropdownMenu>
   )

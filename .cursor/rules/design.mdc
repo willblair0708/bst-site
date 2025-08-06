@@ -1,0 +1,242 @@
+---
+description: Considering changes to design, ui and ux
+alwaysApply: false
+---
+# Runix Hub Design Constitution
+
+---
+
+> **The Story We're Writing**
+> Every scientific claim becomes runnable. Research transforms into reproducible pipelines.
+> **Runix Hub** is where git-based protocols meet automated reproducibility checking—
+> making science fork-able, verifiable, and provably reproducible.
+
+This constitution translates that narrative into color tokens, interaction patterns, and performance standards so every pixel advances reproducible science.
+
+---
+
+## 0 · Purpose
+
+Runix Hub is the **GitHub for Science**—where researchers turn claims into runnable artifacts with git-based versioning and automated reproducibility verification. This document is the *single source of design truth* for everyone shipping code, copy, or pixels.
+
+## 1 · Inspirational DNA
+
+| House Spirit           | Borrowed Principle                       | Runix Hub Manifestation                                            |
+| ---------------------- | ---------------------------------------- | ------------------------------------------------------------------ |
+| **Apple**              | *Relentless simplicity + tactile delight* | Ultra-clean layouts, intuitive touch targets, subtle depth, and delightful micro-interactions. |
+| **OpenAI**             | *Clarity over flair; API-first*           | One accent color, minimal chrome, every UI action maps to a documented endpoint. |
+| **GitHub**             | *Social coding rituals + version control* | Fork → verify → merge workflows for scientific protocols.         |
+| **Linear**             | *Minimalist focus + motion polish*        | Clean cards, smooth hover states, purposeful animations.          |
+| **Vercel**             | *Performance obsession + developer UX*    | Sub-second loads; every action feels instant.                     |
+| **Observable**         | *Notebook-driven exploration*             | Interactive data views; every chart links to underlying code.     |
+| **Papers With Code**   | *Reproducibility as first principle*      | Verification badges; hash ribbons; reproducibility scores.        |
+
+---
+
+## 2 · Narrative‑Driven Tenets
+
+1. **Reproducibility is Status.**  Green verification badges and reproducibility percentages are the primary status indicators.
+2. **Evidence is Explorable.**  Every metric, hash, and badge drills down to raw data and underlying code.
+3. **Speed Serves Science.**  Fast interactions reduce friction in the research workflow—every millisecond matters.
+4. **Transparency Builds Trust.**  SHA-256 hashes, audit trails, and public verification create scientific accountability.
+5. **Motion Has Meaning.**  Animations celebrate successful runs, warn of failures, and guide attention to important changes.
+
+---
+
+## 3 · Visual Language
+
+### 3.1 Color System
+
+**Light Theme (Default):**
+| Token             | HSL Value        | Hex     | Purpose                    |
+| ----------------- | ---------------- | ------- | -------------------------- |
+| `background`      | 60 2% 96%        | #F4F4F2 | Sand Paper (main canvas)   |
+| `foreground`      | 220 20% 8%       | #0F1116 | Proof Black (primary text) |
+| `primary`         | 228 100% 51%     | #0436FF | Graph Deep Blue (CTA)      |
+| `accent`          | 173 75% 51%      | #18E0C8 | Quantum Teal (success)     |
+| `destructive`     | 347 77% 64%      | #FF4664 | Alert Red (errors)         |
+| `muted-foreground`| 220 14% 67%      | #9CA3AF | Oxide Grey (secondary)     |
+
+**Dark Theme:**
+| Token             | HSL Value        | Hex     | Purpose                    |
+| ----------------- | ---------------- | ------- | -------------------------- |
+| `background`      | 220 20% 8%       | #0F1116 | Proof Black (main canvas)  |
+| `foreground`      | 60 2% 96%        | #F4F4F2 | Sand Paper (primary text)  |
+| `primary`         | 228 100% 51%     | #0436FF | Graph Deep Blue (CTA)      |
+| `accent`          | 173 75% 51%      | #18E0C8 | Quantum Teal (success)     |
+
+### 3.2 Typography
+
+* **Display:** Satoshi (headings, hero text) - Clean, modern, slightly condensed
+* **Body:** Inter (UI text, descriptions) - High legibility, variable font features enabled
+* **Mono:** JetBrains Mono (code, hashes, data) - Clear distinction for technical content
+
+**Hierarchy:**
+- H1: 4rem-6rem, font-weight 300, tracking -0.035em
+- H2: 2.5rem-4rem, font-weight 350, tracking -0.025em  
+- Body: 1rem, line-height 1.6, font-feature-settings 'cv02', 'cv03', 'cv04', 'cv11'
+
+### 3.3 Motion & Interaction
+
+**Animation Library:**
+- Framer Motion for complex sequences
+- CSS transitions for micro-interactions
+- 250ms cubic-bezier(0.22, 0.61, 0.36, 1) as default easing
+
+**Key Patterns:**
+- `hover:scale(1.05)` on interactive cards
+- Rotating progress rings for running operations
+- Checksum ribbons that unfurl on hover
+- Success pulses for completed verifications
+- Shake animations for failures
+
+---
+
+## 4 · Component Patterns
+
+### 4.1 Repository Cards
+
+```tsx
+<Card className="paper-layers checksum-ribbon">
+  <Badge>{language}</Badge>
+  <VerificationBadge reproducibility={94.2} />
+  <HashPreview hash="a1b2c3d4e5f6..." />
+  <Stats stars={47} forks={12} />
+</Card>
+```
+
+**Visual Features:**
+- Subtle shadow layering (`paper-layers`)
+- Hash ribbon appears on hover
+- Verification badge with reproducibility percentage
+- Monospace font for technical data
+
+### 4.2 Interactive Elements
+
+**Buttons:**
+- Primary: Blue background, white text, hover scale
+- Ghost: Transparent, hover accent background
+- Destructive: Red background for dangerous actions
+
+**Form Controls:**
+- Consistent border radius (0.5rem)
+- Focus rings with primary color
+- Smooth state transitions
+
+### 4.3 Data Visualization
+
+**Verification Indicators:**
+- Green checkmarks for verified reproducibility
+- Percentage scores in monospace font
+- Animated progress rings for active checks
+- SHA-256 hash displays in expandable sections
+
+---
+
+## 5 · Layout & Information Architecture
+
+### 5.1 Navigation Structure
+
+```
+🏠 Home (Landing)
+ ├─ Explore      ↦ Search & browse pipelines
+ ├─ Dashboard    ↦ Personal workspace, recent activity
+ ├─ Repo/{owner}/{name} ↦ Repository details
+ ├─ Profile      ↦ User settings and contributions
+ └─ Mission      ↦ About reproducible science
+```
+
+### 5.2 Page Layouts
+
+**Landing Page:**
+- Hero section with animated elements
+- Featured repositories grid
+- Feature showcase with hover effects
+- Clean footer with organized links
+
+**Repository View:**
+- README/protocol display
+- Verification status prominently shown
+- Fork/run actions in header
+- File browser with syntax highlighting
+
+---
+
+## 6 · Performance Standards
+
+| Metric         | Target       | Rationale                             |
+| -------------- | ------------ | ------------------------------------- |
+| First Contentful Paint | < 1s | Instant perceived load for researchers |
+| Largest Contentful Paint | < 2s | Maintain engagement during exploration |
+| Cumulative Layout Shift | < 0.1 | Stable interface for data review |
+| Time to Interactive | < 3s | Quick interaction for workflow efficiency |
+
+**Technical Stack:**
+- Next.js 15 with App Router
+- Tailwind CSS for consistent styling
+- Framer Motion for animations
+- Optimized font loading (Inter, Satoshi, JetBrains Mono)
+
+---
+
+## 7 · Accessibility
+
+**Standards:**
+- WCAG 2.1 AA compliance
+- Keyboard navigation for all interactions
+- Screen reader friendly markup
+- High contrast ratios (4.5:1 minimum)
+
+**Motion Preferences:**
+- Respect `prefers-reduced-motion`
+- Alternative static states for animations
+- Optional motion disable via URL parameter (`?audit=1`)
+
+---
+
+## 8 · Content Strategy
+
+**Tone & Voice:**
+- Technical but approachable
+- Focus on reproducibility benefits
+- Celebrate scientific progress
+- Clear, action-oriented interface copy
+
+**Microcopy Examples:**
+- "Fork Your First Pipeline" (CTA)
+- "Verified reproducible (94.2%)" (badge tooltip)
+- "Run Demo Pipeline" (primary action)
+- "Make Science Reproducible" (hero CTA)
+
+---
+
+## 9 · Responsive Design
+
+**Breakpoints:**
+- Mobile: 320px-768px (single column, stacked cards)
+- Tablet: 768px-1024px (two-column grids)
+- Desktop: 1024px+ (full three-column layouts)
+
+**Mobile Considerations:**
+- Touch-friendly button sizing (min 44px)
+- Simplified navigation patterns
+- Optimized font sizes for readability
+- Efficient data loading for slower connections
+
+---
+
+## 10 · Development Guidelines
+
+**CSS Architecture:**
+- Utility-first with Tailwind CSS
+- Custom properties for theme values
+- Component-level style encapsulation
+- Consistent spacing scale (rem-based)
+
+**Animation Best Practices:**
+- Use `transform` and `opacity` for performance
+- Implement animation cleanup on unmount
+- Provide motion alternatives for accessibility
+- Test on lower-powered devices
+
+---

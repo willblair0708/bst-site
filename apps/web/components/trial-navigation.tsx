@@ -132,7 +132,7 @@ export function TrialNavigation() {
         <nav className="flex space-x-8 overflow-x-auto">
           {navigation.map((item) => {
             const isActive = pathname === item.href || 
-              (item.href !== '/' && pathname.startsWith(item.href))
+              (item.href !== '/' && pathname?.startsWith(item.href))
             const Icon = item.icon
             return (
               <Link

@@ -9,12 +9,12 @@ export function LayoutWrapper({ children }: { children: React.ReactNode }) {
   const pathname = usePathname()
   
   const isPlatformRoute = platformRoutes.some(route => 
-    pathname.startsWith(route) || pathname === '/'
+    pathname?.startsWith(route) || pathname === '/'
   )
   
-  const isTrialRoute = !isPlatformRoute || pathname.startsWith('/ctp-') || 
+  const isTrialRoute = !isPlatformRoute || pathname?.startsWith('/ctp-') || 
     ['/files', '/issues', '/pull-requests', '/actions', '/projects', '/analytics', '/wiki', '/people'].some(route => 
-      pathname.startsWith(route) && !pathname.startsWith('/profile')
+      pathname?.startsWith(route) && !pathname?.startsWith('/profile')
     )
 
   return (

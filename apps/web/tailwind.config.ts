@@ -85,7 +85,8 @@ const config = {
             "orange-500": "#FF9A3C",
             "green-400": "#34D399",
             "purple-500": "hsl(var(--viz-purple))",
-        }
+        },
+        "equity-gold": "#FFD700",
       },
       borderRadius: {
         lg: "var(--radius)",

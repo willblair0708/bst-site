@@ -17,7 +17,8 @@ const badgeVariants = cva(
         success: "border-accent-500/30 bg-accent-500/10 text-accent-500 hover:bg-accent-500/20",
         warning: "border-viz-orange-500/30 bg-viz-orange-500/10 text-viz-orange-500 hover:bg-viz-orange-500/20",
         info: "border-viz-blue-500/30 bg-viz-blue-500/10 text-viz-blue-500 hover:bg-viz-blue-500/20",
-        purple: "border-viz-purple-500/30 bg-viz-purple-500/10 text-viz-purple-500 hover:bg-viz-purple-500/20"
+        purple: "border-viz-purple-500/30 bg-viz-purple-500/10 text-viz-purple-500 hover:bg-viz-purple-500/20",
+        gold: "border-equity-gold/30 bg-equity-gold/10 text-equity-gold hover:bg-equity-gold/20",
       },
     },
     defaultVariants: {

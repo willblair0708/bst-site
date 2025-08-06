@@ -198,13 +198,6 @@ export default function LandingPage() {
       </header>
 
       <main>
-        {/* Command Palette Banner */}
-        <section className="border-b border-accent/20 bg-accent/5 py-2">
-          <div className="mx-auto max-w-7xl px-6 lg:px-8">
-
-          </div>
-        </section>
-
         {/* Proof Runway (Zero-State Flow) */}
         <section className="py-20 sm:py-24" role="region" aria-labelledby="proof-runway-heading">
         <div className="mx-auto max-w-7xl px-6 lg:px-8">
@@ -217,12 +210,12 @@ export default function LandingPage() {
             transition={{ duration: 0.6, ease: "easeOut" }}
           >
             <motion.div whileHover={{ scale: 1.05 }} className="inline-block mb-4">
-              <Badge variant="outline" className="border-accent-500/30 bg-accent-500/10 text-accent-500">
-                <Sparkles className="w-3 h-3 mr-1 text-accent-500 animate-pulse" />
-                Proof Runway
+              <Badge variant="outline" className="border-accent-500/30 bg-accent-100 text-accent-500 rounded-full px-4 py-1.5">
+                <Sparkles className="w-4 h-4 mr-2 text-accent-500" />
+                <span className="font-semibold">Proof Runway</span>
               </Badge>
             </motion.div>
-            <h2 id="proof-runway-heading" className="font-display text-3xl tracking-tight sm:text-4xl text-balance">
+            <h2 id="proof-runway-heading" className="font-display text-4xl font-bold tracking-tight sm:text-5xl text-balance">
               From hypothesis to verified result in 3 steps.
             </h2>
           </motion.div>
@@ -319,13 +312,13 @@ export default function LandingPage() {
                     variants={fadeInUp}
                     transition={{ duration: 0.6 }}
                     whileHover={MOTION.bento_hover}
-                    className={`group relative flex flex-col h-full overflow-hidden rounded-xl border border-border bg-${PILLARS[repo.pillar].bg} shadow-elevation-1 transition-all duration-300 hover:shadow-elevation-4 hover:border-${PILLARS[repo.pillar].color}/30`}
+                    className={`group relative flex flex-col h-full overflow-hidden rounded-2xl border bg-card shadow-sm`}
                   >
                 {/* Verification badge */}
                 {repo.verified && (
                   <div className="absolute right-4 top-4 z-10">
-                    <div className="verify-ring bg-accent-500/10 rounded-full p-1 border border-accent-500/20">
-                      <CheckCircle2 className="h-4 w-4 text-accent-500" strokeWidth={2} />
+                    <div className="bg-accent-100 rounded-full p-1.5 border-2 border-background shadow-md">
+                      <CheckCircle2 className="h-4 w-4 text-accent-500" strokeWidth={2.5} />
                     </div>
                   </div>
                 )}

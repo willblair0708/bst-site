@@ -51,25 +51,27 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
               key={toast.id}
               initial={{ opacity: 0, y: -50, scale: 0.3 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
-              exit={{ opacity: 0, y: -50, scale: 0.5 }}
-              className={`flex items-center gap-3 rounded-lg border px-4 py-3 shadow-lg backdrop-blur-sm ${
+              exit={{ opacity: 0, y: 20, scale: 0.9 }}
+              transition={{ type: 'spring', stiffness: 300, damping: 25 }}
+              className={`flex items-center gap-3 rounded-full border px-4 py-2 shadow-lg ${
                 toast.type === 'success' 
-                  ? 'border-accent/20 bg-card/95 text-foreground' 
-                  : 'border-destructive/20 bg-card/95 text-foreground'
+                  ? 'border-accent-500/20 bg-accent-100/80 text-accent-500' 
+                  : 'border-destructive/20 bg-error-100/80 text-destructive-500'
               }`}
+              style={{backdropFilter: 'blur(10px)'}}
             >
               {toast.type === 'success' ? (
-                <CheckCircle2 className="h-4 w-4 text-accent" />
+                <CheckCircle2 className="h-5 w-5" />
               ) : (
-                <X className="h-4 w-4 text-destructive" />
+                <X className="h-5 w-5" />
               )}
-              <span className="text-sm font-medium">{toast.message}</span>
+              <span className="text-sm font-semibold">{toast.message}</span>
               <button
                 onClick={() => removeToast(toast.id)}
-                className="ml-2 text-muted-foreground hover:text-foreground transition-colors"
+                className="ml-auto text-muted-foreground hover:text-foreground transition-colors p-1 -mr-2 rounded-full"
                 aria-label="Close notification"
               >
-                <X className="h-3 w-3" />
+                <X className="h-4 w-4" />
               </button>
             </motion.div>
           ))}

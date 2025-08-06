@@ -1,14 +1,15 @@
 'use client';
 
 import { useState, useMemo } from 'react';
-import { motion, AnimatePresence, useScroll, useTransform, useSpring } from 'framer-motion';
+import { motion, AnimatePresence, useScroll, useTransform, useSpring, Variants } from 'framer-motion';
 import { 
   Brain,
   Search,
   Flame,
   Verified,
   Download,
-  Trophy
+  Trophy,
+  Bot
 } from 'lucide-react';
 import { 
   Card, 
@@ -27,7 +28,7 @@ import { ModelCard } from '@/components/ui/model-card';
 import Link from 'next/link';
 
 // Animation variants for enhanced micro-interactions
-const pageVariants = {
+const pageVariants: Variants = {
   initial: { opacity: 0, y: 20 },
   animate: { 
     opacity: 1, 
@@ -41,7 +42,7 @@ const pageVariants = {
   exit: { opacity: 0, y: -20, transition: { duration: 0.3 } }
 };
 
-const containerVariants = {
+const containerVariants: Variants = {
   initial: { opacity: 0 },
   animate: {
     opacity: 1,
@@ -52,7 +53,7 @@ const containerVariants = {
   }
 };
 
-const itemVariants = {
+const itemVariants: Variants = {
   initial: { opacity: 0, y: 20, scale: 0.95 },
   animate: { 
     opacity: 1, 
@@ -74,7 +75,7 @@ const itemVariants = {
   tap: { scale: 0.98 }
 };
 
-const cardVariants = {
+const cardVariants: Variants = {
   initial: { opacity: 0, y: 30, rotateY: -15 },
   animate: { 
     opacity: 1, 
@@ -89,7 +90,7 @@ const cardVariants = {
   }
 };
 
-const statsVariants = {
+const statsVariants: Variants = {
   initial: { opacity: 0, scale: 0.8, rotateX: -45 },
   animate: { 
     opacity: 1, 
@@ -110,7 +111,7 @@ const statsVariants = {
   }
 };
 
-const heroVariants = {
+const heroVariants: Variants = {
   initial: { opacity: 0, y: 40 },
   animate: { 
     opacity: 1, 
@@ -638,20 +639,16 @@ export default function ModelsPage() {
           {filteredModels.map((model, index) => (
             <ModelCard
               key={model.id}
-              id={model.id}
-              name={model.name}
-              description={model.description}
-              author={model.author}
-              authorAvatar={model.authorAvatar}
-              featured={model.featured}
-              trending={model.trending}
-              verified={model.verified}
-              tags={model.tags}
-              downloads={model.downloads}
-              likes={model.likes}
-              accuracy={model.accuracy}
-              framework={model.framework}
-              delay={index * 0.05}
+              model={{
+                name: model.name,
+                version: "1.0", // Placeholder
+                description: model.description,
+                provider: model.author,
+                Icon: Bot,
+                stars: model.likes,
+                forks: model.downloads,
+              }}
+              variants={itemVariants}
             />
           ))}
         </motion.div>

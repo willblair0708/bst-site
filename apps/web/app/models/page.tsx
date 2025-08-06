@@ -4,30 +4,11 @@ import { useState, useMemo } from 'react';
 import { motion, AnimatePresence, useScroll, useTransform, useSpring } from 'framer-motion';
 import { 
   Brain,
-  Sparkles,
-  Zap,
-  Globe,
-  Cpu,
-  Calendar,
-  Shield,
-  TrendingUp,
-  GitFork,
-  Users,
-  ArrowRight,
-  ChevronRight,
-  Star,
-  Download,
-  Eye,
-  Clock,
-  BarChart3,
-  Layers,
-  Rocket,
   Search,
-  Filter,
   Flame,
-  Trophy,
-  Lightbulb,
-  Activity
+  Verified,
+  Download,
+  Trophy
 } from 'lucide-react';
 import { 
   Card, 
@@ -42,6 +23,7 @@ import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { ModelCard } from '@/components/ui/model-card';
 import Link from 'next/link';
 
 // Animation variants for enhanced micro-interactions
@@ -97,21 +79,13 @@ const cardVariants = {
   animate: { 
     opacity: 1, 
     y: 0, 
-    rotateY: 0,
-    transition: {
-      duration: 0.6,
-      ease: "easeOut"
-    }
+    rotateY: 0
   },
   hover: {
     y: -12,
     rotateY: 5,
     scale: 1.03,
-    boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.25)",
-    transition: {
-      duration: 0.4,
-      ease: "easeOut"
-    }
+    boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.25)"
   }
 };
 
@@ -367,11 +341,7 @@ export default function ModelsPage() {
     return filtered;
   }, [searchQuery, selectedCategory, selectedDomain, selectedFramework, sortBy, viewMode]);
 
-  const formatNumber = (num: number) => {
-    if (num >= 1000000) return `${(num / 1000000).toFixed(1)}M`;
-    if (num >= 1000) return `${(num / 1000).toFixed(1)}K`;
-    return num.toString();
-  };
+
 
   return (
     <motion.div 
@@ -381,222 +351,185 @@ export default function ModelsPage() {
       animate="animate"
       exit="exit"
     >
-      {/* Enhanced gradient overlay with parallax */}
+      {/* Refined gradient overlay following design system */}
       <motion.div 
-        className="absolute inset-0 bg-gradient-to-br from-background via-background to-muted/10"
+        className="absolute inset-0 bg-gradient-to-br from-background via-background to-muted/5"
         style={{ y: backgroundY }}
       />
       
-      {/* Enhanced floating geometric elements with physics */}
+      {/* Subtle geometric elements with design system colors */}
       <motion.div
-        className="absolute w-80 h-80 rounded-full opacity-5"
+        className="absolute w-96 h-96 rounded-full opacity-[0.03]"
         style={{ 
-          top: '5%', 
-          left: '5%',
-          background: 'hsl(228 100% 51%)', // primary color
-          filter: 'blur(40px)'
+          top: '8%', 
+          left: '10%',
+          background: 'hsl(228 100% 51%)', // primary from design system
+          filter: 'blur(60px)'
         }}
         animate={{ 
-          x: [0, 50, 0], 
-          y: [0, -30, 0],
-          scale: [1, 1.1, 1]
+          x: [0, 30, 0], 
+          y: [0, -20, 0],
+          scale: [1, 1.05, 1]
+        }}
+        transition={{ duration: 30, repeat: Infinity, ease: "easeInOut" }}
+      />
+      <motion.div
+        className="absolute w-80 h-80 rounded-full opacity-[0.03]"
+        style={{ 
+          bottom: '15%', 
+          right: '15%',
+          background: 'hsl(173 75% 51%)', // accent from design system
+          filter: 'blur(50px)'
+        }}
+        animate={{ 
+          x: [0, -25, 0], 
+          y: [0, 25, 0],
+          scale: [1, 0.95, 1]
         }}
         transition={{ duration: 25, repeat: Infinity, ease: "easeInOut" }}
       />
-      <motion.div
-        className="absolute w-60 h-60 rounded-full opacity-5"
-        style={{ 
-          bottom: '10%', 
-          right: '10%',
-          background: 'hsl(173 75% 51%)', // accent color
-          filter: 'blur(30px)'
-        }}
-        animate={{ 
-          x: [0, -40, 0], 
-          y: [0, 40, 0],
-          scale: [1, 0.9, 1]
-        }}
-        transition={{ duration: 20, repeat: Infinity, ease: "easeInOut" }}
-      />
 
-      <div className="max-w-7xl mx-auto px-6 py-8 relative z-10">
-        {/* Enhanced Hero Section with Parallax */}
+      <div className="max-w-7xl mx-auto px-6 py-12 relative z-10">
+        {/* Hero Section - Clean and minimal following design system */}
         <motion.div 
-          className="text-center mb-16"
+          className="text-center mb-20"
           style={{ y: heroSpring, opacity: opacitySpring }}
           initial={{ opacity: 0, y: 40 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, ease: "easeOut", staggerChildren: 0.2 }}
+          transition={{ duration: 0.8, ease: "easeOut", staggerChildren: 0.15 }}
         >
           <motion.div
-            className="flex items-center justify-center gap-4 mb-8"
-            initial={{ opacity: 0, y: 20, scale: 0.95 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            transition={{ duration: 0.5, ease: "easeOut" }}
+            className="flex items-center justify-center gap-3 mb-6"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, ease: "easeOut" }}
           >
             <motion.div 
-              className="relative"
+              className="relative flex items-center justify-center"
               animate={{
-                y: [-2, 2, -2],
-                rotate: [-2, 2, -2]
+                y: [-1, 1, -1],
               }}
               transition={{
-                duration: 4,
+                duration: 6,
                 repeat: Infinity,
                 ease: "easeInOut"
               }}
             >
-              <Brain size={48} className="text-primary drop-shadow-lg" />
-              <motion.div
-                className="absolute -top-1 -right-1 w-3 h-3 bg-accent rounded-full"
-                animate={{ 
-                  scale: [1, 1.4, 1],
-                  opacity: [0.7, 1, 0.7]
-                }}
-                transition={{ 
-                  duration: 2, 
-                  repeat: Infinity,
-                  ease: "easeInOut"
-                }}
-              />
+              <Brain size={42} className="text-primary" />
             </motion.div>
             <motion.h1 
-              className="text-5xl md:text-6xl font-light tracking-tight bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent m-0"
+              className="text-4xl md:text-5xl lg:text-6xl font-light tracking-tight text-foreground"
               style={{ 
                 fontWeight: 300,
                 letterSpacing: '-0.035em',
-                lineHeight: 1
+                lineHeight: 0.9
               }}
-              initial={{ opacity: 0, y: 20, scale: 0.95 }}
-              animate={{ opacity: 1, y: 0, scale: 1 }}
-              transition={{ duration: 0.5, ease: "easeOut", delay: 0.1 }}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, ease: "easeOut", delay: 0.1 }}
             >
               Scientific Models
             </motion.h1>
-            <motion.div
-              animate={{
-                y: [-2, 2, -2],
-                rotate: [-2, 2, -2]
-              }}
-              transition={{
-                duration: 4,
-                repeat: Infinity,
-                ease: "easeInOut"
-              }}
-            >
-              <Sparkles size={24} className="text-accent drop-shadow-lg" />
-            </motion.div>
           </motion.div>
           
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            transition={{ duration: 0.8, delay: 0.3 }}
+            transition={{ duration: 0.8, delay: 0.2 }}
           >
             <p 
-              className="text-xl text-muted-foreground max-w-4xl mx-auto mb-12 leading-relaxed font-light"
+              className="text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto mb-8 leading-relaxed"
+              style={{ fontWeight: 400 }}
             >
               Every scientific claim becomes runnable. Discover and deploy cutting-edge foundation models 
               with git-based versioning and automated reproducibility verification.
             </p>
           </motion.div>
 
-          {/* Enhanced Stats Cards with Stagger Animation */}
+          {/* Clean Stats Cards following design system */}
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            transition={{ staggerChildren: 0.08, delayChildren: 0.1 }}
-            className="mb-12"
+            transition={{ staggerChildren: 0.06, delayChildren: 0.3 }}
+            className="mb-16"
           >
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
               <motion.div
-                initial={{ opacity: 0, scale: 0.8, rotateX: -45 }}
-                animate={{ opacity: 1, scale: 1, rotateX: 0 }}
-                whileHover={{ scale: 1.05, rotateX: 5 }}
-                whileTap={{ scale: 0.98 }}
-                transition={{ duration: 0.7, ease: "easeOut" }}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                whileHover={{ y: -2 }}
+                transition={{ duration: 0.5, ease: "easeOut" }}
+                className="group"
               >
-                <Card className="text-center h-32 bg-card/50 backdrop-blur border-border/50 hover:shadow-lg transition-all duration-300">
-                  <CardContent className="p-6 flex flex-col items-center justify-center h-full">
+                <Card className="text-center border border-border/50 bg-card/30 backdrop-blur-sm hover:bg-card/50 hover:border-border transition-all duration-300 group-hover:shadow-sm">
+                  <CardContent className="p-4 md:p-6">
                     <div className="flex items-center justify-center gap-2 mb-1">
-                      <Brain className="text-primary text-lg" />
-                      <span className="text-2xl font-bold text-primary font-mono">
+                      <Brain className="h-4 w-4 text-primary" />
+                      <span className="text-xl md:text-2xl font-semibold text-foreground font-mono">
                         {models.length}
                       </span>
                     </div>
-                    <span className="text-muted-foreground text-sm">AI Models</span>
+                    <span className="text-xs md:text-sm text-muted-foreground">AI Models</span>
                   </CardContent>
                 </Card>
               </motion.div>
               
               <motion.div
-                initial={{ opacity: 0, scale: 0.8, rotateX: -45 }}
-                animate={{ opacity: 1, scale: 1, rotateX: 0 }}
-                whileHover={{ scale: 1.05, rotateX: 5 }}
-                whileTap={{ scale: 0.98 }}
-                transition={{ duration: 0.7, ease: "easeOut", delay: 0.1 }}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                whileHover={{ y: -2 }}
+                transition={{ duration: 0.5, ease: "easeOut", delay: 0.1 }}
+                className="group"
               >
-                <Card className="text-center h-32 bg-card/50 backdrop-blur border-border/50 hover:shadow-lg transition-all duration-300">
-                  <CardContent className="p-6 flex flex-col items-center justify-center h-full">
-                    <motion.div 
-                      className="flex items-center justify-center gap-2 mb-1"
-                      whileHover={{ scale: 1.1 }}
-                      transition={{ duration: 0.2 }}
-                    >
-                      <Download className="text-accent text-lg" />
-                      <span className="text-2xl font-bold text-accent font-mono">
-                        {formatNumber(models.reduce((sum, m) => sum + m.downloads, 0))}
+                <Card className="text-center border border-border/50 bg-card/30 backdrop-blur-sm hover:bg-card/50 hover:border-border transition-all duration-300 group-hover:shadow-sm">
+                  <CardContent className="p-4 md:p-6">
+                    <div className="flex items-center justify-center gap-2 mb-1">
+                      <Download className="h-4 w-4 text-accent" />
+                      <span className="text-xl md:text-2xl font-semibold text-foreground font-mono">
+                        {models.reduce((sum, m) => sum + m.downloads, 0).toLocaleString()}
                       </span>
-                    </motion.div>
-                    <span className="text-muted-foreground text-sm">Downloads</span>
+                    </div>
+                    <span className="text-xs md:text-sm text-muted-foreground">Downloads</span>
                   </CardContent>
                 </Card>
               </motion.div>
               
               <motion.div
-                initial={{ opacity: 0, scale: 0.8, rotateX: -45 }}
-                animate={{ opacity: 1, scale: 1, rotateX: 0 }}
-                whileHover={{ scale: 1.05, rotateX: 5 }}
-                whileTap={{ scale: 0.98 }}
-                transition={{ duration: 0.7, ease: "easeOut", delay: 0.2 }}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                whileHover={{ y: -2 }}
+                transition={{ duration: 0.5, ease: "easeOut", delay: 0.2 }}
+                className="group"
               >
-                <Card className="text-center h-32 bg-card/50 backdrop-blur border-border/50 hover:shadow-lg transition-all duration-300">
-                  <CardContent className="p-6 flex flex-col items-center justify-center h-full">
-                    <motion.div 
-                      className="flex items-center justify-center gap-2 mb-1"
-                      whileHover={{ scale: 1.1 }}
-                      transition={{ duration: 0.2 }}
-                    >
-                      <Trophy className="text-primary text-lg" />
-                      <span className="text-2xl font-bold text-primary font-mono">
-                        {formatNumber(models.reduce((sum, m) => sum + (m.citations || 0), 0))}
+                <Card className="text-center border border-border/50 bg-card/30 backdrop-blur-sm hover:bg-card/50 hover:border-border transition-all duration-300 group-hover:shadow-sm">
+                  <CardContent className="p-4 md:p-6">
+                    <div className="flex items-center justify-center gap-2 mb-1">
+                      <Trophy className="h-4 w-4 text-primary" />
+                      <span className="text-xl md:text-2xl font-semibold text-foreground font-mono">
+                        {models.reduce((sum, m) => sum + (m.citations || 0), 0).toLocaleString()}
                       </span>
-                    </motion.div>
-                    <span className="text-muted-foreground text-sm">Citations</span>
+                    </div>
+                    <span className="text-xs md:text-sm text-muted-foreground">Citations</span>
                   </CardContent>
                 </Card>
               </motion.div>
               
               <motion.div
-                initial={{ opacity: 0, scale: 0.8, rotateX: -45 }}
-                animate={{ opacity: 1, scale: 1, rotateX: 0 }}
-                whileHover={{ scale: 1.05, rotateX: 5 }}
-                whileTap={{ scale: 0.98 }}
-                transition={{ duration: 0.7, ease: "easeOut", delay: 0.3 }}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                whileHover={{ y: -2 }}
+                transition={{ duration: 0.5, ease: "easeOut", delay: 0.3 }}
+                className="group"
               >
-                <Card className="text-center h-32 bg-card/50 backdrop-blur border-border/50 hover:shadow-lg transition-all duration-300">
-                  <CardContent className="p-6 flex flex-col items-center justify-center h-full">
-                    <motion.div 
-                      className="flex items-center justify-center gap-2 mb-1"
-                      whileHover={{ scale: 1.1 }}
-                      transition={{ duration: 0.2 }}
-                    >
-                      <Shield className="text-accent text-lg" />
-                      <span className="text-2xl font-bold text-accent font-mono">
+                <Card className="text-center border border-border/50 bg-card/30 backdrop-blur-sm hover:bg-card/50 hover:border-border transition-all duration-300 group-hover:shadow-sm">
+                  <CardContent className="p-4 md:p-6">
+                    <div className="flex items-center justify-center gap-2 mb-1">
+                      <Verified className="h-4 w-4 text-accent" />
+                      <span className="text-xl md:text-2xl font-semibold text-foreground font-mono">
                         98.5%
                       </span>
-                    </motion.div>
-                    <span className="text-muted-foreground text-sm">Verified</span>
+                    </div>
+                    <span className="text-xs md:text-sm text-muted-foreground">Verified</span>
                   </CardContent>
                 </Card>
               </motion.div>
@@ -604,30 +537,30 @@ export default function ModelsPage() {
           </motion.div>
         </motion.div>
 
-        {/* Search and Filters - Custom UI */}
+        {/* Search and Filters - Refined UI */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.7 }}
+          transition={{ duration: 0.6, delay: 0.5 }}
         >
-          <Card className="bg-card/80 backdrop-blur border-border/50 mb-8">
+          <Card className="bg-card/60 backdrop-blur-sm border-border/50 mb-8 shadow-sm">
             <CardContent className="p-6">
-              <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 items-center">
-                <div className="lg:col-span-5">
-                  <div className="relative">
-                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
-                    <Input
-                      placeholder="Search models, tags, or descriptions..."
-                      value={searchQuery}
-                      onChange={(e) => setSearchQuery(e.target.value)}
-                      className="pl-10"
-                    />
-                  </div>
+              <div className="space-y-4">
+                {/* Search Bar */}
+                <div className="relative max-w-lg mx-auto">
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
+                  <Input
+                    placeholder="Search models, tags, or descriptions..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="pl-10 border-border/50 bg-background/50 focus:bg-background/80 transition-colors"
+                  />
                 </div>
-                
-                <div className="lg:col-span-2">
+
+                {/* Filters Row */}
+                <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
                   <Select value={selectedCategory} onValueChange={setSelectedCategory}>
-                    <SelectTrigger>
+                    <SelectTrigger className="border-border/50">
                       <SelectValue placeholder="Category" />
                     </SelectTrigger>
                     <SelectContent>
@@ -636,11 +569,9 @@ export default function ModelsPage() {
                       ))}
                     </SelectContent>
                   </Select>
-                </div>
 
-                <div className="lg:col-span-2">
                   <Select value={selectedDomain} onValueChange={setSelectedDomain}>
-                    <SelectTrigger>
+                    <SelectTrigger className="border-border/50">
                       <SelectValue placeholder="Domain" />
                     </SelectTrigger>
                     <SelectContent>
@@ -649,11 +580,9 @@ export default function ModelsPage() {
                       ))}
                     </SelectContent>
                   </Select>
-                </div>
 
-                <div className="lg:col-span-2">
                   <Select value={selectedFramework} onValueChange={setSelectedFramework}>
-                    <SelectTrigger>
+                    <SelectTrigger className="border-border/50">
                       <SelectValue placeholder="Framework" />
                     </SelectTrigger>
                     <SelectContent>
@@ -662,17 +591,15 @@ export default function ModelsPage() {
                       ))}
                     </SelectContent>
                   </Select>
-                </div>
 
-                <div className="lg:col-span-1">
                   <Tabs value={viewMode} onValueChange={setViewMode}>
-                    <TabsList className="grid w-full grid-cols-2">
-                      <TabsTrigger value="featured" className="text-xs">
+                    <TabsList className="grid w-full grid-cols-2 bg-muted/30">
+                      <TabsTrigger value="featured" className="text-xs data-[state=active]:bg-background">
                         <Flame className="h-3 w-3 mr-1" />
                         Featured
                       </TabsTrigger>
-                      <TabsTrigger value="all" className="text-xs">
-                        <Lightbulb className="h-3 w-3 mr-1" />
+                      <TabsTrigger value="all" className="text-xs data-[state=active]:bg-background">
+                        <Brain className="h-3 w-3 mr-1" />
                         All
                       </TabsTrigger>
                     </TabsList>
@@ -680,18 +607,18 @@ export default function ModelsPage() {
                 </div>
               </div>
               
-              <div className="border-t border-border/50 mt-4 pt-4">
+              <div className="border-t border-border/30 mt-6 pt-4">
                 <div className="flex items-center justify-between">
-                  <span className="text-muted-foreground text-sm">
+                  <span className="text-muted-foreground text-sm font-medium">
                     {filteredModels.length} model{filteredModels.length !== 1 ? 's' : ''} found
                   </span>
                   <div className="flex items-center gap-2">
-                    <Badge variant="secondary" className="flex items-center gap-1">
+                    <Badge variant="secondary" className="flex items-center gap-1 bg-primary/10 text-primary border-primary/20">
                       <Flame className="h-3 w-3" />
                       {models.filter(m => m.trending).length} Trending
                     </Badge>
-                    <Badge variant="secondary" className="flex items-center gap-1">
-                      <Shield className="h-3 w-3" />
+                    <Badge variant="secondary" className="flex items-center gap-1 bg-accent/10 text-accent border-accent/20">
+                      <Verified className="h-3 w-3" />
                       {models.filter(m => m.verified).length} Verified
                     </Badge>
                   </div>
@@ -701,126 +628,101 @@ export default function ModelsPage() {
           </Card>
         </motion.div>
 
-        {/* Models Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
-          {filteredModels.map((model) => (
-            <Card key={model.id} className="hover:shadow-lg transition-shadow">
-              <CardHeader className="pb-4">
-                <div className="flex items-start justify-between">
-                  <div className="flex items-center gap-3">
-                    <Avatar className="h-10 w-10">
-                      <AvatarImage 
-                        src={model.authorAvatar} 
-                        alt={model.author}
-                      />
-                      <AvatarFallback className="bg-primary/10 text-primary font-medium">
-                        {model.author.charAt(0)}
-                      </AvatarFallback>
-                    </Avatar>
-                    <div>
-                      <Link href={`/models/${model.id}`}>
-                        <CardTitle className="hover:text-primary cursor-pointer">
-                          {model.name}
-                        </CardTitle>
-                      </Link>
-                      <div className="text-sm text-muted-foreground">{model.author}</div>
-                    </div>
-                  </div>
-                  {model.featured && (
-                    <Badge variant="secondary" className="bg-yellow-100 text-yellow-800">
-                      Featured
-                    </Badge>
-                  )}
-                </div>
-                <CardDescription className="mt-2">
-                  {model.description}
-                </CardDescription>
-              </CardHeader>
-              
-              <CardContent className="pt-0">
-                <div className="space-y-4">
-                  {/* Tags */}
-                  <div className="flex flex-wrap gap-1">
-                    {model.tags.slice(0, 3).map((tag) => (
-                      <Badge key={tag} variant="outline" className="text-xs">
-                        {tag}
-                      </Badge>
-                    ))}
-                    {model.tags.length > 3 && (
-                      <Badge variant="outline" className="text-xs">
-                        +{model.tags.length - 3}
-                      </Badge>
-                    )}
-                  </div>
-
-                  {/* Model Info */}
-                  <div className="grid grid-cols-2 gap-4 text-sm">
-                    <div className="space-y-2">
-                      <div className="flex items-center gap-2">
-                        <Download className="h-4 w-4 text-muted-foreground" />
-                        <span>{formatNumber(model.downloads)}</span>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <Star className="h-4 w-4 text-muted-foreground" />
-                        <span>{formatNumber(model.likes)}</span>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <Cpu className="h-4 w-4 text-muted-foreground" />
-                        <span>{model.framework}</span>
-                      </div>
-                    </div>
-                    <div className="space-y-2">
-                      <div className="flex items-center gap-2">
-                        <Calendar className="h-4 w-4 text-muted-foreground" />
-                        <span>{new Date(model.lastModified).toLocaleDateString()}</span>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <Activity className="h-4 w-4 text-muted-foreground" />
-                        <span>{model.size}</span>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <BarChart3 className="h-4 w-4 text-muted-foreground" />
-                        <span>{model.accuracy}% acc</span>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Actions */}
-                  <div className="flex gap-2 pt-2">
-                    <Button asChild className="flex-1">
-                      <Link href={`/models/${model.id}`}>
-                        View Model
-                      </Link>
-                    </Button>
-                    <Button variant="outline" size="sm">
-                      <Star className="h-4 w-4" />
-                    </Button>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
+        {/* Models Grid - Clean and Simple */}
+        <motion.div 
+          className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6"
+          variants={containerVariants}
+          initial="initial"
+          animate="animate"
+        >
+          {filteredModels.map((model, index) => (
+            <ModelCard
+              key={model.id}
+              id={model.id}
+              name={model.name}
+              description={model.description}
+              author={model.author}
+              authorAvatar={model.authorAvatar}
+              featured={model.featured}
+              trending={model.trending}
+              verified={model.verified}
+              tags={model.tags}
+              downloads={model.downloads}
+              likes={model.likes}
+              accuracy={model.accuracy}
+              framework={model.framework}
+              delay={index * 0.05}
+            />
           ))}
-        </div>
+        </motion.div>
 
-        {/* Empty State */}
-        {filteredModels.length === 0 && (
-          <div className="text-center py-12">
-            <Cpu className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-            <h3 className="text-lg font-medium text-foreground mb-2">No models found</h3>
-            <p className="text-muted-foreground mb-4">
-              Try adjusting your search criteria or browse all models
-            </p>
-            <Button variant="outline" onClick={() => {
-              setSearchQuery('');
-              setSelectedCategory('All');
-              setSelectedDomain('All');
-              setSelectedFramework('All');
-              setViewMode('all');
-            }}>
-              Clear Filters
-            </Button>
-          </div>
-        )}
+        {/* Enhanced Empty State */}
+        <AnimatePresence>
+          {filteredModels.length === 0 && (
+            <motion.div 
+              className="text-center py-16"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              transition={{ duration: 0.4, ease: "easeOut" }}
+            >
+              <motion.div
+                initial={{ scale: 0.8, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                transition={{ duration: 0.5, delay: 0.1 }}
+                className="mb-6"
+              >
+                <div className="relative mx-auto w-16 h-16 mb-4">
+                  <Brain className="w-16 h-16 text-muted-foreground/60 mx-auto" />
+                  <motion.div
+                    className="absolute -top-1 -right-1 w-4 h-4 bg-accent/20 rounded-full"
+                    animate={{ scale: [1, 1.2, 1], opacity: [0.5, 0.8, 0.5] }}
+                    transition={{ duration: 2, repeat: Infinity }}
+                  />
+                </div>
+              </motion.div>
+              
+              <motion.h3 
+                className="text-xl font-semibold text-foreground mb-2"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.5, delay: 0.2 }}
+              >
+                No models found
+              </motion.h3>
+              
+              <motion.p 
+                className="text-muted-foreground mb-6 max-w-md mx-auto"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.5, delay: 0.3 }}
+              >
+                Try adjusting your search criteria or browse all available models to discover cutting-edge AI research.
+              </motion.p>
+              
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.4 }}
+              >
+                <Button 
+                  variant="outline" 
+                  onClick={() => {
+                    setSearchQuery('');
+                    setSelectedCategory('All');
+                    setSelectedDomain('All');
+                    setSelectedFramework('All');
+                    setViewMode('all');
+                  }}
+                  className="bg-background hover:bg-muted/50 border-border/50"
+                >
+                  <Search className="h-4 w-4 mr-2" />
+                  Clear All Filters
+                </Button>
+              </motion.div>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
     </motion.div>
   );

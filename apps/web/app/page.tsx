@@ -317,7 +317,7 @@ export default function LandingPage() {
                 {/* Verification badge */}
                 {repo.verified && (
                   <div className="absolute right-4 top-4 z-10">
-                    <div className="bg-accent-100 rounded-full p-1.5 border-2 border-background shadow-md">
+                    <div className="bg-accent-100 rounded-xl p-1.5 border border-black/5">
                       <CheckCircle2 className="h-4 w-4 text-accent-500" strokeWidth={2.5} />
                     </div>
                   </div>
@@ -334,11 +334,13 @@ export default function LandingPage() {
                         })}
                       </div>
                     </div>
-                    {repo.isPrivate ? (
-                      <Lock className="h-4 w-4 text-muted-foreground" strokeWidth={1.5} />
-                    ) : (
-                      <Globe className="h-4 w-4 text-muted-foreground" strokeWidth={1.5} />
-                    )}
+                    <div className="bg-muted/50 rounded-lg p-1">
+                      {repo.isPrivate ? (
+                        <Lock className="h-3 w-3 text-muted-foreground" strokeWidth={2} />
+                      ) : (
+                        <Globe className="h-3 w-3 text-muted-foreground" strokeWidth={2} />
+                      )}
+                    </div>
                   </div>
                   
                   <Link

@@ -126,16 +126,16 @@ const getPriorityIndicator = (priority: string, read: boolean) => {
   switch (priority) {
     case 'critical':
       return (
-        <div className="w-3 h-3 rounded-full bg-destructive flex items-center justify-center">
-          <div className="w-1.5 h-1.5 rounded-full bg-white" />
+        <div className="w-3 h-3 rounded-md bg-destructive flex items-center justify-center">
+          <div className="w-1.5 h-1.5 rounded-sm bg-white" />
         </div>
       )
     case 'high':
-      return <div className="w-2.5 h-2.5 rounded-full bg-amber-500" />
+      return <div className="w-2.5 h-2.5 rounded-md bg-amber-500" />
     case 'medium':
-      return <div className="w-2 h-2 rounded-full bg-primary" />
+      return <div className="w-2 h-2 rounded-sm bg-primary" />
     default:
-      return <div className="w-1.5 h-1.5 rounded-full bg-muted-foreground/60" />
+      return <div className="w-1.5 h-1.5 rounded-sm bg-muted-foreground/60" />
   }
 }
 
@@ -233,7 +233,7 @@ export function NotificationCenter() {
       <Button
         variant="ghost"
         size="icon"
-        className="relative h-9 w-9 rounded-md"
+        className="relative h-9 w-9 rounded-xl"
       >
         {/* Simple bell icon */}
         {unreadCount > 0 ? (
@@ -246,7 +246,7 @@ export function NotificationCenter() {
         {unreadCount > 0 && (
           <Badge 
             className={cn(
-              "absolute -top-2 -right-2 h-5 w-5 rounded-full p-0 text-xs",
+              "absolute -top-2 -right-2 h-5 w-5 rounded-xl p-0 text-xs",
               "flex items-center justify-center",
               criticalCount > 0 ? "bg-destructive" : "bg-primary"
             )}
@@ -260,20 +260,20 @@ export function NotificationCenter() {
 
       <DropdownMenuContent 
         align="end" 
-        className="w-[420px] max-h-[650px] overflow-hidden bg-white border border-gray-200 shadow-lg rounded-lg"
+        className="w-[420px] max-h-[650px] overflow-hidden bg-background/95 backdrop-blur-sm border border-border shadow-elevation-4 rounded-2xl"
         sideOffset={12}
       >
         {/* Header with Filters */}
-        <div className="border-b border-gray-200 bg-white">
+        <div className="border-b border-border bg-background">
           <div className="flex items-center justify-between p-4">
             <div className="flex items-center space-x-3">
-              <DropdownMenuLabel className="text-lg font-semibold text-gray-900 p-0">
+              <DropdownMenuLabel className="text-lg font-semibold text-foreground p-0">
                 Notifications
               </DropdownMenuLabel>
               {unreadCount > 0 && (
                 <div className="flex items-center space-x-1">
-                  <div className="w-2 h-2 rounded-full bg-primary" />
-                  <span className="text-xs text-gray-600">
+                  <div className="w-2 h-2 rounded-sm bg-primary" />
+                  <span className="text-xs text-muted-foreground">
                     {unreadCount} unread
                   </span>
                 </div>
@@ -295,7 +295,7 @@ export function NotificationCenter() {
           
           {/* Smart Filter Tabs */}
           <div className="flex items-center justify-between px-4 pb-3">
-            <div className="flex items-center space-x-1 bg-muted/50 rounded-full p-1">
+            <div className="flex items-center space-x-1 bg-muted rounded-2xl p-1">
               {(['all', 'unread', 'critical'] as const).map((filterType) => (
                 <Button
                   key={filterType}
@@ -303,7 +303,7 @@ export function NotificationCenter() {
                   size="sm"
                   onClick={() => setFilter(filterType)}
                   className={cn(
-                    "h-6 px-3 text-xs font-medium transition-all duration-200 rounded-full",
+                    "h-6 px-3 text-xs font-medium transition-all duration-200 rounded-xl",
                     filter === filterType && "shadow-sm bg-background text-foreground"
                   )}
                 >
@@ -362,7 +362,7 @@ export function NotificationCenter() {
                     transition={{ duration: 0.3 }}
                   >
                     {/* Group Header */}
-                    <div className="sticky top-0 z-10 bg-background/80 backdrop-blur-sm border-b border-border/30 px-4 py-2">
+                    <div className="sticky top-0 z-10 bg-background border-b border-border px-4 py-2">
                       <h3 className="text-xs font-mono font-medium text-muted-foreground uppercase tracking-wider">
                         {groupLabels[groupKey as keyof typeof groupLabels]}
                         <span className="ml-2 text-2xs">({groupNotifications.length})</span>
@@ -391,7 +391,7 @@ export function NotificationCenter() {
                                     {formatRelativeTime(notification.timestamp)}
                                   </span>
                                   {!notification.read && (
-                                    <div className="w-1.5 h-1.5 rounded-full bg-accent" />
+                                    <div className="w-1.5 h-1.5 rounded-sm bg-accent" />
                                   )}
                                 </div>
                               </div>
@@ -501,15 +501,7 @@ export function NotificationCenter() {
             </div>
           </div>
           
-          {/* Status Indicator */}
-          <div className="flex items-center justify-center mt-2 space-x-2">
-            <div className="flex items-center space-x-1">
-              <div className="w-1 h-1 rounded-full bg-accent" />
-              <span className="text-2xs font-mono text-muted-foreground">
-                Live updates enabled
-              </span>
-            </div>
-          </div>
+
     </div>
       </DropdownMenuContent>
     </DropdownMenu>
@@ -551,7 +543,7 @@ export function NotificationToast({ notification, onDismiss }: {
       )}
     >
       {/* Progress Bar */}
-      <div className="h-1 bg-muted/30">
+      <div className="h-1 bg-muted">
         <motion.div
           className={cn(
             "h-full transition-all duration-100",

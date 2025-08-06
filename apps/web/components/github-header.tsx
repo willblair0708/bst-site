@@ -163,7 +163,7 @@ export function GitHubHeader() {
               whileTap={{ scale: 0.95 }}
               className="hidden md:block"
             >
-              <Button variant="outline" size="sm" className="font-medium">
+              <Button variant="outline" size="sm" className="font-medium h-9">
                 <GitFork className="w-4 h-4 mr-2" />
                 Fork
               </Button>
@@ -229,7 +229,7 @@ export function GitHubHeader() {
             </div>
 
             {/* User Actions */}
-            <div className="flex items-center space-x-3">
+            <div className="flex items-center space-x-1">
               {/* Theme toggle */}
               <ThemeToggle />
 
@@ -238,7 +238,7 @@ export function GitHubHeader() {
 
               {/* User avatar */}
               <motion.div 
-                className="w-8 h-8 bg-foreground rounded-full flex items-center justify-center text-background text-xs font-mono transition-medium hover:bg-accent"
+                className="w-8 h-8 bg-foreground rounded-full flex items-center justify-center text-background text-xs font-mono transition-medium hover:bg-accent ml-2"
                 whileHover={{ 
                   scale: 1.1,
                   boxShadow: "0 0 16px rgba(147, 51, 234, 0.4)",

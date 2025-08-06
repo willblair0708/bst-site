@@ -27,9 +27,9 @@ export function ThemeToggle() {
   return (
     <Button
       variant="ghost"
-      size="sm"
+      size="icon"
       onClick={toggleTheme}
-      className="w-9 h-9 p-0 transition-medium hover:bg-muted"
+      className="h-9 w-9 rounded-md"
       title={`Switch to ${theme === 'light' ? 'dark' : 'light'} theme`}
     >
       {theme === 'light' ? (

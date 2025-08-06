@@ -1,7 +1,7 @@
 "use client"
 
 import { usePathname } from 'next/navigation'
-import { GitHubHeader } from "@/components/github-header"
+import { GitHubHeader } from "@/components/header"
 
 const platformRoutes = ['/trials', '/organizations', '/profile', '/dashboard', '/new', '/settings']
 

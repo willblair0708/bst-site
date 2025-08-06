@@ -1,5 +1,5 @@
 {
-  "name": "web",
+  "name": "@bastion/web",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -7,6 +7,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
+    "type-check": "tsc --noEmit",
+    "clean": "rm -rf .next dist",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build"
   },

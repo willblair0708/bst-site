@@ -4,15 +4,13 @@
   "description": "GitHub for Clinical Trials - ProofOS Bastion Platform",
   "main": "index.js",
   "scripts": {
-    "dev": "concurrently \"npm run dev:api\" \"npm run dev:web\"",
-    "dev:api": "cd services/api && npm run dev",
-    "dev:web": "cd web && npm run dev",
-    "build": "npm run build:api && npm run build:web",
-    "build:api": "cd services/api && npm run build",
-    "build:web": "cd web && npm run build",
-    "test": "npm run test:api && npm run test:web",
-    "test:api": "cd services/api && npm test",
-    "test:web": "cd web && npm test",
+    "build": "turbo build",
+    "dev": "turbo dev",
+    "lint": "turbo lint",
+    "test": "turbo test",
+    "type-check": "turbo type-check",
+    "clean": "turbo clean",
+    "format": "prettier --write \"**/*.{ts,tsx,md}\"",
     "docker:build": "docker-compose build",
     "docker:up": "docker-compose up -d",
     "docker:down": "docker-compose down",
@@ -31,17 +29,22 @@
   ],
   "author": "ProofOS Team",
   "license": "MIT",
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=8.0.0"
+  },
+  "packageManager": "npm@10.0.0",
   "devDependencies": {
-    "concurrently": "^8.2.2",
-    "eslint": "^8.55.0",
+    "turbo": "^2.0.0",
     "prettier": "^3.1.0",
-    "tailwindcss-themer": "^4.1.1",
-    "typescript": "^5.3.3"
+    "eslint": "^8.55.0",
+    "typescript": "^5.3.3",
+    "tailwindcss-themer": "^4.1.1"
   },
   "workspaces": [
+    "apps/*",
     "services/*",
-    "packages/*",
-    "web"
+    "packages/*"
   ],
   "dependencies": {
     "@radix-ui/react-avatar": "^1.1.10",

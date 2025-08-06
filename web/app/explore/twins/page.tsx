@@ -157,7 +157,7 @@ const DigitalTwinExplorerPage = () => {
             <CardTitle className="text-md">BMI Outliers</CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-sm">3 outliers detected in the real-world cohort with BMI > 35.</p>
+            <p className="text-sm">3 outliers detected in the real-world cohort with BMI &gt; 35.</p>
           </CardContent>
         </Card>
       </div>

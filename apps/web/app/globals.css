@@ -97,17 +97,43 @@
     letter-spacing: 0.01em;
   }
   
-  /* Force design.mdc colors to show up */
+  /* Test: Apply design.mdc colors directly */
   .text-primary-500 {
-    color: #0436FF !important;
+    color: hsl(228 100% 51%) !important; /* #0436FF */
   }
   
   .text-accent-500 {
-    color: #18E0C8 !important;
+    color: hsl(173 75% 51%) !important; /* #18E0C8 */
   }
   
   .text-viz-purple-500 {
-    color: #A855F7 !important;
+    color: hsl(258 77% 68%) !important; /* #A855F7 */
+  }
+  
+  /* Background colors with opacity */
+  .bg-primary-500\/5 {
+    background-color: hsl(228 100% 51% / 0.05) !important;
+  }
+  
+  .bg-accent-500\/10 {
+    background-color: hsl(173 75% 51% / 0.1) !important;
+  }
+  
+  .bg-viz-purple-500\/15 {
+    background-color: hsl(258 77% 68% / 0.15) !important;
+  }
+  
+  /* Border colors with opacity */
+  .border-primary-500\/30 {
+    border-color: hsl(228 100% 51% / 0.3) !important;
+  }
+  
+  .border-accent-500\/30 {
+    border-color: hsl(173 75% 51% / 0.3) !important;
+  }
+  
+  .border-viz-purple-500\/30 {
+    border-color: hsl(258 77% 68% / 0.3) !important;
   }
 
   /* Global Motion & Transition */

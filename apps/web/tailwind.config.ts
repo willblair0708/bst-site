@@ -148,15 +148,14 @@ const config = {
           'runix': 'cubic-bezier(.22,.61,.36,1)',
       },
       boxShadow: {
-        // Transparent Bento Design System
-        'elevation-1': '0 1px 4px rgba(0,0,0,0.03)',
-        'elevation-4': '0 12px 32px rgba(0,0,0,0.12)',
-        'soft': 'var(--soft-inner), var(--soft-outer)',
+        // Astra-Lite: Soft-UI / Pastel-Bento shadows
+        soft: "var(--soft-inner), var(--soft-outer)",
+        elevation: {
+          1: "0 1px 4px rgba(0,0,0,0.03)",
+          2: "0 4px 8px rgba(0,0,0,0.06)",
+          4: "0 12px 32px rgba(0,0,0,0.12)",
+        },
       },
-      backdropBlur: {
-        // Story Layer - Static blur only
-        'story': 'var(--story-blur-radius)',
-      }
     },
   },
   plugins: [require("tailwindcss-animate")],

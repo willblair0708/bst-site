@@ -1,12 +1,8 @@
 "use client"
 
 import React from 'react'
-import { motion, useMotionValue, useTransform, Variants } from 'framer-motion'
-import { Hash } from 'lucide-react'
-import { FlaskConical } from 'lucide-react'
-import { Sparkles } from 'lucide-react'
-import { ArrowRight } from 'lucide-react'
-import { Zap } from 'lucide-react'
+import { motion, Variants } from 'framer-motion'
+import { Hash, FlaskConical, Users, ArrowRight, Zap, Sparkles } from 'lucide-react'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { AnimatedCounter } from '@/components/ui/animated-counter'
@@ -24,87 +20,121 @@ const containerVariants: Variants = {
 }
 
 const itemVariants: Variants = {
-  hidden: { opacity: 0, y: 30 },
+  hidden: { opacity: 0, y: 20 },
   visible: { 
     opacity: 1, 
-    y: 0
+    y: 0,
+    transition: {
+      duration: 0.5,
+      ease: "easeOut"
+    }
   }
 }
 
-const PaperStack = () => {
-  const mouseX = useMotionValue(0)
-  const mouseY = useMotionValue(0)
-  
-  const rotateX = useTransform(mouseY, [-100, 100], [2, -2])
-  const rotateY = useTransform(mouseX, [-100, 100], [-2, 2])
+const pillars = [
+  {
+    name: 'Versioned',
+    icon: Hash,
+    color: 'text-primary-500',
+    bg: 'bg-primary-100/50',
+    border: 'border-primary-500/20',
+    shadow: 'shadow-primary-500/10',
+    emoji: '🗂️',
+    rotation: -6,
+    x: -110,
+    y: 10,
+  },
+  {
+    name: 'Composable',
+    icon: FlaskConical,
+    color: 'text-accent-500',
+    bg: 'bg-accent-100/50',
+    border: 'border-accent-500/20',
+    shadow: 'shadow-accent-500/10',
+    emoji: '🛠️',
+    rotation: 0,
+    x: 0,
+    y: 0,
+  },
+  {
+    name: 'Collaborative',
+    icon: Users,
+    color: 'text-viz-purple-500',
+    bg: 'bg-collaboration-100/50',
+    border: 'border-purple-500/20',
+    shadow: 'shadow-purple-500/10',
+    emoji: '🤝',
+    rotation: 6,
+    x: 110,
+    y: 10,
+  },
+];
 
-  const handleMouseMove = (e: React.MouseEvent) => {
-    const rect = e.currentTarget.getBoundingClientRect()
-    const x = e.clientX - rect.left - rect.width / 2
-    const y = e.clientY - rect.top - rect.height / 2
-    mouseX.set(x)
-    mouseY.set(y)
-  }
+const staggerContainer = {
+  initial: {},
+  animate: {
+    transition: {
+      staggerChildren: 0.1,
+    },
+  },
+};
 
+const HeroViz = () => {
   return (
-    <motion.div 
-      className="relative w-32 h-32"
-      onMouseMove={handleMouseMove}
-      onMouseLeave={() => {
-        mouseX.set(0)
-        mouseY.set(0)
-      }}
-      style={{
-        rotateX,
-        rotateY,
-        transformStyle: 'preserve-3d'
-      }}
-    >
-      {/* Paper layers */}
-      {[0, 1, 2].map((i) => (
-        <motion.div
-          key={i}
-          className="absolute inset-0 bg-card border border-border rounded-lg shadow-elevation-1"
-          style={{
-            transform: `translateZ(${i * 15}px) translateY(${i * -5}px)`,
-            opacity: 1 - i * 0.2
-          }}
-          initial={{ scale: 0 }}
-          animate={{ scale: 1 }}
-          transition={{ 
-            delay: 0.5 + i * 0.1,
-            duration: 0.3,
-            ease: "easeOut"
-          }}
+    <div className="relative flex items-center justify-center w-full h-64 lg:h-80">
+      {/* Grid background */}
+      <div className="absolute inset-0 z-0">
+        <div 
+            className="w-full h-full"
+            style={{
+                backgroundImage: 'radial-gradient(circle, hsl(var(--border)) 1px, transparent 1px)',
+                backgroundSize: '20px 20px',
+            }}
         />
-      ))}
-      
-      {/* Light beam effect */}
-      <motion.div
-        className="absolute inset-0 rounded-lg overflow-hidden"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 1, duration: 0.8 }}
+        <div className="absolute inset-0 z-1 bg-gradient-to-t from-background via-background to-transparent" />
+      </div>
+
+      {/* Pillar Cards */}
+      <motion.div 
+        className="relative z-10 flex items-center justify-center"
+        variants={containerVariants}
+        initial="hidden"
+        animate="visible"
       >
-        <div className="absolute inset-0 bg-gradient-to-t from-transparent via-primary/10 to-accent/20 blur-xl" />
+        {pillars.map((pillar, i) => {
+            const Icon = pillar.icon;
+            return(
+                <motion.div
+                    key={pillar.name}
+                    className={`absolute w-36 h-44 rounded-2xl border ${pillar.border} ${pillar.bg} shadow-lg ${pillar.shadow}`}
+                    variants={itemVariants}
+                    transition={{duration: 0.5, delay: 0.3 + i * 0.15}}
+                    style={{
+                        rotate: pillar.rotation,
+                        x: pillar.x,
+                        y: pillar.y,
+                        transformOrigin: 'bottom center',
+                    }}
+                    whileHover={{
+                        scale: 1.05,
+                        rotate: pillar.rotation + (pillar.rotation > 0 ? 2 : -2),
+                        y: pillar.y - 10,
+                        zIndex: 20,
+                        transition: { type: 'spring', stiffness: 300 }
+                    }}
+                >
+                    <div className="flex flex-col items-center justify-center h-full p-4 text-center">
+                        <div className={`p-3 mb-3 rounded-full ${pillar.bg} border ${pillar.border}`}>
+                            <Icon className={`w-7 h-7 ${pillar.color}`} strokeWidth={2}/>
+                        </div>
+                        <p className="font-semibold text-base">{pillar.name}</p>
+                        <p className="text-2xl mt-1">{pillar.emoji}</p>
+                    </div>
+                </motion.div>
+            )
+        })}
       </motion.div>
-      
-      {/* Hash icon */}
-      <motion.div
-        className="absolute inset-0 flex items-center justify-center"
-        initial={{ scale: 0, rotate: -180 }}
-        animate={{ scale: 1, rotate: 0 }}
-        transition={{ 
-          delay: 1.2,
-          duration: 0.7,
-          type: "spring",
-          stiffness: 150,
-          damping: 12
-        }}
-      >
-                  <Hash className="w-12 h-12 text-primary-500" strokeWidth={1.5} aria-hidden="true" />
-      </motion.div>
-    </motion.div>
+    </div>
   )
 }
 
@@ -112,160 +142,105 @@ export function AnimatedHero() {
   const prefersReducedMotion = typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches
 
   return (
-    <div className="relative overflow-hidden py-20 sm:py-28">
+    <div className="relative overflow-hidden py-20 sm:py-24">
       <div className="max-w-7xl mx-auto px-6 lg:px-8">
         <motion.div 
-          className="grid lg:grid-cols-12 gap-12 items-center"
+          className="grid lg:grid-cols-2 gap-x-12 gap-y-20 items-center"
           variants={containerVariants}
           initial="hidden"
           animate="visible"
         >
           {/* Left content */}
-          <div className="lg:col-span-7">
+          <div className="z-10">
             <motion.div 
               variants={itemVariants}
-              transition={{ duration: 0.6 }}
             >
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-accent-500/20 bg-accent-500/5 backdrop-blur-sm mb-6">
-                <Sparkles className="w-4 h-4 text-accent-500 animate-pulse" />
-                <span className="text-sm font-medium">Scientific-punk optimism</span>
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-accent-500/20 bg-accent-100 mb-6">
+                <Sparkles className="w-4 h-4 text-accent-500" />
+                <span className="text-sm font-semibold text-accent-500">Astra-Lite UI</span>
               </div>
             </motion.div>
             
             <motion.h1 
-              variants={prefersReducedMotion ? { initial: { opacity: 1 }, animate: { opacity: 1 } } : itemVariants}
-              transition={{ duration: prefersReducedMotion ? 0 : 0.7 }}
+              variants={itemVariants}
               className="text-display font-display tracking-tight text-foreground"
             >
-              Every scientific claim
+              Every claim,
               <br />
-              <span className="text-primary-500">becomes runnable</span>
+              <span className="text-primary-500">verifiable & runnable.</span>
             </motion.h1>
             
             <motion.p 
               variants={itemVariants}
-              transition={{ duration: 0.8 }}
-              className="mt-6 text-lg leading-8 text-muted-foreground max-w-2xl"
+              className="mt-6 text-lg leading-8 text-muted-foreground max-w-xl"
             >
-              Turn static papers into <span className="font-semibold text-foreground">versioned, forkable, verifiable</span> artefacts. 
-              Git-grade provenance meets AI-accelerated discovery.
+              The platform for modern science. We turn static papers into <span className="font-semibold text-foreground">versioned, forkable, verifiable</span> artefacts with git-grade provenance.
             </motion.p>
             
             <motion.div 
               variants={itemVariants}
-              transition={{ duration: 0.9 }}
               className="mt-10 flex flex-wrap items-center gap-4"
             >
-              <Link href="/explore">
+              <Link href="/explore" passHref>
                 <Button 
                   size="lg" 
-                  className="group bg-primary-500 hover:bg-primary-600 text-primary-foreground transition-all duration-200"
-                  onClick={() => trackEvent('cta_run_verify_clicked')}
+                  className="group soft-ui bg-primary-500 hover:bg-primary-500/90 text-primary-foreground active:translate-y-px"
+                  onClick={() => trackEvent('cta_start_building_clicked')}
                 >
-                  <FlaskConical className={`w-4 h-4 mr-2 ${!prefersReducedMotion && 'group-hover:animate-snap'}`} strokeWidth={1.5} aria-hidden="true" />
-                  Run & Verify
-                  <ArrowRight className={`w-4 h-4 ml-2 ${!prefersReducedMotion && 'group-hover:translate-x-1'} transition-transform`} strokeWidth={1.5} aria-hidden="true" />
+                  <FlaskConical className={`w-4 h-4 mr-2 ${!prefersReducedMotion && 'group-hover:animate-snap'}`} strokeWidth={2} aria-hidden="true" />
+                  Start Building
+                  <ArrowRight className={`w-4 h-4 ml-2 ${!prefersReducedMotion && 'group-hover:translate-x-1'} transition-transform`} strokeWidth={2} aria-hidden="true" />
                 </Button>
               </Link>
               
-              <Link href="/docs">
+              <Link href="/docs" passHref>
                 <Button 
                   variant="outline" 
                   size="lg"
-                  className="group hover:shadow-elevation-2 transition-all duration-200"
+                  className="group soft-ui bg-background/50 hover:bg-muted"
                 >
-                  View Documentation
+                  Read Docs
                 </Button>
               </Link>
-            </motion.div>
-            
-            {/* Stats */}
-            <motion.div 
-              variants={itemVariants}
-              transition={{ duration: 1 }}
-              className="mt-12 grid grid-cols-3 gap-6 max-w-md"
-            >
-              <div>
-                <div className="text-2xl font-mono font-bold text-foreground">
-                  <AnimatedCounter from={0} to={1200} suffix="+" className="text-2xl font-mono font-bold text-foreground" />
-                </div>
-                <div className="text-sm text-muted-foreground">Pipelines</div>
-              </div>
-              <div>
-                <div className="text-2xl font-mono font-bold text-foreground">
-                  <AnimatedCounter from={0} to={98.2} decimals={1} suffix="%" className="text-2xl font-mono font-bold text-foreground" />
-                </div>
-                <div className="text-sm text-muted-foreground">Reproducible</div>
-              </div>
-              <div>
-                <div className="text-2xl font-mono font-bold text-foreground">
-                  <span className="inline-flex items-center gap-1">
-                    <AnimatedCounter from={0} to={3421} className="text-2xl font-mono font-bold text-foreground" />
-                    <Zap className={`w-4 h-4 text-accent-500 ${!prefersReducedMotion && 'animate-pulse'}`} aria-hidden="true" />
-                  </span>
-                </div>
-                <div className="text-sm text-muted-foreground">Running now</div>
-              </div>
             </motion.div>
           </div>
           
           {/* Right visual */}
           <motion.div 
-            className="lg:col-span-5 flex justify-center lg:justify-end"
+            className="lg:row-start-1 lg:col-start-2"
             variants={itemVariants}
-            transition={{ duration: 0.8, delay: 0.2 }}
           >
-            <PaperStack />
+            <HeroViz />
           </motion.div>
         </motion.div>
-      </div>
-      
-      {/* Background effects */}
-      <div className="absolute inset-0 -z-10 overflow-hidden" aria-hidden="true">
+        
+        {/* Stats */}
         <motion.div 
-          className="absolute -top-40 -right-40 w-[500px] h-[500px] rounded-full bg-gradient-to-tr from-primary/10 to-accent/10 blur-3xl backdrop-blur-sm"
-          animate={prefersReducedMotion ? {} : {
-            opacity: [0.5, 0.3, 0.5],
-            scale: [1, 1.1, 1],
-          }}
-          transition={prefersReducedMotion ? {} : {
-            duration: 8,
-            repeat: Infinity,
-            ease: "easeInOut"
-          }}
-        />
-        <motion.div 
-          className="absolute -bottom-40 -left-40 w-[500px] h-[500px] rounded-full bg-gradient-to-bl from-accent/10 to-primary/10 blur-3xl backdrop-blur-sm"
-          animate={prefersReducedMotion ? {} : {
-            opacity: [0.3, 0.5, 0.3],
-            scale: [1, 1.2, 1],
-          }}
-          transition={prefersReducedMotion ? {} : {
-            duration: 10,
-            repeat: Infinity,
-            ease: "easeInOut"
-          }}
-        />
-      </div>
-      
-      {/* Scroll indicator */}
-      <motion.div 
-        className="absolute bottom-8 left-1/2 -translate-x-1/2"
-        initial={{ opacity: 0, y: -10 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 2, duration: 0.8 }}
-      >
-        <motion.div
-          animate={prefersReducedMotion ? {} : { y: [0, 8, 0] }}
-          transition={prefersReducedMotion ? {} : { duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
-          className="flex flex-col items-center gap-2 text-muted-foreground"
+          className="mt-20 grid grid-cols-2 sm:grid-cols-4 gap-8 text-center"
+          variants={staggerContainer}
+          initial="initial"
+          whileInView="animate"
+          viewport={{once: true}}
         >
-          <span className="text-xs font-medium">Scroll to explore</span>
-          <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
-          </svg>
+          {[
+            {label: "Pipelines", value: 1200, suffix: "+"},
+            {label: "Reproducibility", value: 98.2, decimals: 1, suffix: "%"},
+            {label: "Models", value: 430, suffix: "+"},
+            {label: "Active Runs", value: 3421, icon: Zap},
+          ].map(stat => (
+              <motion.div key={stat.label} variants={itemVariants}>
+                <div className="text-3xl font-bold font-mono text-foreground tracking-tight">
+                  <span className="inline-flex items-center gap-1">
+                    <AnimatedCounter from={0} to={stat.value} decimals={stat.decimals || 0} className="text-3xl font-mono font-bold text-foreground" />
+                    {stat.suffix}
+                    {stat.icon && <stat.icon className={`w-5 h-5 ml-1 ${stat.label === 'Active Runs' ? 'text-accent-500 animate-pulse' : 'text-muted-foreground'}`} aria-hidden="true" />}
+                  </span>
+                </div>
+                <div className="text-sm text-muted-foreground mt-1">{stat.label}</div>
+              </motion.div>
+          ))}
         </motion.div>
-      </motion.div>
+      </div>
     </div>
   )
 }

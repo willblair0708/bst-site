@@ -190,9 +190,9 @@ export default function LandingPage() {
 
   return (
     <div className="bg-background text-foreground antialiased">
-      {/* Hero Section - Story Layer (Transparent Bento) */}
+      {/* Hero Section - Astra-Lite Story Layer */}
       <header className="relative">
-        <div className="story-glass shadow-elevation-4 rounded-2xl mx-6 lg:mx-8 mt-6">
+        <div className="bg-primary-100/50 shadow-elevation-2 rounded-2xl mx-4 lg:mx-8 mt-4 border border-black/5">
           <AnimatedHero />
         </div>
       </header>
@@ -222,44 +222,27 @@ export default function LandingPage() {
                 Proof Runway
               </Badge>
             </motion.div>
-            <h2 id="proof-runway-heading" className="font-display text-3xl tracking-tight sm:text-4xl">
-              From hypothesis to verified result in 3 steps
+            <h2 id="proof-runway-heading" className="font-display text-3xl tracking-tight sm:text-4xl text-balance">
+              From hypothesis to verified result in 3 steps.
             </h2>
           </motion.div>
 
           <div className="mx-auto mt-16 max-w-5xl">
             <div className="grid grid-cols-1 gap-8 sm:grid-cols-3">
-              <div className="block sm:hidden overflow-x-auto">
-                <div className="flex gap-4 pb-4 min-w-max">
-                  {proofRunwaySteps.map((step, index) => (
-                    <div 
-                      key={step.title} 
-                      className="min-w-[280px]" 
-                      onMouseEnter={() => trackEvent('proof_runway_step_hovered', { step: step.title })}
-                    >
-                      <ProofRunwayCard
-                        step={step}
-                        index={index}
-                        totalSteps={proofRunwaySteps.length}
-                      />
-                    </div>
-                  ))}
-                </div>
-              </div>
-              <div className="hidden sm:contents">
                 {proofRunwaySteps.map((step, index) => (
-                  <div 
+                  <motion.div 
                     key={step.title}
                     onMouseEnter={() => trackEvent('proof_runway_step_hovered', { step: step.title })}
+                    variants={fadeInUp}
+                    custom={index}
                   >
                     <ProofRunwayCard
                       step={step}
                       index={index}
                       totalSteps={proofRunwaySteps.length}
                     />
-                  </div>
+                  </motion.div>
                 ))}
-              </div>
             </div>
           </div>
           
@@ -276,10 +259,10 @@ export default function LandingPage() {
                 addToast("Demo verification complete! ✓")
                 trackEvent('verify_button_demo', { section: 'proof_runway' })
               }}
-            />
-            <p className="mt-4 text-sm text-muted-foreground">
-              Experience the Soft-UI tactile feedback
-            </p>
+            >
+              <Sparkles className="w-4 h-4 mr-2" />
+              <span>Experience Soft-UI</span>
+            </VerifyButton>
           </motion.div>
         </div>
       </section>

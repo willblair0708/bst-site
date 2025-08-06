@@ -22,41 +22,31 @@
     --border: 220 20% 85%;
     --input: 220 20% 92%;
     --ring: 228 100% 51%;
-    --radius: 0.75rem; /* Larger, more modern radius */
-
+    --radius: 1rem; /* Increased for a softer, more modern look */
+  
     /* Semantic Additions from @design.mdc */
     --warn-bg: 45 100% 95%; /* Light warning #FFF7E6 */
     --info-bg: 210 100% 96%; /* Light info #E5F0FF */
     --viz-purple: 258 77% 68%; /* viz-purple-500 #A855F7 */
 
-    /* Transparent Bento Design Paradigm */
-    
-    /* Story Layer - Precision Glass (hero, zero-state, modals only) */
-    --story-glass-bg: rgba(244,244,242,0.10); /* 10% opacity pastel tint */
-    --story-glass-border: rgba(255,255,255,0.18);
-    --story-blur-radius: 12px;
-    
-    /* Action Layer - Soft-UI 2.0 (4px depth) */
+    /* Astra-Lite: Pastel-Bento × Soft-UI */
     --soft-inner: inset 2px 2px 4px rgba(0,0,0,0.04);
     --soft-outer: 0 2px 4px rgba(0,0,0,0.08);
 
-    /* Enhanced depth system */
+    /* Elevation from @design.mdc */
     --elevation-1: 0 1px 4px rgba(0,0,0,0.03);
+    --elevation-2: 0 4px 8px rgba(0,0,0,0.06);
     --elevation-4: 0 12px 32px rgba(0,0,0,0.12);
-
-    /* Color Tokens v3 - Core & Pastel Spread */
-    --primary-100: 228 235 255; /* #E4EBFF - Primary pastel */
-    --accent-100: 163 244 233; /* #A3F4E9 - Success/Accent pastel */
-    --collaboration-100: 235 212 255; /* #EBD4FF - Collaboration pastel */
-    --error-100: 255 213 221; /* #FFD5DD - Error pastel */
     
-    /* Design.mdc v3 Simplified - Pastel-Bento × Soft-UI 2.0 */
-    --soft-inner: inset 2px 2px 4px rgba(0,0,0,0.04);
-    --soft-outer: 0 2px 4px rgba(0,0,0,0.08);
+    /* Color Tokens v3 - Core & Pastel Spread */
+    --primary-100: 228 100% 95%; /* #E4EBFF */
+    --accent-100: 173 100% 93%; /* #A3F4E9 */
+    --collaboration-100: 275 100% 95%; /* #EBD4FF */
+    --error-100: 350 100% 96%; /* #FFD5DD */
   }
 
   .dark {
-    /* Runix Hub Dark Theme - Design Vision 0.2 */
+    /* Runix Hub Dark Theme - Design Vision 0.4 "Astra-Lite" */
     --background: 220 20% 8%; /* neutral-900 #0F1116 */
     --foreground: 60 2% 96%; /* neutral-100 #F4F4F2 */
     --card: 220 20% 10%; /* Slightly lighter than bg */
@@ -82,30 +72,18 @@
     --info-bg: 215 82% 16%; /* Dark info #08254A */
     --viz-purple: 258 77% 68%; /* viz-purple-500 #A855F7 */
 
-    /* Transparent Bento Design Paradigm - Dark Mode */
-    
-    /* Story Layer - Dark Mode */
-    --story-glass-bg: rgba(15,17,22,0.15); /* 15% opacity for better visibility */
-    --story-glass-border: rgba(255,255,255,0.08);
-    --story-blur-radius: 12px;
-    
-    /* Action Layer - Dark Mode */
+    /* Astra-Lite: Soft-UI / Pastel-Bento shadows - Dark Mode */
     --soft-inner: inset 2px 2px 4px rgba(0,0,0,0.12);
     --soft-outer: 0 2px 4px rgba(0,0,0,0.16);
-
-    /* Enhanced depth system - Dark Mode */
     --elevation-1: 0 1px 4px rgba(0,0,0,0.08);
+    --elevation-2: '0 4px 8px rgba(0,0,0,0.12)',
     --elevation-4: 0 12px 32px rgba(0,0,0,0.24);
 
     /* Color Tokens v3 - Dark Mode Pastels */
-    --primary-100: 20 22 28; /* Dark primary pastel */
-    --accent-100: 18 25 23; /* Dark accent pastel */
-    --collaboration-100: 25 20 28; /* Dark collaboration pastel */
-    --error-100: 28 20 22; /* Dark error pastel */
-    
-    /* Design.mdc v3 Simplified - Dark Mode */
-    --soft-inner: inset 2px 2px 4px rgba(0,0,0,0.12);
-    --soft-outer: 0 2px 4px rgba(0,0,0,0.16);
+    --primary-100: 228 30% 15%; /* #202228 */
+    --accent-100: 173 30% 15%; /* #121917 */
+    --collaboration-100: 275 30% 15%; /* #19141c */
+    --error-100: 350 30% 15%; /* #1c1416 */
   }
 
   * {
@@ -300,32 +278,19 @@
         text-wrap: balance;
     }
     
-    /* Story Layer - Precision Glass (hero, zero-state, modals only) */
-    .story-glass {
-        background: var(--story-glass-bg);
-        backdrop-filter: blur(var(--story-blur-radius));
-        border: 1px solid var(--story-glass-border);
-        /* WCAG 2.2 AA Fallback - solid bg when backdrop-filter unsupported */
-        @supports not (backdrop-filter: blur(4px)) {
-            background: rgba(244,244,242,0.95);
-        }
-    }
-    
-    .dark .story-glass {
-        @supports not (backdrop-filter: blur(4px)) {
-            background: rgba(15,17,22,0.95);
-        }
-    }
-    
     /* Action Layer - Soft-UI 2.0 */
     .soft-ui {
-        box-shadow: var(--soft-inner), var(--soft-outer);
-        border-radius: 0.75rem;
+        box-shadow: var(--soft-outer), var(--soft-inner);
         transition: all 150ms cubic-bezier(0.22, 0.61, 0.36, 1);
     }
     
     .soft-ui:hover {
         transform: translateY(-1px);
+    }
+    
+    .soft-ui:active {
+        transform: translateY(0px);
+        box-shadow: var(--soft-inner);
     }
     
     /* Pastel background utilities */
@@ -334,54 +299,18 @@
     }
     
     .bg-pastel-accent {
-        background-color: hsl(var(--accent-100) / 0.3);
+        background-color: hsl(var(--accent-100));
     }
     
-    .bg-pastel-secondary {
-        background-color: hsl(var(--secondary-bg));
+    .bg-pastel-collaboration {
+        background-color: hsl(var(--collaboration-100));
     }
 
-    /* Performance Tenets - LCP < 2s on 3G, glass blur never animates */
-    .story-glass {
-        /* Static blur only - never animate backdrop-filter for performance */
-        will-change: auto;
+    .bg-pastel-error {
+        background-color: hsl(var(--error-100));
     }
     
-    /* Respect prefers-reduced-motion for all story elements */
-    @media (prefers-reduced-motion: reduce) {
-        .story-glass {
-            backdrop-filter: none;
-            background: rgba(244,244,242,0.95);
-        }
-        
-        .dark .story-glass {
-            background: rgba(15,17,22,0.95);
-        }
-    }
-
-
-    /* Story Layer - Light Beam Effects */
-    .light-beam {
-        background: linear-gradient(180deg, hsl(var(--primary) / 0.1) 0%, transparent 100%);
-        animation: light-beam-pulse 3.2s ease-in-out infinite;
-    }
-    
-    .dark .light-beam {
-        background: linear-gradient(180deg, hsl(var(--primary) / 0.2) 0%, transparent 100%);
-    }
-    
-    /* Data-Reactive Beam - Optional enhancement */
-    .beam-reactive {
-        background: linear-gradient(180deg, 
-            hsl(var(--primary) / 0.1) 0%, 
-            hsl(var(--accent) / 0.05) 50%,
-            transparent 100%);
-    }
-    
-    @keyframes light-beam-pulse {
-        0%, 100% { opacity: 0.6; }
-        50% { opacity: 1; }
-    }
+    /* Performance Tenets - LCP < 2s on 3G */
     
     /* Enhanced Verification ring animation */
     .verify-ring {
@@ -399,30 +328,34 @@
         padding: 3px;
         background: conic-gradient(
             from 180deg at 50% 50%,
-            hsl(173 75% 51%) 0deg,
-            hsl(228 100% 51%) 120deg,
+            hsl(var(--accent)) 0deg,
+            hsl(var(--primary)) 120deg,
             transparent 240deg,
-            hsl(173 75% 51%) 360deg
+            hsl(var(--accent)) 360deg
         );
         -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-        -webkit-mask-composite: xor;
         mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+        -webkit-mask-composite: xor;
         mask-composite: exclude;
         animation: verify-ring-spin 1.6s linear infinite;
         filter: blur(0.5px);
     }
     
-    .verify-ring::after {
+    .verify-ring.is-verified::before {
+        animation: pulse-success 800ms ease-in-out;
+    }
+
+    .verify-ring.is-verified::after {
         content: '';
         position: absolute;
         inset: -8px;
         border-radius: 50%;
         background: radial-gradient(
             circle at center,
-            hsl(173 75% 51% / 0.15) 0%,
+            hsl(var(--accent) / 0.15) 0%,
             transparent 70%
         );
-        animation: pulse-success 2s ease-in-out infinite;
+        animation: pulse-success 1s ease-in-out;
     }
     
     /* Enhanced Spark glow effect */
@@ -431,139 +364,58 @@
         overflow: visible;
     }
     
-    .spark-glow::before {
+    .spark-glow:hover::before {
         content: '';
         position: absolute;
         inset: -12px;
         border-radius: inherit;
         background: radial-gradient(
             circle at center,
-            hsl(173 75% 51% / 0.08) 0%,
-            hsl(173 75% 51% / 0.04) 40%,
+            hsl(var(--accent) / 0.08) 0%,
+            hsl(var(--accent) / 0.04) 40%,
             transparent 70%
         );
-        opacity: 0;
-        transition: opacity 400ms ease;
-        z-index: -1;
-    }
-    
-    .spark-glow:hover::before {
         opacity: 1;
         animation: spark-glow 800ms ease-in-out;
-    }
-    
-    .spark-glow::after {
-        content: '';
-        position: absolute;
-        inset: -4px;
-        border-radius: inherit;
-        background: linear-gradient(
-            135deg,
-            hsl(173 75% 51% / 0.1) 0%,
-            transparent 50%,
-            hsl(228 100% 51% / 0.1) 100%
-        );
-        opacity: 0;
-        transition: opacity 300ms ease;
         z-index: -1;
     }
-    
-    .spark-glow:hover::after {
-        opacity: 1;
-    }
-    
+        
     /* Display font sizes using clamp */
     .text-display {
-        font-size: clamp(3.5rem, 5vw, 5.5rem);
-        line-height: 1;
-    }
-    
-    /* Enhanced paper layer effect */
-    .paper-stack {
-        position: relative;
-        transform-style: preserve-3d;
-    }
-    
-    .paper-layer {
-        position: absolute;
-        inset: 0;
-        background: linear-gradient(
-            135deg,
-            hsl(0 0% 100%) 0%,
-            hsl(0 0% 98%) 100%
-        );
-        border: 1px solid hsl(220 20% 90%);
-        border-radius: 12px;
-        box-shadow: 
-            0 1px 3px hsl(220 20% 20% / 0.05),
-            0 4px 12px hsl(220 20% 20% / 0.03);
-    }
-    
-    /* Light beam effects */
-    .light-beam-vertical {
-        background: linear-gradient(
-            180deg,
-            hsl(228 100% 51% / 0.12) 0%,
-            hsl(173 75% 51% / 0.08) 50%,
-            transparent 100%
-        );
-    }
-    
-    .light-beam-radial {
-        background: radial-gradient(
-            ellipse at center,
-            hsl(228 100% 51% / 0.1) 0%,
-            hsl(173 75% 51% / 0.05) 50%,
-            transparent 100%
-        );
-    }
-    
-
-    
-    /* Floating animation */
-    .float {
-        animation: float 6s ease-in-out infinite;
-    }
-    
-    @keyframes float {
-        0%, 100% { transform: translateY(0px); }
-        50% { transform: translateY(-10px); }
+        font-size: clamp(3rem, 5vw, 5rem);
+        line-height: 1.1;
     }
     
     /* Pillar-specific gradients */
     .gradient-versioned {
         background: linear-gradient(
             135deg,
-            hsl(228 100% 51% / 0.1) 0%,
-            hsl(228 100% 51% / 0.05) 100%
+            hsl(var(--primary) / 0.1) 0%,
+            hsl(var(--primary) / 0.05) 100%
         );
     }
     
     .gradient-composable {
         background: linear-gradient(
             135deg,
-            hsl(173 75% 51% / 0.1) 0%,
-            hsl(173 75% 51% / 0.05) 100%
+            hsl(var(--accent) / 0.1) 0%,
+            hsl(var(--accent) / 0.05) 100%
         );
     }
     
     .gradient-collaborative {
         background: linear-gradient(
             135deg,
-            hsl(258 77% 68% / 0.1) 0%,
-            hsl(258 77% 68% / 0.05) 100%
+            hsl(var(--viz-purple) / 0.1) 0%,
+            hsl(var(--viz-purple) / 0.05) 100%
         );
     }
     
     /* Enhanced focus states */
-    .focus-ring {
-        transition: all 200ms ease;
-    }
-    
     .focus-ring:focus-visible {
-        outline: 2px solid hsl(228 100% 51%);
+        outline: 2px solid hsl(var(--primary));
         outline-offset: 2px;
-        box-shadow: 0 0 0 4px hsl(228 100% 51% / 0.1);
+        box-shadow: 0 0 0 4px hsl(var(--primary) / 0.1);
         border-radius: 8px;
     }
 }

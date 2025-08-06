@@ -1275,7 +1275,7 @@ export default function ModelPage({ params }: ModelPageProps) {
 
   useEffect(() => {
     const resolveParams = async () => {
-      const resolvedParams = await params;
+  const resolvedParams = await params;
       setModelId(resolvedParams.id);
       const modelData = getModel(resolvedParams.id);
       setModel(modelData);
@@ -1314,153 +1314,205 @@ export default function ModelPage({ params }: ModelPageProps) {
       transition={{ duration: 0.6 }}
     >
       <div className="max-w-7xl mx-auto px-6 py-8">
-        {/* Hero Section */}
+                  {/* Hero Section - Enhanced Design */}
         <motion.div 
-          className="mb-12"
+          className="mb-16"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.1 }}
         >
-          <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-8 mb-8">
-            <div className="flex items-start gap-6">
-              <Avatar className="h-16 w-16 ring-4 ring-background shadow-lg">
-                <AvatarImage src={model.authorAvatar} alt={model.author} />
-                <AvatarFallback className="bg-primary/10 text-primary text-xl font-semibold">
-                  {model.author.split(' ').map((n: string) => n[0]).join('')}
-                </AvatarFallback>
-              </Avatar>
-              
-              <div className="flex-1">
-                <div className="flex items-center gap-3 mb-3">
-                  <h1 className="text-3xl lg:text-4xl font-light tracking-tight text-foreground">
-                    {model.name}
-                  </h1>
-                  <div className="flex gap-2">
-                    {model.featured && (
-                      <Badge variant="secondary" className="bg-primary/10 text-primary border-primary/20">
-                        <Trophy className="h-3 w-3 mr-1" />
-                        Featured
-                      </Badge>
-                    )}
-                    {model.trending && (
-                      <Badge variant="secondary" className="bg-accent/10 text-accent border-accent/20">
-                        <TrendingUp className="h-3 w-3 mr-1" />
-                        Trending
-                      </Badge>
-                    )}
-                    {model.verified && (
-                      <Badge variant="secondary" className="bg-green-500/10 text-green-700 border-green-500/20">
-                        <Verified className="h-3 w-3 mr-1" />
-                        Verified
-                      </Badge>
-                    )}
-                  </div>
+          {/* Header with improved spacing and layout */}
+          <div className="bg-gradient-to-br from-card/30 to-card/10 border border-border/50 rounded-2xl p-8 mb-8 backdrop-blur-sm">
+            <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-8">
+              <div className="flex items-start gap-6 flex-1">
+                <div className="relative">
+                  <Avatar className="h-20 w-20 ring-2 ring-border shadow-xl">
+                    <AvatarImage src={model.authorAvatar} alt={model.author} />
+                    <AvatarFallback className="bg-primary/10 text-primary text-2xl font-bold">
+                      {model.author.split(' ').map((n: string) => n[0]).join('')}
+                    </AvatarFallback>
+            </Avatar>
+                  {model.verified && (
+                    <div className="absolute -bottom-1 -right-1 w-6 h-6 bg-accent rounded-full flex items-center justify-center border-2 border-background">
+                      <Verified className="h-3 w-3 text-background" />
+                    </div>
+                  )}
                 </div>
                 
-                <div className="flex items-center gap-2 mb-4">
-                  <span className="text-muted-foreground">by</span>
-                  <span className="font-medium text-foreground">{model.author}</span>
-                  <span className="text-muted-foreground">•</span>
-                  <span className="text-muted-foreground">v{model.version}</span>
-                  <span className="text-muted-foreground">•</span>
-                  <span className="text-muted-foreground">Updated {new Date(model.lastModified).toLocaleDateString()}</span>
-                </div>
-                
-                <p className="text-lg text-muted-foreground leading-relaxed max-w-3xl">
-                  {model.description}
-                </p>
-              </div>
+                <div className="flex-1 min-w-0">
+                  <div className="flex flex-col gap-3 mb-4">
+                    <div className="flex items-center gap-3 flex-wrap">
+                      <h1 className="text-3xl lg:text-4xl font-light tracking-tight text-foreground">
+                        {model.name}
+                      </h1>
+                      <div className="flex gap-2">
+                {model.featured && (
+                          <Badge className="bg-gradient-to-r from-primary to-primary/80 text-primary-foreground border-0 shadow-sm">
+                            <Trophy className="h-3 w-3 mr-1" />
+                    Featured
+                  </Badge>
+                )}
+                        {model.trending && (
+                          <Badge className="bg-gradient-to-r from-accent to-accent/80 text-accent-foreground border-0 shadow-sm">
+                            <TrendingUp className="h-3 w-3 mr-1" />
+                            Trending
+                  </Badge>
+                )}
             </div>
-            
-            <ModelActions likes={model.likes} />
           </div>
+          
+                    <div className="flex items-center gap-2 text-sm">
+                      <span className="text-muted-foreground">by</span>
+                      <span className="font-semibold text-foreground">{model.author}</span>
+                      <span className="text-muted-foreground">•</span>
+                      <Badge variant="outline" className="text-xs px-2 py-0.5">
+                        v{model.version}
+                      </Badge>
+                      <span className="text-muted-foreground">•</span>
+                      <span className="text-muted-foreground">Updated {new Date(model.lastModified).toLocaleDateString()}</span>
+                    </div>
+        </div>
 
-          {/* Key Metrics Grid */}
+                  <p className="text-base lg:text-lg text-muted-foreground leading-relaxed">
+                    {model.description}
+                  </p>
+          </div>
+          </div>
+              
+              <div className="lg:ml-8">
+                                <ModelActions likes={model.likes} />
+          </div>
+          </div>
+        </div>
+
+          {/* Enhanced Metrics Grid */}
           <motion.div 
-            className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4 mb-8"
+            className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-8"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.3 }}
           >
-            <Card className="text-center bg-card/50 border-border/50">
-              <CardContent className="p-4">
-                <div className="text-2xl font-bold text-primary mb-1">{formatNumber(model.downloads)}</div>
-                <div className="text-xs text-muted-foreground">Downloads</div>
-              </CardContent>
-            </Card>
+            <motion.div
+              whileHover={{ y: -2 }}
+              transition={{ duration: 0.2 }}
+            >
+              <Card className="text-center bg-gradient-to-br from-primary/5 to-primary/10 border-primary/20 hover:border-primary/30 transition-colors">
+                <CardContent className="p-6">
+                  <Download className="h-5 w-5 text-primary mx-auto mb-2" />
+                  <div className="text-2xl font-bold text-primary mb-1">{formatNumber(model.downloads)}</div>
+                  <div className="text-xs text-muted-foreground font-medium">Downloads</div>
+                </CardContent>
+              </Card>
+            </motion.div>
             
-            <Card className="text-center bg-card/50 border-border/50">
-              <CardContent className="p-4">
-                <div className="text-2xl font-bold text-accent mb-1">{formatNumber(model.likes)}</div>
-                <div className="text-xs text-muted-foreground">Stars</div>
-              </CardContent>
-            </Card>
+            <motion.div
+              whileHover={{ y: -2 }}
+              transition={{ duration: 0.2 }}
+            >
+              <Card className="text-center bg-gradient-to-br from-accent/5 to-accent/10 border-accent/20 hover:border-accent/30 transition-colors">
+                <CardContent className="p-6">
+                  <Star className="h-5 w-5 text-accent mx-auto mb-2" />
+                  <div className="text-2xl font-bold text-accent mb-1">{formatNumber(model.likes)}</div>
+                  <div className="text-xs text-muted-foreground font-medium">Stars</div>
+                </CardContent>
+              </Card>
+            </motion.div>
             
-            <Card className="text-center bg-card/50 border-border/50">
-              <CardContent className="p-4">
-                <div className="text-2xl font-bold text-primary mb-1">{formatNumber(model.citations)}</div>
-                <div className="text-xs text-muted-foreground">Citations</div>
-              </CardContent>
-            </Card>
+            <motion.div
+              whileHover={{ y: -2 }}
+              transition={{ duration: 0.2 }}
+            >
+              <Card className="text-center bg-gradient-to-br from-primary/5 to-primary/10 border-primary/20 hover:border-primary/30 transition-colors">
+                <CardContent className="p-6">
+                  <Trophy className="h-5 w-5 text-primary mx-auto mb-2" />
+                  <div className="text-2xl font-bold text-primary mb-1">{formatNumber(model.citations)}</div>
+                  <div className="text-xs text-muted-foreground font-medium">Citations</div>
+                </CardContent>
+              </Card>
+            </motion.div>
             
-            <Card className="text-center bg-card/50 border-border/50">
-              <CardContent className="p-4">
-                <div className="text-2xl font-bold text-accent mb-1">{model.accuracy}%</div>
-                <div className="text-xs text-muted-foreground">Accuracy</div>
-              </CardContent>
-            </Card>
+            <motion.div
+              whileHover={{ y: -2 }}
+              transition={{ duration: 0.2 }}
+            >
+              <Card className="text-center bg-gradient-to-br from-accent/5 to-accent/10 border-accent/20 hover:border-accent/30 transition-colors">
+                <CardContent className="p-6">
+                  <BarChart3 className="h-5 w-5 text-accent mx-auto mb-2" />
+                  <div className="text-2xl font-bold text-accent mb-1">{model.accuracy}%</div>
+                  <div className="text-xs text-muted-foreground font-medium">Accuracy</div>
+                </CardContent>
+              </Card>
+            </motion.div>
             
-            <Card className="text-center bg-card/50 border-border/50">
-              <CardContent className="p-4">
-                <div className="text-2xl font-bold text-primary mb-1">{model.reproducibilityScore}%</div>
-                <div className="text-xs text-muted-foreground">Reproducible</div>
-              </CardContent>
-            </Card>
+            <motion.div
+              whileHover={{ y: -2 }}
+              transition={{ duration: 0.2 }}
+            >
+              <Card className="text-center bg-gradient-to-br from-green-500/5 to-green-500/10 border-green-500/20 hover:border-green-500/30 transition-colors">
+                <CardContent className="p-6">
+                  <Shield className="h-5 w-5 text-green-600 mx-auto mb-2" />
+                  <div className="text-2xl font-bold text-green-600 mb-1">{model.reproducibilityScore}%</div>
+                  <div className="text-xs text-muted-foreground font-medium">Reproducible</div>
+                </CardContent>
+              </Card>
+            </motion.div>
             
-            <Card className="text-center bg-card/50 border-border/50">
-              <CardContent className="p-4">
-                <div className="text-2xl font-bold text-accent mb-1">#{model.benchmarkRank}</div>
-                <div className="text-xs text-muted-foreground">Global Rank</div>
-              </CardContent>
-            </Card>
+            <motion.div
+              whileHover={{ y: -2 }}
+              transition={{ duration: 0.2 }}
+            >
+              <Card className="text-center bg-gradient-to-br from-primary/5 to-primary/10 border-primary/20 hover:border-primary/30 transition-colors">
+                <CardContent className="p-6">
+                  <Target className="h-5 w-5 text-primary mx-auto mb-2" />
+                  <div className="text-2xl font-bold text-primary mb-1">#{model.benchmarkRank}</div>
+                  <div className="text-xs text-muted-foreground font-medium">Global Rank</div>
+                </CardContent>
+              </Card>
+            </motion.div>
           </motion.div>
 
-          {/* Action Buttons */}
+          {/* Enhanced Action Buttons */}
           <motion.div 
-            className="flex flex-wrap gap-3"
+            className="flex flex-wrap gap-3 justify-center lg:justify-start"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.5 }}
           >
-            <Button size="lg" className="bg-primary hover:bg-primary/90">
+            <Button size="lg" className="bg-gradient-to-r from-primary to-primary/90 hover:from-primary/90 hover:to-primary/80 shadow-md hover:shadow-lg transition-all">
               <Play className="h-4 w-4 mr-2" />
               Run Model
             </Button>
-            <Button variant="outline" size="lg">
+            
+            <Button variant="outline" size="lg" className="border-border/50 hover:bg-muted/50 transition-colors">
               <Download className="h-4 w-4 mr-2" />
               Download
             </Button>
-            <Button variant="outline" size="lg">
+            
+            <Button variant="outline" size="lg" className="border-border/50 hover:bg-muted/50 transition-colors">
               <GitFork className="h-4 w-4 mr-2" />
               Fork
             </Button>
-            <Button variant="outline" size="lg" asChild>
+            
+            <Button variant="outline" size="lg" asChild className="border-border/50 hover:bg-muted/50 transition-colors">
               <Link href={model.codeUrl} target="_blank">
                 <Code className="h-4 w-4 mr-2" />
                 View Code
+                <ExternalLink className="h-3 w-3 ml-1" />
               </Link>
             </Button>
-            <Button variant="outline" size="lg" asChild>
+            
+            <Button variant="outline" size="lg" asChild className="border-border/50 hover:bg-muted/50 transition-colors">
               <Link href={model.paperUrl} target="_blank">
                 <FileText className="h-4 w-4 mr-2" />
                 Read Paper
+                <ExternalLink className="h-3 w-3 ml-1" />
               </Link>
             </Button>
           </motion.div>
         </motion.div>
 
         <div className="grid grid-cols-1 xl:grid-cols-4 gap-8">
-          {/* Main Content */}
+        {/* Main Content */}
           <motion.div 
             className="xl:col-span-3"
             initial={{ opacity: 0, x: -20 }}
@@ -1468,33 +1520,35 @@ export default function ModelPage({ params }: ModelPageProps) {
             transition={{ duration: 0.8, delay: 0.2 }}
           >
             <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-              <TabsList className="grid w-full grid-cols-6 bg-muted/30">
-                <TabsTrigger value="overview" className="data-[state=active]:bg-background">
-                  <Brain className="h-4 w-4 mr-2" />
-                  Overview
-                </TabsTrigger>
-                <TabsTrigger value="quickstart" className="data-[state=active]:bg-background">
-                  <Zap className="h-4 w-4 mr-2" />
-                  Quick Start
-                </TabsTrigger>
-                <TabsTrigger value="benchmarks" className="data-[state=active]:bg-background">
-                  <Trophy className="h-4 w-4 mr-2" />
-                  Benchmarks
-                </TabsTrigger>
-                <TabsTrigger value="api" className="data-[state=active]:bg-background">
-                  <Terminal className="h-4 w-4 mr-2" />
-                  API Docs
-                </TabsTrigger>
-                <TabsTrigger value="validation" className="data-[state=active]:bg-background">
-                  <Shield className="h-4 w-4 mr-2" />
-                  Validation
-                </TabsTrigger>
-                <TabsTrigger value="changelog" className="data-[state=active]:bg-background">
-                  <Clock className="h-4 w-4 mr-2" />
-                  Changelog
-                </TabsTrigger>
-              </TabsList>
-              
+              <div className="mb-8">
+                <TabsList className="grid w-full grid-cols-3 lg:grid-cols-6 bg-card/50 border border-border/50 p-1 rounded-xl backdrop-blur-sm">
+                  <TabsTrigger value="overview" className="data-[state=active]:bg-background data-[state=active]:shadow-sm rounded-lg transition-all">
+                    <Brain className="h-4 w-4 mr-2" />
+                    <span className="hidden sm:inline">Overview</span>
+                  </TabsTrigger>
+                  <TabsTrigger value="quickstart" className="data-[state=active]:bg-background data-[state=active]:shadow-sm rounded-lg transition-all">
+                    <Zap className="h-4 w-4 mr-2" />
+                    <span className="hidden sm:inline">Quick Start</span>
+                  </TabsTrigger>
+                  <TabsTrigger value="benchmarks" className="data-[state=active]:bg-background data-[state=active]:shadow-sm rounded-lg transition-all">
+                    <Trophy className="h-4 w-4 mr-2" />
+                    <span className="hidden sm:inline">Benchmarks</span>
+                  </TabsTrigger>
+                  <TabsTrigger value="api" className="data-[state=active]:bg-background data-[state=active]:shadow-sm rounded-lg transition-all">
+                    <Terminal className="h-4 w-4 mr-2" />
+                    <span className="hidden sm:inline">API Docs</span>
+                  </TabsTrigger>
+                  <TabsTrigger value="validation" className="data-[state=active]:bg-background data-[state=active]:shadow-sm rounded-lg transition-all">
+                    <Shield className="h-4 w-4 mr-2" />
+                    <span className="hidden sm:inline">Validation</span>
+                  </TabsTrigger>
+                  <TabsTrigger value="changelog" className="data-[state=active]:bg-background data-[state=active]:shadow-sm rounded-lg transition-all">
+                    <Clock className="h-4 w-4 mr-2" />
+                    <span className="hidden sm:inline">Changelog</span>
+                  </TabsTrigger>
+            </TabsList>
+              </div>
+            
               <AnimatePresence mode="wait">
                 <motion.div
                   key={activeTab}
@@ -1503,83 +1557,101 @@ export default function ModelPage({ params }: ModelPageProps) {
                   exit={{ opacity: 0, y: -20 }}
                   transition={{ duration: 0.3 }}
                 >
-                  <TabsContent value="overview" className="space-y-6">
-                    <Card className="bg-card/50 border-border/50">
-                      <CardHeader>
-                        <CardTitle className="flex items-center gap-2">
-                          <BookOpen className="h-5 w-5" />
+                  <TabsContent value="overview" className="space-y-8">
+                    <Card className="bg-gradient-to-br from-card/40 to-card/20 border-border/50 shadow-sm">
+                      <CardHeader className="pb-6">
+                        <CardTitle className="flex items-center gap-3 text-xl">
+                          <div className="p-2 bg-primary/10 rounded-lg">
+                            <BookOpen className="h-5 w-5 text-primary" />
+                          </div>
                           About This Model
                         </CardTitle>
-                      </CardHeader>
-                      <CardContent>
-                        <div className="prose max-w-none">
+                </CardHeader>
+                <CardContent>
+                  <div className="prose max-w-none">
                           {model.longDescription.split('\n\n').map((paragraph: string, index: number) => (
-                            <p key={index} className="mb-4 text-muted-foreground leading-relaxed">
-                              {paragraph}
-                            </p>
-                          ))}
-                        </div>
-                      </CardContent>
-                    </Card>
+                            <p key={index} className="mb-6 text-muted-foreground leading-relaxed text-base">
+                        {paragraph}
+                      </p>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
 
-                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                      <Card className="bg-card/50 border-border/50">
-                        <CardHeader>
-                          <CardTitle className="flex items-center gap-2">
-                            <Target className="h-5 w-5" />
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                      <Card className="bg-gradient-to-br from-accent/5 to-accent/10 border-accent/20 shadow-sm">
+                        <CardHeader className="pb-6">
+                          <CardTitle className="flex items-center gap-3 text-xl">
+                            <div className="p-2 bg-accent/10 rounded-lg">
+                              <Target className="h-5 w-5 text-accent" />
+                            </div>
                             Use Cases
                           </CardTitle>
-                        </CardHeader>
-                        <CardContent>
-                          <div className="space-y-3">
+                </CardHeader>
+                <CardContent>
+                          <div className="space-y-4">
                             {model.useCases.map((useCase: string, index: number) => (
-                              <div key={index} className="flex items-start gap-3">
-                                <CheckCircle className="h-4 w-4 text-accent flex-shrink-0 mt-0.5" />
-                                <span className="text-sm text-muted-foreground">{useCase}</span>
-                              </div>
+                              <motion.div 
+                                key={index} 
+                                className="flex items-start gap-3 p-3 bg-background/50 rounded-lg border border-border/30"
+                                initial={{ opacity: 0, x: -10 }}
+                                animate={{ opacity: 1, x: 0 }}
+                                transition={{ delay: index * 0.1 }}
+                              >
+                                <CheckCircle className="h-5 w-5 text-accent flex-shrink-0 mt-0.5" />
+                                <span className="text-sm text-foreground font-medium">{useCase}</span>
+                              </motion.div>
                             ))}
                           </div>
-                        </CardContent>
-                      </Card>
+                </CardContent>
+              </Card>
 
-                      <Card className="bg-card/50 border-border/50">
-                        <CardHeader>
-                          <CardTitle className="flex items-center gap-2">
-                            <BarChart3 className="h-5 w-5" />
+                      <Card className="bg-gradient-to-br from-primary/5 to-primary/10 border-primary/20 shadow-sm">
+                        <CardHeader className="pb-6">
+                          <CardTitle className="flex items-center gap-3 text-xl">
+                            <div className="p-2 bg-primary/10 rounded-lg">
+                              <BarChart3 className="h-5 w-5 text-primary" />
+                            </div>
                             Performance Metrics
                           </CardTitle>
                         </CardHeader>
                         <CardContent>
-                          <div className="space-y-3">
-                            {Object.entries(model.metrics).map(([key, value]: [string, string]) => (
-                              <div key={key} className="flex justify-between items-center">
-                                <span className="text-sm text-muted-foreground capitalize">
+                          <div className="space-y-4">
+                            {Object.entries(model.metrics).map(([key, value]: [string, string], index: number) => (
+                              <motion.div 
+                                key={key} 
+                                className="flex justify-between items-center p-3 bg-background/50 rounded-lg border border-border/30"
+                                initial={{ opacity: 0, x: 10 }}
+                                animate={{ opacity: 1, x: 0 }}
+                                transition={{ delay: index * 0.1 }}
+                              >
+                                <span className="text-sm text-muted-foreground capitalize font-medium">
                                   {key.replace(/([A-Z])/g, ' $1')}:
                                 </span>
-                                <span className="text-sm font-medium">{value}</span>
-                              </div>
+                                <span className="text-sm font-bold text-foreground">{value}</span>
+                              </motion.div>
                             ))}
                           </div>
                         </CardContent>
                       </Card>
                     </div>
-                  </TabsContent>
+            </TabsContent>
 
-                  <TabsContent value="quickstart" className="space-y-6">
+            <TabsContent value="quickstart" className="space-y-6">
                     <Card className="bg-card/50 border-border/50">
-                      <CardHeader>
+                <CardHeader>
                         <CardTitle className="flex items-center gap-2">
                           <Zap className="h-5 w-5" />
                           Quick Start Guide
                         </CardTitle>
-                        <CardDescription>Get started with {model.name} in minutes</CardDescription>
-                      </CardHeader>
-                      <CardContent>
-                        <div className="space-y-4">
+                  <CardDescription>Get started with {model.name} in minutes</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
                           <div className="relative">
                             <pre className="bg-muted/50 p-4 rounded-lg overflow-x-auto border border-border/50">
-                              <code className="text-sm">{model.quickStart}</code>
-                            </pre>
+                        <code className="text-sm">{model.quickStart}</code>
+                      </pre>
                             <Button
                               variant="outline"
                               size="sm"
@@ -1588,23 +1660,23 @@ export default function ModelPage({ params }: ModelPageProps) {
                             >
                               {copySuccess ? <CheckCircle className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
                             </Button>
-                          </div>
-                        </div>
-                      </CardContent>
-                    </Card>
-                  </TabsContent>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </TabsContent>
 
                   <TabsContent value="benchmarks" className="space-y-6">
                     <Card className="bg-card/50 border-border/50">
-                      <CardHeader>
+                  <CardHeader>
                         <CardTitle className="flex items-center gap-2">
                           <Trophy className="h-5 w-5" />
                           Benchmark Results
                         </CardTitle>
                         <CardDescription>Performance across scientific evaluation datasets</CardDescription>
-                      </CardHeader>
-                      <CardContent>
-                        <div className="space-y-4">
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-4">
                           {model.benchmarks.map((benchmark: any, index: number) => (
                             <div key={index} className="flex items-center justify-between p-4 bg-muted/30 rounded-lg border border-border/50">
                               <div>
@@ -1617,20 +1689,20 @@ export default function ModelPage({ params }: ModelPageProps) {
                                   Rank #{benchmark.rank} of {benchmark.participants}
                                 </div>
                               </div>
-                            </div>
-                          ))}
                         </div>
-                      </CardContent>
-                    </Card>
+                      ))}
+                    </div>
+                  </CardContent>
+                </Card>
 
                     <Card className="bg-card/50 border-border/50">
-                      <CardHeader>
+                  <CardHeader>
                         <CardTitle className="flex items-center gap-2">
                           <PieChart className="h-5 w-5" />
                           Scientific Metrics
                         </CardTitle>
-                      </CardHeader>
-                      <CardContent>
+                  </CardHeader>
+                  <CardContent>
                         <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
                           {Object.entries(model.scientificMetrics).map(([key, value]: [string, number]) => (
                             <div key={key} className="text-center p-3 bg-muted/30 rounded-lg border border-border/50">
@@ -1638,23 +1710,23 @@ export default function ModelPage({ params }: ModelPageProps) {
                               <div className="text-xs text-muted-foreground uppercase tracking-wide">
                                 {key.replace(/_/g, '-')}
                               </div>
-                            </div>
-                          ))}
                         </div>
-                      </CardContent>
-                    </Card>
-                  </TabsContent>
+                      ))}
+                    </div>
+                  </CardContent>
+                </Card>
+            </TabsContent>
 
-                  <TabsContent value="api" className="space-y-6">
+            <TabsContent value="api" className="space-y-6">
                     <Card className="bg-card/50 border-border/50">
-                      <CardHeader>
+                <CardHeader>
                         <CardTitle className="flex items-center gap-2">
                           <Terminal className="h-5 w-5" />
                           API Reference
                         </CardTitle>
                         <CardDescription>Complete API documentation for {model.name}</CardDescription>
-                      </CardHeader>
-                      <CardContent>
+                </CardHeader>
+                <CardContent>
                         <div className="space-y-6">
                           {model.apiReference.map((api: any, index: number) => (
                             <div key={index} className="border border-border/50 rounded-lg p-4 bg-muted/30">
@@ -1704,161 +1776,189 @@ export default function ModelPage({ params }: ModelPageProps) {
                           <div className="text-center p-4 bg-green-500/10 rounded-lg border border-green-500/20">
                             <div className="text-2xl font-bold text-green-700 mb-2">✓ Verified</div>
                             <div className="text-sm text-muted-foreground">Scientific Review</div>
-                          </div>
-                        </div>
-                      </CardContent>
-                    </Card>
-                  </TabsContent>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </TabsContent>
 
-                  <TabsContent value="changelog" className="space-y-6">
-                    <div className="space-y-4">
+            <TabsContent value="changelog" className="space-y-6">
+              <div className="space-y-4">
                       {model.changelog.map((release: any, index: number) => (
                         <Card key={index} className="bg-card/50 border-border/50">
-                          <CardHeader>
-                            <div className="flex justify-between items-start">
-                              <CardTitle className="text-lg">Version {release.version}</CardTitle>
-                              <Badge variant="outline">{release.date}</Badge>
-                            </div>
-                          </CardHeader>
-                          <CardContent>
+                    <CardHeader>
+                      <div className="flex justify-between items-start">
+                        <CardTitle className="text-lg">Version {release.version}</CardTitle>
+                        <Badge variant="outline">{release.date}</Badge>
+                      </div>
+                    </CardHeader>
+                    <CardContent>
                             <ul className="space-y-2">
                               {release.changes.map((change: string, changeIndex: number) => (
                                 <li key={changeIndex} className="flex items-start gap-3">
                                   <div className="w-1.5 h-1.5 bg-accent rounded-full mt-2 flex-shrink-0" />
                                   <span className="text-sm text-muted-foreground">{change}</span>
-                                </li>
-                              ))}
-                            </ul>
-                          </CardContent>
-                        </Card>
-                      ))}
-                    </div>
-                  </TabsContent>
+                          </li>
+                        ))}
+                      </ul>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            </TabsContent>
                 </motion.div>
               </AnimatePresence>
-            </Tabs>
+          </Tabs>
           </motion.div>
 
-          {/* Sidebar */}
+        {/* Sidebar */}
           <motion.div 
             className="space-y-6"
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.8, delay: 0.4 }}
           >
-            {/* Model Information */}
-            <Card className="bg-card/50 border-border/50">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Database className="h-5 w-5" />
+            {/* Enhanced Model Information */}
+            <Card className="bg-gradient-to-br from-card/40 to-card/20 border-border/50 shadow-sm">
+              <CardHeader className="pb-6">
+                <CardTitle className="flex items-center gap-3 text-lg">
+                  <div className="p-2 bg-primary/10 rounded-lg">
+                    <Database className="h-5 w-5 text-primary" />
+                  </div>
                   Model Information
                 </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-3">
-                <div className="flex justify-between items-center">
-                  <span className="text-sm text-muted-foreground">Category:</span>
-                  <Badge variant="secondary">{model.category}</Badge>
-                </div>
-                <div className="flex justify-between items-center">
-                  <span className="text-sm text-muted-foreground">Domain:</span>
-                  <span className="text-sm font-medium">{model.domain}</span>
-                </div>
-                <div className="flex justify-between items-center">
-                  <span className="text-sm text-muted-foreground">Framework:</span>
-                  <span className="text-sm font-medium">{model.framework}</span>
-                </div>
-                <div className="flex justify-between items-center">
-                  <span className="text-sm text-muted-foreground">Language:</span>
-                  <span className="text-sm font-medium">{model.language}</span>
-                </div>
-                <div className="flex justify-between items-center">
-                  <span className="text-sm text-muted-foreground">License:</span>
-                  <span className="text-sm font-medium">{model.license}</span>
-                </div>
-                <div className="flex justify-between items-center">
-                  <span className="text-sm text-muted-foreground">Model Size:</span>
-                  <span className="text-sm font-medium">{model.size}</span>
-                </div>
-                <div className="flex justify-between items-center">
-                  <span className="text-sm text-muted-foreground">Compute:</span>
-                  <span className="text-sm font-medium">{model.computeReq}</span>
-                </div>
-              </CardContent>
-            </Card>
+            </CardHeader>
+            <CardContent className="space-y-4">
+                <div className="flex justify-between items-center p-3 bg-background/50 rounded-lg">
+                  <span className="text-sm text-muted-foreground font-medium">Category:</span>
+                  <Badge className="bg-primary/10 text-primary border-primary/20">{model.category}</Badge>
+              </div>
+                <div className="flex justify-between items-center p-3 bg-background/50 rounded-lg">
+                  <span className="text-sm text-muted-foreground font-medium">Domain:</span>
+                  <span className="text-sm font-semibold text-foreground">{model.domain}</span>
+              </div>
+                <div className="flex justify-between items-center p-3 bg-background/50 rounded-lg">
+                  <span className="text-sm text-muted-foreground font-medium">Framework:</span>
+                  <Badge variant="outline" className="border-accent/30 text-accent">{model.framework}</Badge>
+              </div>
+                <div className="flex justify-between items-center p-3 bg-background/50 rounded-lg">
+                  <span className="text-sm text-muted-foreground font-medium">Language:</span>
+                  <span className="text-sm font-semibold text-foreground">{model.language}</span>
+              </div>
+                <div className="flex justify-between items-center p-3 bg-background/50 rounded-lg">
+                  <span className="text-sm text-muted-foreground font-medium">License:</span>
+                  <Badge variant="outline" className="border-green-500/30 text-green-600">{model.license}</Badge>
+              </div>
+                <div className="flex justify-between items-center p-3 bg-background/50 rounded-lg">
+                  <span className="text-sm text-muted-foreground font-medium">Model Size:</span>
+                  <span className="text-sm font-semibold text-foreground">{model.size}</span>
+              </div>
+                <div className="flex justify-between items-center p-3 bg-background/50 rounded-lg">
+                  <span className="text-sm text-muted-foreground font-medium">Compute:</span>
+                  <span className="text-sm font-semibold text-foreground">{model.computeReq}</span>
+              </div>
+            </CardContent>
+          </Card>
 
-            {/* System Requirements */}
-            <Card className="bg-card/50 border-border/50">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Monitor className="h-5 w-5" />
+            {/* Enhanced System Requirements */}
+            <Card className="bg-gradient-to-br from-card/40 to-card/20 border-border/50 shadow-sm">
+              <CardHeader className="pb-6">
+                <CardTitle className="flex items-center gap-3 text-lg">
+                  <div className="p-2 bg-accent/10 rounded-lg">
+                    <Monitor className="h-5 w-5 text-accent" />
+                  </div>
                   System Requirements
                 </CardTitle>
               </CardHeader>
-              <CardContent className="space-y-3">
-                {Object.entries(model.requirements).map(([key, value]: [string, string]) => (
-                  <div key={key} className="flex justify-between items-center">
-                    <span className="text-sm text-muted-foreground capitalize">
+              <CardContent className="space-y-4">
+                {Object.entries(model.requirements).map(([key, value]: [string, string], index: number) => (
+                  <motion.div 
+                    key={key} 
+                    className="flex justify-between items-center p-3 bg-background/50 rounded-lg"
+                    initial={{ opacity: 0, x: -10 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: index * 0.1 }}
+                  >
+                    <span className="text-sm text-muted-foreground capitalize font-medium">
                       {key.replace(/([A-Z])/g, ' $1')}:
                     </span>
-                    <span className="text-sm font-medium">{value}</span>
-                  </div>
+                    <span className="text-sm font-semibold text-foreground">{value}</span>
+                  </motion.div>
                 ))}
               </CardContent>
             </Card>
 
-            {/* Tags */}
-            <Card className="bg-card/50 border-border/50">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Hash className="h-5 w-5" />
+            {/* Enhanced Tags */}
+            <Card className="bg-gradient-to-br from-card/40 to-card/20 border-border/50 shadow-sm">
+              <CardHeader className="pb-6">
+                <CardTitle className="flex items-center gap-3 text-lg">
+                  <div className="p-2 bg-primary/10 rounded-lg">
+                    <Hash className="h-5 w-5 text-primary" />
+                  </div>
                   Tags
                 </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="flex flex-wrap gap-2">
-                  {model.tags.map((tag: string) => (
-                    <Badge key={tag} variant="outline" className="bg-muted/30 border-border/50">
-                      {tag}
-                    </Badge>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
+            </CardHeader>
+            <CardContent>
+              <div className="flex flex-wrap gap-2">
+                  {model.tags.map((tag: string, index: number) => (
+                    <motion.div
+                      key={tag}
+                      initial={{ opacity: 0, scale: 0.8 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      transition={{ delay: index * 0.1 }}
+                    >
+                      <Badge 
+                        variant="outline" 
+                        className="bg-gradient-to-r from-muted/50 to-muted/30 border-border/50 hover:bg-muted/70 transition-colors cursor-pointer"
+                      >
+                    {tag}
+                  </Badge>
+                    </motion.div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
 
-            {/* Related Models */}
-            <Card className="bg-card/50 border-border/50">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Layers className="h-5 w-5" />
+            {/* Enhanced Related Models */}
+            <Card className="bg-gradient-to-br from-card/40 to-card/20 border-border/50 shadow-sm">
+              <CardHeader className="pb-6">
+                <CardTitle className="flex items-center gap-3 text-lg">
+                  <div className="p-2 bg-accent/10 rounded-lg">
+                    <Layers className="h-5 w-5 text-accent" />
+                  </div>
                   Related Models
                 </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-3">
-                  {model.relatedModels.map((relatedModel: any) => (
-                    <Link 
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-3">
+                  {model.relatedModels.map((relatedModel: any, index: number) => (
+                    <motion.div
                       key={relatedModel.id}
-                      href={`/models/${relatedModel.id}`} 
-                      className="block p-3 rounded-lg border border-border/50 hover:bg-muted/50 transition-colors group"
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: index * 0.1 }}
                     >
-                      <div className="flex items-center justify-between">
-                        <div>
-                          <div className="font-medium group-hover:text-primary transition-colors">
+                      <Link 
+                        href={`/models/${relatedModel.id}`} 
+                        className="block p-4 rounded-xl border border-border/50 hover:border-accent/30 bg-background/50 hover:bg-background/80 transition-all group"
+                      >
+                        <div className="flex items-center justify-between mb-2">
+                          <div className="font-semibold group-hover:text-accent transition-colors">
                             {relatedModel.name}
                           </div>
-                          <div className="text-sm text-muted-foreground">
-                            {relatedModel.description}
-                          </div>
+                          <Badge variant="outline" className="text-xs bg-accent/10 border-accent/30 text-accent">
+                            {Math.round(relatedModel.similarity * 100)}%
+                          </Badge>
                         </div>
-                        <div className="text-xs text-muted-foreground">
-                          {Math.round(relatedModel.similarity * 100)}% similar
+                        <div className="text-sm text-muted-foreground">
+                          {relatedModel.description}
                         </div>
-                      </div>
-                    </Link>
+                </Link>
+                    </motion.div>
                   ))}
-                </div>
-              </CardContent>
-            </Card>
+              </div>
+            </CardContent>
+          </Card>
           </motion.div>
         </div>
       </div>

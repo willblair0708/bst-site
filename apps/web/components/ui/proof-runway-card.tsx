@@ -68,7 +68,7 @@ export function ProofRunwayCard({ step, index, totalSteps }: ProofRunwayCardProp
           {step.description}
         </p>
         
-        <div className="absolute -top-2 -right-2 w-7 h-7 bg-primary-500 text-white text-xs font-bold rounded-full flex items-center justify-center shadow-md border-2 border-background">
+        <div className="absolute -top-2 -right-2 w-7 h-7 bg-primary-500 text-foreground text-xs font-bold rounded-full flex items-center justify-center shadow-md border-2 border-background">
           {index + 1}
         </div>
       </div>

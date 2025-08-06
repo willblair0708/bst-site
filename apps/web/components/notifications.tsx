@@ -233,7 +233,7 @@ export function NotificationCenter() {
       <Button
         variant="ghost"
         size="icon"
-        className="relative h-9 w-9 rounded-xl"
+        className="relative h-9 w-9 rounded-xl overflow-visible"
       >
         {/* Simple bell icon */}
         {unreadCount > 0 ? (
@@ -246,7 +246,7 @@ export function NotificationCenter() {
         {unreadCount > 0 && (
           <Badge 
             className={cn(
-              "absolute -top-2 -right-2 h-5 w-5 rounded-xl p-0 text-xs",
+              "absolute -top-2 -right-2 h-5 w-5 rounded-xl p-0 text-xs text-foreground",
               "flex items-center justify-center",
               criticalCount > 0 ? "bg-destructive" : "bg-primary"
             )}

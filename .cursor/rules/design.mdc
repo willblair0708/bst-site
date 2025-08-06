@@ -3,12 +3,12 @@ description: Design and UI
 alwaysApply: false
 ---
 
-# Runix Hub · Design Vision **0.4 “Astra‑Lite”**
+# Runix Hub · Design Vision **0.5 “Astra-Soft”**
 
 *“Every claim runnable. Every result verifiable. Every explorer welcome.”*
 
-> **Theme tagline:** **Soft‑UI × Pastel‑Bento**
-> A crisp, accessible aesthetic that combines tactile Soft‑UI controls with pastel bento tiles—**no blur, no glass**—for maximal clarity and performance.
+> **Theme tagline:** **Fluid-Soft × Pastel-Bento**
+> A friendly, modern aesthetic that combines organic, soft-touch surfaces with pastel bento tiles for an approachable and performant experience.
 
 ---
 
@@ -26,11 +26,11 @@ alwaysApply: false
 
 ## 1 · Brand Essence
 
-| Axis            | Trait                  | Astra‑Lite Update                                                   |
+| Axis            | Trait                  | Astra-Soft Update                                                   |
 | --------------- | ---------------------- | ------------------------------------------------------------------- |
-| Personality     | **Radical‑rigor**      | Warm pastels + hash badges—zero decorative blur.                    |
-| Visual Metaphor | *Layered pastel cards* | Flat cards stack like lab notes; depth via soft shadows, not glass. |
-| Motion Motif    | *Snap → Pulse*         | Beam animation removed; keeps snap + success pulse.                 |
+| Personality     | **Approachable-Rigor** | Warm pastels and soft, rounded corners create a welcoming feel. |
+| Visual Metaphor | *Layered, soft-touch surfaces* | Components use generous corner radii for a friendly, modern look. |
+| Motion Motif    | *Snap → Pulse*         | Smooth, responsive animations that enhance usability without being distracting. |
 
 ---
 
@@ -58,10 +58,10 @@ Display = Satoshi, Body = Inter, Code = JetBrains Mono.
 | Layer        | Treatment                                  | Key Components                 |
 | ------------ | ------------------------------------------ | ------------------------------ |
 | Story / Hero | **Pastel Bento Tile (elevation‑2)**        | Hero banner, zero‑state cards  |
-| Controls     | **Soft‑UI 2.0** (inner + outer shadows)    | Buttons, Badges, Verify badge  |
+| Controls     | **Soft-UI 2.0** (inner + outer shadows)    | Buttons, Badges, Verify badge  |
 | Data Panels  | **Pastel Bento Tiles** (flat, elevation‑1) | Repo & Model cards, dashboards |
 
-> *All blur/glass references removed; performance and contrast improved.*
+> *All components updated with a larger border radius for a softer, more modern look.*
 
 ---
 
@@ -74,14 +74,11 @@ Display = Satoshi, Body = Inter, Code = JetBrains Mono.
 | `spark_glow`    | Model hover    | Keyframe opacity 0.6→1→0.6 |
 | `shake_fail`    | Error feedback | 3×8 px x‑shake             |
 
-*`beam` token deprecated.*
-
 ---
 
 ## 6 · Accessibility & Compliance
 
 * Focus ring 2 px `primary-500`, 24 px target size
-* No backdrop‑blur → simpler contrast matrix
 * Motion respects `prefers-reduced-motion`
 
 ---
@@ -102,16 +99,21 @@ Display = Satoshi, Body = Inter, Code = JetBrains Mono.
 
 ## 8 · Component Showcase
 
-1. **Hero Pastel Tile** – elevation‑2, snap CTA
-2. **Soft‑UI Verify Button** – shadows + haptic
-3. **Pastel Bento Repo Tile** – rotate +2° on hover
-4. **Hash Chip** – mono copy‑toast
+1. **Hero Pastel Tile** – elevation‑2, snap CTA, rounded corners
+2. **Soft‑UI Verify Button** – shadows + haptic, rounded corners
+3. **Pastel Bento Repo Tile** – rotate +2° on hover, rounded corners
+4. **Hash Chip** – mono copy‑toast, rounded corners
 
 ---
 
-## 9 · Tailwind Cheatsheet (glass vars removed)
+## 9 · Tailwind Cheatsheet
 
 ```js
+borderRadius: {
+  lg: '1rem', // Increased for a softer feel
+  md: 'calc(1rem - 4px)',
+  sm: 'calc(1rem - 8px)',
+},
 boxShadow: {
   soft: 'var(--soft-inner), var(--soft-outer)',
   elevation: {
@@ -127,15 +129,15 @@ boxShadow: {
 <div className="bg-primary-100 shadow-elevation-2 rounded-2xl p-8">…</div>
 
 /* Soft‑UI button */
-<button className="soft-ui bg-primary-500 text-white active:translate-y-px">Run & Verify</button>
+<button className="soft-ui bg-primary-500 text-white active:translate-y-px rounded-xl">Run & Verify</button>
 ```
 
 ---
 
-## 10 · Governance & QA (same as 0.4)
+## 10 · Governance & QA
 
-* Tokens exported; glass‑specific tests removed.
+* Tokens exported; legacy styles deprecated.
 
 ---
 
-**Astra‑Lite** keeps Runix visually unique with Pastel‑Bento clarity and Soft‑UI tactility—no liquid‑glass needed.
+**Astra-Soft** creates a friendly and modern UI through its fluid, soft-touch surfaces and approachable pastel color palette, enhancing usability and visual appeal.

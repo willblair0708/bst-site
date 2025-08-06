@@ -492,39 +492,32 @@ export default function LandingPage() {
               {/* Agent suggestion card - Human-AI Collaboration Pillar (Action Layer) */}
               <motion.div
                 variants={fadeInUp}
-                className="soft-ui bg-collaboration-100 border border-collaboration-500/20 p-6"
+                className="rounded-2xl border border-border bg-card p-6 shadow-sm"
               >
                 <div className="flex items-start gap-4">
-                  <div className="flex items-center gap-2">
-                    <span className="text-lg">🤝</span>
-                    <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-collaboration-500/10 border border-collaboration-500/20">
-                      <Brain className="h-5 w-5 text-collaboration-500" />
-                    </div>
+                  <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-collaboration-100/80">
+                    <Brain className="h-5 w-5 text-viz-purple-500" />
                   </div>
                   <div className="flex-1">
-                    <h3 className="font-semibold">Agent Suggestions</h3>
+                    <h3 className="font-semibold text-foreground">Agent Suggestions</h3>
                     <p className="mt-2 text-sm text-muted-foreground">
                       "Based on your protein folding results, consider testing pH levels between 6.5-7.2 
-                      for improved stability. Similar work by Chen et al. (2023) showed 15% better yields."
+                      for improved stability."
                     </p>
                     <div className="mt-4 flex items-center gap-2">
-                      <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-                        <Button 
-                          size="sm" 
-                          className="bg-viz-purple-500 hover:bg-viz-purple-500/90 text-white"
-                          onClick={() => {
-                            trackEvent('cta_accept_run_clicked')
-                            addToast('Running experiment with suggested parameters...')
-                          }}
-                        >
-                          Accept & Run
-                        </Button>
-                      </motion.div>
-                      <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-                        <Button size="sm" variant="outline" className="border-viz-purple-500/20 hover:border-viz-purple-500/40">
-                          View Details
-                        </Button>
-                      </motion.div>
+                      <Button 
+                        size="sm" 
+                        className="soft-ui bg-primary-500 hover:bg-primary-500/90 text-white"
+                        onClick={() => {
+                          trackEvent('cta_accept_run_clicked')
+                          addToast('Running experiment with suggested parameters...')
+                        }}
+                      >
+                        Accept & Run
+                      </Button>
+                      <Button size="sm" variant="outline" className="soft-ui bg-card hover:bg-muted">
+                        View Details
+                      </Button>
                     </div>
                   </div>
                 </div>
@@ -627,7 +620,7 @@ export default function LandingPage() {
       </section>
 
         {/* Core Features Grid */}
-        <section className="border-t border-border bg-muted/30 py-24 sm:py-32" role="region" aria-labelledby="core-features-heading">
+        <section className="py-24 sm:py-32" role="region" aria-labelledby="core-features-heading">
         <div className="mx-auto max-w-7xl px-6 lg:px-8">
           <motion.div
             className="mx-auto max-w-2xl text-center"
@@ -635,10 +628,10 @@ export default function LandingPage() {
             whileInView="animate"
             variants={fadeInUp}
             viewport={{ once: true }}
-            transition={{ duration: 0.6 }}
+            transition={{ duration: 0.5 }}
           >
-            <h2 id="core-features-heading" className="font-display text-3xl tracking-tight sm:text-4xl">
-              A new operating system for science
+            <h2 id="core-features-heading" className="font-display text-4xl font-bold tracking-tight sm:text-5xl text-balance">
+              A new operating system for science.
             </h2>
             <p className="mt-6 text-lg leading-8 text-muted-foreground">
               Built for the next generation of reproducible, collaborative research.
@@ -671,30 +664,24 @@ export default function LandingPage() {
                           return (
                             <motion.div 
                                 key={feature.title} 
-                                className="flex flex-col"
+                                className="flex flex-col items-center text-center"
                                 initial="initial"
                                 whileInView="animate"
                                 variants={fadeInUp}
                                 viewport={{ once: true }}
-                    transition={{ duration: 0.6, ease: "easeOut" }}
+                                transition={{ duration: 0.5, ease: "easeOut" }}
                             >
-                                                    <dt className="flex items-center gap-x-3 text-base font-semibold leading-7 text-foreground">
-                      <motion.div 
-                        className="flex h-12 w-12 items-center justify-center rounded-lg bg-primary/15 border border-primary/20"
-                        whileHover={{ 
-                          scale: 1.1, 
-                          backgroundColor: "rgba(4, 54, 255, 0.2)",
-                          rotate: 5 
-                        }}
-                        transition={{ type: "spring", stiffness: 300 }}
-                      >
-                        <Icon className="h-6 w-6 text-primary" aria-hidden="true" strokeWidth={1.5} />
-                      </motion.div>
-                      {feature.title}
-                    </dt>
-                                <dd className="mt-4 flex flex-auto flex-col text-base leading-7 text-muted-foreground">
-                                    <p className="flex-auto">{feature.description}</p>
-                                </dd>
+                              <dt className="flex flex-col items-center gap-y-4">
+                                <div 
+                                  className="flex h-14 w-14 items-center justify-center rounded-2xl bg-muted border"
+                                >
+                                  <Icon className="h-6 w-6 text-foreground" aria-hidden="true" strokeWidth={2} />
+                                </div>
+                                <span className="text-base font-semibold leading-7 text-foreground">{feature.title}</span>
+                              </dt>
+                              <dd className="mt-2 flex flex-auto flex-col text-base leading-7 text-muted-foreground">
+                                  <p className="flex-auto">{feature.description}</p>
+                              </dd>
                             </motion.div>
                 );
                         })}

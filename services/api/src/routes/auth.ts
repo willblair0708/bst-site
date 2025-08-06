@@ -13,7 +13,7 @@ router.post('/register', [
   body('username').isLength({ min: 3, max: 30 }).matches(/^[a-zA-Z0-9_-]+$/),
   body('name').isLength({ min: 1, max: 100 }),
   body('password').isLength({ min: 8 }).matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/),
-], asyncHandler(async (req: any, res: any) => {
+], asyncHandler(async (req: express.Request, res: express.Response) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     return res.status(400).json({
@@ -23,7 +23,7 @@ router.post('/register', [
   }
 
   const { email, username, name, password } = req.body;
-  const { prisma } = req;
+  const { prisma } = req as any;
 
   // Check if user already exists
   const existingUser = await prisma.user.findFirst({
@@ -80,7 +80,7 @@ router.post('/register', [
 router.post('/login', [
   body('email').isEmail().normalizeEmail(),
   body('password').notEmpty(),
-], asyncHandler(async (req: any, res: any) => {
+], asyncHandler(async (req: express.Request, res: express.Response) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     return res.status(400).json({
@@ -90,7 +90,7 @@ router.post('/login', [
   }
 
   const { email, password } = req.body;
-  const { prisma } = req;
+  const { prisma } = req as any;
 
   // Find user
   const user = await prisma.user.findUnique({
@@ -152,10 +152,10 @@ router.get('/github',
 // GitHub OAuth callback
 router.get('/github/callback',
   passport.authenticate('github', { failureRedirect: '/login' }),
-  asyncHandler(async (req: any, res: any) => {
+  asyncHandler(async (req: express.Request, res: express.Response) => {
     // Generate JWT token
     const token = jwt.sign(
-      { userId: req.user.id },
+      { userId: (req as any).user.id },
       process.env.JWT_SECRET || 'your-secret-key',
       { expiresIn: '7d' }
     );
@@ -169,19 +169,19 @@ router.get('/github/callback',
 // Get current user
 router.get('/me',
   passport.authenticate('jwt', { session: false }),
-  asyncHandler(async (req: any, res: any) => {
+  asyncHandler(async (req: express.Request, res: express.Response) => {
     const user = req.user;
     
     res.json({
       user: {
-        id: user.id,
-        email: user.email,
-        username: user.username,
-        name: user.name,
-        avatar: user.avatar,
-        role: user.role,
-        lastLogin: user.lastLogin,
-        createdAt: user.createdAt
+        id: (user as any).id,
+        email: (user as any).email,
+        username: (user as any).username,
+        name: (user as any).name,
+        avatar: (user as any).avatar,
+        role: (user as any).role,
+        lastLogin: (user as any).lastLogin,
+        createdAt: (user as any).createdAt
       }
     });
   })
@@ -190,12 +190,12 @@ router.get('/me',
 // Refresh token
 router.post('/refresh',
   passport.authenticate('jwt', { session: false }),
-  asyncHandler(async (req: any, res: any) => {
+  asyncHandler(async (req: express.Request, res: express.Response) => {
     const user = req.user;
 
     // Generate new JWT token
     const token = jwt.sign(
-      { userId: user.id },
+      { userId: (user as any).id },
       process.env.JWT_SECRET || 'your-secret-key',
       { expiresIn: '7d' }
     );
@@ -210,7 +210,7 @@ router.post('/refresh',
 // Logout (invalidate token on client side)
 router.post('/logout',
   passport.authenticate('jwt', { session: false }),
-  asyncHandler(async (req: any, res: any) => {
+  asyncHandler(async (req: express.Request, res: express.Response) => {
     // In a real implementation, you might want to blacklist the token
     res.json({
       message: 'Logout successful'

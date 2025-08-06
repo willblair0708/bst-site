@@ -5,8 +5,8 @@ import { asyncHandler } from '../middleware/errorHandler';
 const router = express.Router();
 const requireAuth = passport.authenticate('jwt', { session: false });
 
-router.get('/', requireAuth, asyncHandler(async (req: any, res: any) => {
-  const { prisma } = req;
+router.get('/', requireAuth, asyncHandler(async (req: express.Request, res: express.Response) => {
+  const { prisma } = req as any;
   const pullRequests = await prisma.pullRequest.findMany({
     include: {
       author: { select: { username: true, name: true, avatar: true } },

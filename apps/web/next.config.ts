@@ -7,8 +7,8 @@ const nextConfig: NextConfig = {
     ignoreDuringBuilds: true,
   },
   experimental: {
-    // Force dynamic rendering
-    forceSwcTransforms: true,
+    // Force dynamic rendering - disabled for Turbopack compatibility
+    // forceSwcTransforms: true,
   },
   async rewrites() {
     return [

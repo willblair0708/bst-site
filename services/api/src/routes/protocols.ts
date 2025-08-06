@@ -6,8 +6,8 @@ const router = express.Router();
 const requireAuth = passport.authenticate('jwt', { session: false });
 
 // Get protocols
-router.get('/', requireAuth, asyncHandler(async (req: any, res: any) => {
-  const { prisma } = req;
+router.get('/', requireAuth, asyncHandler(async (req: express.Request, res: express.Response) => {
+  const { prisma } = req as any;
   
   const protocols = await prisma.protocol.findMany({
     include: {
@@ -26,8 +26,8 @@ router.get('/', requireAuth, asyncHandler(async (req: any, res: any) => {
 }));
 
 // Create protocol
-router.post('/', requireAuth, asyncHandler(async (req: any, res: any) => {
-  const { prisma } = req;
+router.post('/', requireAuth, asyncHandler(async (req: express.Request, res: express.Response) => {
+  const { prisma } = req as any;
   const { name, version, description, type, phase, content, repositoryId } = req.body;
 
   const protocol = await prisma.protocol.create({

@@ -14,7 +14,7 @@ router.get('/', requireAuth, [
   query('limit').optional().isInt({ min: 1, max: 100 }),
   query('search').optional().isString(),
   query('type').optional().isIn(['owned', 'collaborated', 'public']),
-], asyncHandler(async (req: any, res: any) => {
+], asyncHandler(async (req: express.Request, res: express.Response) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     return res.status(400).json({
@@ -23,9 +23,9 @@ router.get('/', requireAuth, [
     });
   }
 
-  const { prisma, user } = req;
-  const page = parseInt(req.query.page) || 1;
-  const limit = parseInt(req.query.limit) || 20;
+  const { prisma, user } = req as any;
+  const page = parseInt(req.query.page as string) || 1;
+  const limit = parseInt(req.query.limit as string) || 20;
   const search = req.query.search;
   const type = req.query.type || 'all';
   const offset = (page - 1) * limit;
@@ -113,7 +113,7 @@ router.get('/', requireAuth, [
 // Get a specific repository
 router.get('/:id', requireAuth, [
   param('id').isUUID()
-], asyncHandler(async (req: any, res: any) => {
+], asyncHandler(async (req: express.Request, res: express.Response) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     return res.status(400).json({
@@ -122,7 +122,7 @@ router.get('/:id', requireAuth, [
     });
   }
 
-  const { prisma, user } = req;
+  const { prisma, user } = req as any;
   const { id } = req.params;
 
   const repository = await prisma.repository.findFirst({
@@ -198,7 +198,7 @@ router.post('/', requireAuth, [
   body('description').optional().isLength({ max: 500 }),
   body('isPrivate').optional().isBoolean(),
   body('organizationId').optional().isUUID(),
-], asyncHandler(async (req: any, res: any) => {
+], asyncHandler(async (req: express.Request, res: express.Response) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     return res.status(400).json({
@@ -207,7 +207,7 @@ router.post('/', requireAuth, [
     });
   }
 
-  const { prisma, user } = req;
+  const { prisma, user } = req as any;
   const { name, description, isPrivate = false, organizationId } = req.body;
 
   // Generate slug from name
@@ -279,7 +279,7 @@ router.put('/:id', requireAuth, [
   body('description').optional().isLength({ max: 500 }),
   body('isPrivate').optional().isBoolean(),
   body('defaultBranch').optional().isString(),
-], asyncHandler(async (req: any, res: any) => {
+], asyncHandler(async (req: express.Request, res: express.Response) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     return res.status(400).json({
@@ -288,7 +288,7 @@ router.put('/:id', requireAuth, [
     });
   }
 
-  const { prisma, user } = req;
+  const { prisma, user } = req as any;
   const { id } = req.params;
   const updates = req.body;
 
@@ -346,7 +346,7 @@ router.put('/:id', requireAuth, [
 // Delete repository
 router.delete('/:id', requireAuth, [
   param('id').isUUID()
-], asyncHandler(async (req: any, res: any) => {
+], asyncHandler(async (req: express.Request, res: express.Response) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     return res.status(400).json({
@@ -355,7 +355,7 @@ router.delete('/:id', requireAuth, [
     });
   }
 
-  const { prisma, user } = req;
+  const { prisma, user } = req as any;
   const { id } = req.params;
 
   // Check repository ownership
@@ -385,7 +385,7 @@ router.post('/:id/collaborators', requireAuth, [
   param('id').isUUID(),
   body('username').isString(),
   body('permission').isIn(['read', 'write', 'admin']),
-], asyncHandler(async (req: any, res: any) => {
+], asyncHandler(async (req: express.Request, res: express.Response) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     return res.status(400).json({
@@ -394,7 +394,7 @@ router.post('/:id/collaborators', requireAuth, [
     });
   }
 
-  const { prisma, user } = req;
+  const { prisma, user } = req as any;
   const { id } = req.params;
   const { username, permission } = req.body;
 
@@ -453,7 +453,7 @@ router.post('/:id/collaborators', requireAuth, [
 // Get repository branches
 router.get('/:id/branches', requireAuth, [
   param('id').isUUID()
-], asyncHandler(async (req: any, res: any) => {
+], asyncHandler(async (req: express.Request, res: express.Response) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     return res.status(400).json({
@@ -462,7 +462,7 @@ router.get('/:id/branches', requireAuth, [
     });
   }
 
-  const { prisma, user } = req;
+  const { prisma, user } = req as any;
   const { id } = req.params;
 
   // Check repository access

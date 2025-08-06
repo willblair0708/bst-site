@@ -240,7 +240,7 @@ async function generateProtocolFromPrompt(prompt: string): Promise<any> {
 // Generate protocol from natural language
 router.post('/generate-protocol', [
   body('prompt').isString().isLength({ min: 10 }),
-], asyncHandler(async (req: any, res: any) => {
+], asyncHandler(async (req: express.Request, res: express.Response) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     return res.status(400).json({ error: 'Invalid prompt', errors: errors.array() });
@@ -273,7 +273,7 @@ router.post('/generate-protocol', [
 router.post('/run-simulation', [
   body('protocol').isString().isLength({ min: 100 }),
   body('protocolName').isString().isLength({ min: 1 })
-], asyncHandler(async (req: any, res: any) => {
+], asyncHandler(async (req: express.Request, res: express.Response) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     return res.status(400).json({ error: 'Invalid simulation request', errors: errors.array() });
@@ -350,7 +350,7 @@ router.post('/run-simulation', [
 router.post('/deploy-protocol', [
   body('protocol').isString().isLength({ min: 100 }),
   body('simulation').isObject()
-], asyncHandler(async (req: any, res: any) => {
+], asyncHandler(async (req: express.Request, res: express.Response) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     return res.status(400).json({ error: 'Invalid deployment request', errors: errors.array() });
@@ -397,7 +397,7 @@ router.post('/generate-audit', [
   body('protocol').isString().isLength({ min: 100 }),
   body('simulation').isObject(),
   body('userPrompt').isString()
-], asyncHandler(async (req: any, res: any) => {
+], asyncHandler(async (req: express.Request, res: express.Response) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     return res.status(400).json({ error: 'Invalid audit request', errors: errors.array() });

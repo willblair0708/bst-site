@@ -4,6 +4,7 @@ import { Prisma } from '@prisma/client';
 interface AppError extends Error {
   statusCode?: number;
   isOperational?: boolean;
+  code?: string;
 }
 
 export const errorHandler = (
@@ -20,8 +21,9 @@ export const errorHandler = (
   let errors: any[] = [];
 
   // Handle Prisma errors
-  if (error instanceof Prisma.PrismaClientKnownRequestError) {
-    switch (error.code) {
+  if (error && typeof error === 'object' && 'code' in error && 'meta' in error) {
+    const prismaError = error as any;
+    switch (prismaError.code) {
       case 'P2002':
         statusCode = 409;
         message = 'Resource already exists';
@@ -41,7 +43,7 @@ export const errorHandler = (
   }
 
   // Handle Prisma validation errors
-  if (error instanceof Prisma.PrismaClientValidationError) {
+  if (error && error.name === 'PrismaClientValidationError') {
     statusCode = 400;
     message = 'Invalid data provided';
   }
@@ -124,7 +126,7 @@ export const createError = (message: string, statusCode: number = 500): AppError
   return error;
 };
 
-export const asyncHandler = (fn: Function) => {
+export const asyncHandler = (fn: (req: Request, res: Response, next: NextFunction) => Promise<any>) => {
   return (req: Request, res: Response, next: NextFunction) => {
     Promise.resolve(fn(req, res, next)).catch(next);
   };

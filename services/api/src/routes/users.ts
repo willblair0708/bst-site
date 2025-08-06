@@ -6,8 +6,8 @@ const router = express.Router();
 const requireAuth = passport.authenticate('jwt', { session: false });
 
 // Get all users (admin only)
-router.get('/', requireAuth, asyncHandler(async (req: any, res: any) => {
-  const { prisma, user } = req;
+router.get('/', requireAuth, asyncHandler(async (req: express.Request, res: express.Response) => {
+  const { prisma, user } = req as any;
   
   if (user.role !== 'ADMIN') {
     return res.status(403).json({ error: 'Insufficient permissions' });
@@ -32,8 +32,8 @@ router.get('/', requireAuth, asyncHandler(async (req: any, res: any) => {
 }));
 
 // Get user profile
-router.get('/:username', requireAuth, asyncHandler(async (req: any, res: any) => {
-  const { prisma } = req;
+router.get('/:username', requireAuth, asyncHandler(async (req: express.Request, res: express.Response) => {
+  const { prisma } = req as any;
   const { username } = req.params;
 
   const user = await prisma.user.findUnique({

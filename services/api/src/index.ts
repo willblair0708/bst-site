@@ -11,22 +11,22 @@ import dotenv from 'dotenv';
 import pino from 'pino';
 
 // Import routes
-import authRoutes from './routes/auth.js';
-import userRoutes from './routes/users.js';
-import repositoryRoutes from './routes/repositories.js';
-import protocolRoutes from './routes/protocols.js';
-import pullRequestRoutes from './routes/pullRequests.js';
-import simulationRoutes from './routes/simulations.js';
-import packageRoutes from './routes/packages.js';
-import aiRoutes from './routes/ai.js';
-import auditRoutes from './routes/audit.js';
-import webhookRoutes from './routes/webhooks.js';
-import metricsRoutes from './routes/metrics.js';
+import authRoutes from './routes/auth';
+import userRoutes from './routes/users';
+import repositoryRoutes from './routes/repositories';
+import protocolRoutes from './routes/protocols';
+import pullRequestRoutes from './routes/pullRequests';
+import simulationRoutes from './routes/simulations';
+import packageRoutes from './routes/packages';
+import aiRoutes from './routes/ai';
+import auditRoutes from './routes/audit';
+import webhookRoutes from './routes/webhooks';
+import metricsRoutes from './routes/metrics';
 
 // Import middleware
-import { errorHandler } from './middleware/errorHandler.js';
-import { setupPassport } from './config/passport.js';
-import { auditLogger } from './middleware/auditLogger.js';
+import { errorHandler } from './middleware/errorHandler';
+import { setupPassport } from './config/passport';
+import { auditLogger } from './middleware/auditLogger';
 
 dotenv.config();
 
@@ -104,7 +104,7 @@ app.use(passport.initialize());
 app.use(auditLogger(prisma));
 
 // Make services available to routes
-app.use((req, res, next) => {
+app.use((req: express.Request, res: express.Response, next: express.NextFunction) => {
   (req as any).prisma = prisma;
   (req as any).redis = redis;
   (req as any).logger = logger;
@@ -112,7 +112,7 @@ app.use((req, res, next) => {
 });
 
 // Health check
-app.get('/health', async (req, res) => {
+app.get('/health', async (req: express.Request, res: express.Response) => {
   try {
     // Check database connection
     await prisma.$queryRaw`SELECT 1`;
@@ -150,7 +150,7 @@ app.use('/api/metrics', metricsRoutes);
 app.use('/api/ai', aiRoutes);
 
 // 404 handler
-app.use('*', (req, res) => {
+app.use('*', (req: express.Request, res: express.Response) => {
   res.status(404).json({
     error: 'Not Found',
     message: `Route ${req.originalUrl} not found`,

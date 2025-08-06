@@ -111,28 +111,28 @@
   }
   
   /* Background colors with opacity */
-  .bg-primary-500\/5 {
+  [class*="bg-primary-500/"] {
     background-color: hsl(228 100% 51% / 0.05) !important;
   }
   
-  .bg-accent-500\/10 {
+  [class*="bg-accent-500/"] {
     background-color: hsl(173 75% 51% / 0.1) !important;
   }
   
-  .bg-viz-purple-500\/15 {
+  [class*="bg-viz-purple-500/"] {
     background-color: hsl(258 77% 68% / 0.15) !important;
   }
   
   /* Border colors with opacity */
-  .border-primary-500\/30 {
+  [class*="border-primary-500/"] {
     border-color: hsl(228 100% 51% / 0.3) !important;
   }
   
-  .border-accent-500\/30 {
+  [class*="border-accent-500/"] {
     border-color: hsl(173 75% 51% / 0.3) !important;
   }
   
-  .border-viz-purple-500\/30 {
+  [class*="border-viz-purple-500/"] {
     border-color: hsl(258 77% 68% / 0.3) !important;
   }
 

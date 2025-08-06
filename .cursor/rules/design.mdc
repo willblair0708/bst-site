@@ -117,6 +117,10 @@ Runix Hub is the **GitHub for Science**—where researchers turn claims into run
 - Primary: Blue background, white text, hover scale
 - Ghost: Transparent, hover accent background
 - Destructive: Red background for dangerous actions
+- Use ANTD components
+
+**Icons:**
+- Use lucide icons
 
 **Form Controls:**
 - Consistent border radius (0.5rem)

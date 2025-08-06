@@ -21,7 +21,8 @@ import {
   FolderOpen,
   Target,
   Activity,
-  Zap
+  Zap,
+  Brain
 } from 'lucide-react'
 
 interface NavItem {
@@ -37,6 +38,7 @@ const navigation: NavItem[] = [
   { name: 'Issues', href: '/issues', icon: Bug, count: 7 },
   { name: 'Pull Requests', href: '/pull-requests', icon: GitPullRequest, count: 3 },
   { name: 'Actions', href: '/actions', icon: Zap },
+  { name: 'Models', href: '/models', icon: Brain },
   { name: 'Projects', href: '/projects', icon: Target, count: 2 },
   { name: 'Analytics', href: '/analytics', icon: BarChart3 },
   { name: 'Wiki', href: '/wiki', icon: BookOpen },

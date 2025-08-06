@@ -2,6 +2,7 @@
 
 import { usePathname } from 'next/navigation'
 import { GitHubHeader } from "@/components/header"
+import { ToastProvider } from "@/components/ui/toast"
 
 const platformRoutes = ['/trials', '/organizations', '/profile', '/dashboard', '/new', '/settings']
 
@@ -18,9 +19,11 @@ export function LayoutWrapper({ children }: { children: React.ReactNode }) {
     )
 
   return (
-    <div className="min-h-screen bg-background text-foreground">
-      <GitHubHeader />
-      <main>{children}</main>
-    </div>
+    <ToastProvider>
+      <div className="min-h-screen bg-background text-foreground">
+        <GitHubHeader />
+        <main>{children}</main>
+      </div>
+    </ToastProvider>
   )
 }

@@ -1,37 +1,20 @@
 "use client";
 
-import {
-  GitBranch,
-  CheckCircle2,
-  Star,
-  GitFork,
-  Activity,
-  Beaker,
-  Globe,
-  Lock,
-  ArrowRight,
-  Database,
-  ShieldCheck,
-  Zap,
-  FlaskConical,
-  Users,
-  Bot,
-  Sparkles,
-  FileJson,
-  Hash,
-  Workflow,
-  GitMerge,
-  Brain,
-  Search,
-  MessageSquare,
-  LineChart,
-} from "lucide-react";
-import Link from "next/link";
-import { AnimatedHero } from "@/components/ui/animated-hero";
-import { motion } from "framer-motion";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { ModelCard } from "@/components/ui/model-card";
+import { GitBranch, CheckCircle2, Star, GitFork, Activity, Globe, Lock, ArrowRight, Database, ShieldCheck, FlaskConical, Users, Bot, Sparkles, FileJson, Hash, Workflow, GitMerge, Brain, MessageSquare, Copy } from "lucide-react"
+import Link from "next/link"
+import Image from "next/image"
+import { AnimatedHero } from "@/components/ui/animated-hero"
+import { motion } from "framer-motion"
+import { Button } from "@/components/ui/button"
+import { Badge } from "@/components/ui/badge"
+import { ModelCard } from "@/components/ui/model-card"
+import { ProofRunwayCard } from "@/components/ui/proof-runway-card"
+import { useToast } from "@/components/ui/toast"
+import { getLangColor } from "@/lib/icon-utils"
+import { MicroTooltip } from "@/components/ui/micro-tooltip"
+import { RepoCardSkeleton, ModelCardSkeleton } from "@/components/ui/skeleton-loader"
+import { Suspense, useState, useEffect } from "react"
+import { trackEvent, trackPageView } from "@/lib/analytics"
 
 // Three Pillars from design system
 const PILLARS = {
@@ -132,25 +115,28 @@ const featuredModels = [
 
 const proofRunwaySteps = [
   {
-    pillar: "VERSIONED_KNOWLEDGE" as keyof typeof PILLARS,
+    pillar: "VERSIONED_KNOWLEDGE" as const,
     icon: GitFork,
     title: "Fork",
     description: "Create your versioned workspace",
     motion: "snap",
+    emoji: "🗂️",
   },
   {
-    pillar: "COMPOSABLE_MODELS" as keyof typeof PILLARS,
+    pillar: "COMPOSABLE_MODELS" as const,
     icon: Bot,
-    title: "Model",
+    title: "Model", 
     description: "Drop in a model or simulator",
     motion: "spark-glow",
+    emoji: "🛠️",
   },
   {
-    pillar: "HUMAN_AI_COLLAB" as keyof typeof PILLARS,
+    pillar: "HUMAN_AI_COLLAB" as const,
     icon: GitMerge,
     title: "Review",
     description: "Merge results with agents & peers",
     motion: "pulse-success",
+    emoji: "🤝",
   },
 ];
 
@@ -169,13 +155,40 @@ const staggerContainer = {
 };
 
 export default function LandingPage() {
+  const { addToast } = useToast()
+  const [isLoading, setIsLoading] = useState(false)
+  
+  useEffect(() => {
+    trackPageView('landing_page')
+  }, [])
+
+  const copyHash = async (hash: string) => {
+    try {
+      await navigator.clipboard.writeText(hash)
+      addToast('Hash copied to clipboard!')
+      trackEvent('hash_copied', { hash })
+    } catch (err) {
+      addToast('Failed to copy hash', 'error')
+    }
+  }
+
   return (
     <div className="bg-background text-foreground antialiased">
       {/* Hero Section */}
+      <header>
         <AnimatedHero />
+      </header>
 
-      {/* Proof Runway (Zero-State Flow) */}
-      <section className="py-20 sm:py-24">
+      <main>
+        {/* Command Palette Banner */}
+        <section className="border-b border-accent/20 bg-accent/5 py-2">
+          <div className="mx-auto max-w-7xl px-6 lg:px-8">
+
+          </div>
+        </section>
+
+        {/* Proof Runway (Zero-State Flow) */}
+        <section className="py-20 sm:py-24" role="region" aria-labelledby="proof-runway-heading">
         <div className="mx-auto max-w-7xl px-6 lg:px-8">
           <motion.div 
             className="mx-auto max-w-2xl text-center"
@@ -186,67 +199,56 @@ export default function LandingPage() {
             transition={{ duration: 0.6, ease: "easeOut" }}
           >
             <motion.div whileHover={{ scale: 1.05 }} className="inline-block mb-4">
-              <Badge variant="outline" className="border-primary/20 bg-primary/5">
-                <Sparkles className="w-3 h-3 mr-1 text-primary animate-pulse" />
+              <Badge variant="outline" className="border-accent-500/30 bg-accent-500/10 text-accent-500">
+                <Sparkles className="w-3 h-3 mr-1 text-accent-500 animate-pulse" />
                 Proof Runway
               </Badge>
             </motion.div>
-            <h2 className="font-display text-3xl tracking-tight sm:text-4xl">
+            <h2 id="proof-runway-heading" className="font-display text-3xl tracking-tight sm:text-4xl">
               From hypothesis to verified result in 3 steps
             </h2>
           </motion.div>
 
           <div className="mx-auto mt-16 max-w-5xl">
             <div className="grid grid-cols-1 gap-8 sm:grid-cols-3">
-              {proofRunwaySteps.map((step, index) => {
-                const Icon = step.icon;
-                const pillarConfig = PILLARS[step.pillar];
-                
-                return (
-                  <motion.div
-                    key={step.title}
-                    initial="initial"
-                    whileInView="animate"
-                    variants={fadeInUp}
-                    viewport={{ once: true }}
-                    transition={{ duration: 0.6, delay: index * 0.1 }}
-                    className="relative text-center"
-                  >
-                    {/* Connection line */}
-                    {index < proofRunwaySteps.length - 1 && (
-                      <div className="absolute left-1/2 top-12 hidden h-0.5 w-full translate-x-1/2 bg-gradient-to-r from-border to-transparent sm:block" />
-                    )}
-                    
-                    <motion.div
-                      whileHover={{ scale: 1.1, rotate: 5 }}
-                      whileTap={{ scale: 0.95 }}
-                      className={`mx-auto mb-6 flex h-24 w-24 items-center justify-center rounded-2xl transition-all duration-300 hover:shadow-lg ${
-                        step.pillar === "VERSIONED_KNOWLEDGE" ? "bg-primary/10 hover:bg-primary/20" :
-                        step.pillar === "COMPOSABLE_MODELS" ? "bg-accent/10 hover:bg-accent/20 spark-glow" :
-                        "bg-viz-purple-500/10 hover:bg-viz-purple-500/20"
-                      }`}
+              <div className="block sm:hidden overflow-x-auto">
+                <div className="flex gap-4 pb-4 min-w-max">
+                  {proofRunwaySteps.map((step, index) => (
+                    <div 
+                      key={step.title} 
+                      className="min-w-[280px]" 
+                      onMouseEnter={() => trackEvent('proof_runway_step_hovered', { step: step.title })}
                     >
-                      <Icon className={`h-10 w-10 ${
-                        step.pillar === "VERSIONED_KNOWLEDGE" ? "text-primary" :
-                        step.pillar === "COMPOSABLE_MODELS" ? "text-accent" :
-                        "text-viz-purple-500"
-                      }`} strokeWidth={1.5} />
-                    </motion.div>
-                    
-                    <h3 className="mb-2 text-xl font-semibold">
-                      {pillarConfig.emoji} {step.title}
-                    </h3>
-                    <p className="text-sm text-muted-foreground">{step.description}</p>
-                  </motion.div>
-                );
-              })}
+                      <ProofRunwayCard
+                        step={step}
+                        index={index}
+                        totalSteps={proofRunwaySteps.length}
+                      />
+                    </div>
+                  ))}
+                </div>
+              </div>
+              <div className="hidden sm:contents">
+                {proofRunwaySteps.map((step, index) => (
+                  <div 
+                    key={step.title}
+                    onMouseEnter={() => trackEvent('proof_runway_step_hovered', { step: step.title })}
+                  >
+                    <ProofRunwayCard
+                      step={step}
+                      index={index}
+                      totalSteps={proofRunwaySteps.length}
+                    />
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Pillar 1: Versioned Knowledge */}
-      <section className="border-t border-border py-24 sm:py-32">
+        {/* Pillar 1: Versioned Knowledge */}
+        <section className="border-t border-border py-24 sm:py-32" role="region" aria-labelledby="versioned-knowledge-heading">
         <div className="mx-auto max-w-7xl px-6 lg:px-8">
           <motion.div
             className="mx-auto max-w-2xl text-center"
@@ -257,11 +259,13 @@ export default function LandingPage() {
             transition={{ duration: 0.6 }}
           >
             <motion.div whileHover={{ scale: 1.05 }} className="inline-block mb-4">
-              <Badge className="bg-primary/10 text-primary border border-primary/20">
-                {PILLARS.VERSIONED_KNOWLEDGE.emoji} Versioned Knowledge
-              </Badge>
+              <MicroTooltip content="🗂️ Immutable history - Every change tracked with SHA-256 provenance">
+                <Badge className="bg-primary-500/15 text-primary-500 border border-primary-500/30 font-medium">
+                  {PILLARS.VERSIONED_KNOWLEDGE.emoji} Versioned Knowledge
+                </Badge>
+              </MicroTooltip>
             </motion.div>
-            <h2 className="font-display text-3xl tracking-tight sm:text-4xl">
+            <h2 id="versioned-knowledge-heading" className="font-display text-3xl tracking-tight sm:text-4xl">
               Immutable Git-grade history
             </h2>
             <p className="mt-6 text-lg leading-8 text-muted-foreground">
@@ -280,19 +284,22 @@ export default function LandingPage() {
             whileInView="animate"
             viewport={{ once: true }}
           >
+            <Suspense fallback={
+              Array(3).fill(0).map((_, i) => <RepoCardSkeleton key={i} />)
+            }>
             {featuredRepositories.map((repo) => (
               <motion.div
                 key={repo.name}
                 variants={fadeInUp}
                 transition={{ duration: 0.6 }}
                 whileHover={{ y: -8, scale: 1.02 }}
-                className="group relative flex flex-col overflow-hidden rounded-xl border border-border bg-card shadow-elevation-1 transition-all duration-300 hover:shadow-elevation-3 hover:border-primary/20"
+                className="group relative flex flex-col overflow-hidden rounded-xl border border-border bg-card shadow-elevation-1 transition-all duration-300 hover:shadow-elevation-3 hover:border-accent/30 spark-glow"
               >
                 {/* Verification badge */}
                 {repo.verified && (
                   <div className="absolute right-4 top-4 z-10">
-                    <div className="verify-ring">
-                      <CheckCircle2 className="h-5 w-5 text-accent" strokeWidth={2} />
+                    <div className="verify-ring bg-accent-500/10 rounded-full p-1 border border-accent-500/20">
+                      <CheckCircle2 className="h-4 w-4 text-accent-500" strokeWidth={2} />
                     </div>
                   </div>
                 )}
@@ -307,6 +314,7 @@ export default function LandingPage() {
                     <Link
                       href={`/repo/${repo.owner}/${repo.name}`}
                       className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors"
+                      onClick={() => trackEvent('repo_card_clicked', { repo: repo.name, owner: repo.owner })}
                     >
                       {repo.owner} / <span className="font-bold text-foreground">{repo.name}</span>
                     </Link>
@@ -318,51 +326,43 @@ export default function LandingPage() {
 
                   <div className="mt-6 flex items-center gap-4 text-xs">
                     <div className="flex items-center gap-1">
-                      <div
-                        className={`h-2 w-2 rounded-full ${
-                          repo.language === "Python"
-                            ? "bg-viz-blue-500"
-                            : repo.language === "R"
-                            ? "bg-viz-purple-500"
-                            : "bg-viz-orange-500"
-                        }`}
-                      />
+                      <div className={`h-2 w-2 rounded-full ${getLangColor(repo.language)}`} />
                       <span className="text-muted-foreground">{repo.language}</span>
                     </div>
                     <div className="flex items-center gap-1">
-                      <Activity className="h-3 w-3 text-accent" />
-                      <span className="font-mono text-accent">{repo.reproducibility}%</span>
+                      <Activity className="h-3 w-3 text-accent-500" />
+                      <span className="font-mono text-accent-500 font-semibold">{repo.reproducibility}%</span>
                     </div>
                   </div>
 
                   {/* Hash with copy button */}
-                  <div className="mt-4 flex items-center gap-2 rounded-md bg-muted/50 px-3 py-2">
-                    <Hash className="h-3 w-3 text-muted-foreground" />
-                    <code className="flex-1 font-mono text-xs text-muted-foreground">
+                  <div className="mt-4 flex items-center gap-2 rounded-md bg-primary-500/5 border border-primary-500/15 px-3 py-2">
+                    <Hash className="h-3 w-3 text-primary-500" aria-hidden="true" />
+                    <code className="flex-1 font-mono text-xs text-primary-500 font-medium">
                         {repo.hash}
                     </code>
                     <motion.button 
-                      className="text-muted-foreground hover:text-accent transition-colors"
+                      className="text-primary-500 hover:text-accent-500 transition-colors"
                       whileHover={{ scale: 1.1 }}
                       whileTap={{ scale: 0.9 }}
+                      onClick={() => copyHash(repo.hash)}
+                      aria-label="Copy hash to clipboard"
                     >
-                      <svg className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
-                      </svg>
+                      <Copy className="h-3 w-3" />
                     </motion.button>
                     </div>
                 </div>
 
-                <div className="border-t border-border bg-muted/30 px-6 py-4">
+                <div className="border-t border-border bg-primary-500/5 px-6 py-4">
                   <div className="flex items-center justify-between text-xs text-muted-foreground">
                     <div className="flex items-center gap-4">
                       <div className="flex items-center gap-1">
                         <Star className="h-3 w-3" strokeWidth={1.5} />
-                          <span className="font-mono">{repo.stars}</span>
+                          <span className="font-mono text-primary-500 font-semibold">{repo.stars}</span>
                       </div>
                       <div className="flex items-center gap-1">
                         <GitFork className="h-3 w-3" strokeWidth={1.5} />
-                          <span className="font-mono">{repo.forks}</span>
+                          <span className="font-mono text-primary-500 font-semibold">{repo.forks}</span>
                       </div>
                       </div>
                     <span>{repo.updatedAt}</span>
@@ -370,12 +370,13 @@ export default function LandingPage() {
                 </div>
               </motion.div>
             ))}
+            </Suspense>
           </motion.div>
         </div>
       </section>
 
-      {/* Pillar 2: Composable Models & Tools */}
-      <section className="bg-muted/50 py-24 sm:py-32">
+        {/* Pillar 2: Composable Models & Tools */}
+        <section className="bg-muted/50 py-24 sm:py-32" role="region" aria-labelledby="composable-models-heading">
           <div className="mx-auto max-w-7xl px-6 lg:px-8">
               <motion.div 
                 className="mx-auto max-w-2xl text-center"
@@ -386,11 +387,13 @@ export default function LandingPage() {
             transition={{ duration: 0.6 }}
           >
             <motion.div whileHover={{ scale: 1.05 }} className="inline-block mb-4">
-              <Badge className="bg-accent/10 text-accent border border-accent/20">
-                {PILLARS.COMPOSABLE_MODELS.emoji} Composable Models & Tools
-              </Badge>
+              <MicroTooltip content="🛠️ Plug-and-play - Foundation models and simulators ready to integrate">
+                <Badge className="bg-accent-500/15 text-accent-500 border border-accent-500/30 font-medium">
+                  {PILLARS.COMPOSABLE_MODELS.emoji} Composable Models & Tools
+                </Badge>
+              </MicroTooltip>
             </motion.div>
-            <h2 className="font-display text-3xl tracking-tight sm:text-4xl">
+            <h2 id="composable-models-heading" className="font-display text-3xl tracking-tight sm:text-4xl">
               Plug-and-play foundation models
             </h2>
             <p className="mt-6 text-lg leading-8 text-muted-foreground">
@@ -409,15 +412,19 @@ export default function LandingPage() {
             whileInView="animate"
             viewport={{ once: true }}
           >
+            <Suspense fallback={
+              Array(3).fill(0).map((_, i) => <ModelCardSkeleton key={i} />)
+            }>
             {featuredModels.map((model) => (
               <ModelCard key={model.name} model={model} variants={fadeInUp} />
             ))}
+            </Suspense>
           </motion.div>
         </div>
       </section>
 
-      {/* Pillar 3: Human-AI Collaboration */}
-      <section className="py-24 sm:py-32">
+        {/* Pillar 3: Human-AI Collaboration */}
+        <section className="py-24 sm:py-32" role="region" aria-labelledby="human-ai-collab-heading">
         <div className="mx-auto max-w-7xl px-6 lg:px-8">
           <motion.div
             className="mx-auto max-w-2xl text-center"
@@ -428,11 +435,13 @@ export default function LandingPage() {
             transition={{ duration: 0.6 }}
           >
             <motion.div whileHover={{ scale: 1.05 }} className="inline-block mb-4">
-              <Badge className="bg-viz-purple-500/10 text-viz-purple-500 border border-viz-purple-500/20">
-                {PILLARS.HUMAN_AI_COLLAB.emoji} Human–AI Collaboration
-              </Badge>
+              <MicroTooltip content="🤝 Social science - Live agent suggestions and peer review workflows">
+                <Badge className="bg-viz-purple-500/15 text-viz-purple-500 border border-viz-purple-500/30 font-medium">
+                  {PILLARS.HUMAN_AI_COLLAB.emoji} Human–AI Collaboration
+                </Badge>
+              </MicroTooltip>
             </motion.div>
-            <h2 className="font-display text-3xl tracking-tight sm:text-4xl">
+            <h2 id="human-ai-collab-heading" className="font-display text-3xl tracking-tight sm:text-4xl">
               Live agent suggestions & social review
             </h2>
             <p className="mt-6 text-lg leading-8 text-muted-foreground">
@@ -469,7 +478,14 @@ export default function LandingPage() {
                     </p>
                     <div className="mt-4 flex items-center gap-2">
                       <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-                        <Button size="sm" className="bg-viz-purple-500 hover:bg-viz-purple-500/90 text-white">
+                        <Button 
+                          size="sm" 
+                          className="bg-viz-purple-500 hover:bg-viz-purple-500/90 text-white"
+                          onClick={() => {
+                            trackEvent('cta_accept_run_clicked')
+                            addToast('Running experiment with suggested parameters...')
+                          }}
+                        >
                           Accept & Run
                         </Button>
                       </motion.div>
@@ -579,8 +595,8 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* Core Features Grid */}
-      <section className="border-t border-border bg-muted/30 py-24 sm:py-32">
+        {/* Core Features Grid */}
+        <section className="border-t border-border bg-muted/30 py-24 sm:py-32" role="region" aria-labelledby="core-features-heading">
         <div className="mx-auto max-w-7xl px-6 lg:px-8">
           <motion.div
             className="mx-auto max-w-2xl text-center"
@@ -590,7 +606,7 @@ export default function LandingPage() {
             viewport={{ once: true }}
             transition={{ duration: 0.6 }}
           >
-            <h2 className="font-display text-3xl tracking-tight sm:text-4xl">
+            <h2 id="core-features-heading" className="font-display text-3xl tracking-tight sm:text-4xl">
               A new operating system for science
             </h2>
             <p className="mt-6 text-lg leading-8 text-muted-foreground">
@@ -633,7 +649,7 @@ export default function LandingPage() {
                             >
                                                     <dt className="flex items-center gap-x-3 text-base font-semibold leading-7 text-foreground">
                       <motion.div 
-                        className="flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10"
+                        className="flex h-12 w-12 items-center justify-center rounded-lg bg-primary/15 border border-primary/20"
                         whileHover={{ 
                           scale: 1.1, 
                           backgroundColor: "rgba(4, 54, 255, 0.2)",
@@ -656,11 +672,11 @@ export default function LandingPage() {
           </div>
       </section>
 
-      {/* CTA Section */}
-      <section className="py-24 sm:py-32">
+        {/* CTA Section */}
+        <section className="py-24 sm:py-32" role="region" aria-labelledby="cta-heading">
           <div className="mx-auto max-w-7xl px-6 lg:px-8">
                         <motion.div 
-            className="relative isolate overflow-hidden rounded-3xl bg-gradient-to-br from-primary via-primary-600 to-accent/20 px-6 py-24 text-center shadow-2xl sm:px-16"
+            className="relative isolate overflow-hidden rounded-3xl bg-gradient-to-br from-primary via-primary-600 to-accent/30 px-6 py-24 text-center shadow-2xl sm:px-16 border border-primary/20"
                             initial="initial"
                             whileInView="animate"
                             variants={fadeInUp}
@@ -668,7 +684,7 @@ export default function LandingPage() {
                             transition={{ duration: 0.8, ease: "easeOut" }}
             whileHover={{ scale: 1.01 }}
               >
-                  <h2 className="mx-auto max-w-2xl font-display text-3xl font-bold tracking-tight text-primary-foreground sm:text-4xl">
+                  <h2 id="cta-heading" className="mx-auto max-w-2xl font-display text-3xl font-bold tracking-tight text-primary-foreground sm:text-4xl">
               Ready to transform your research?
                   </h2>
             <p className="mx-auto mt-6 max-w-xl text-lg leading-8 text-primary-foreground/90">
@@ -677,7 +693,14 @@ export default function LandingPage() {
                   <div className="mt-10 flex items-center justify-center gap-x-6">
               <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
                 <Link href="/explore">
-                  <Button size="lg" className="bg-white text-primary hover:bg-white/90 shadow-lg hover:shadow-xl transition-all">
+                                          <Button 
+                          size="lg" 
+                          className="bg-white text-[#0436FF] hover:bg-white/90 shadow-lg hover:shadow-xl transition-all"
+                          onClick={() => {
+                            trackEvent('cta_start_building_clicked')
+                            addToast('Redirecting to explore page...')
+                          }}
+                        >
                     <FlaskConical className="mr-2 h-4 w-4" />
                     Start Building
                       </Button>
@@ -722,6 +745,21 @@ export default function LandingPage() {
               </motion.div>
           </div>
       </section>
+
+      </main>
+
+      {/* SHA-256 Verified Watermark */}
+      <div className="fixed bottom-4 left-4 z-10">
+        <motion.div
+          initial={{ opacity: 0, scale: 0.8 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ delay: 2, duration: 0.5 }}
+          className="flex items-center gap-2 rounded-full border border-accent/30 bg-accent/10 backdrop-blur-sm px-3 py-1.5 text-xs font-medium"
+        >
+          <ShieldCheck className="h-3 w-3 text-accent" aria-hidden="true" />
+          <span className="font-mono text-accent">SHA-256 Verified</span>
+        </motion.div>
+      </div>
 
       {/* Footer */}
       <footer className="border-t border-border bg-background">
@@ -771,5 +809,5 @@ export default function LandingPage() {
           </div>
       </footer>
     </div>
-  );
+  )
 }

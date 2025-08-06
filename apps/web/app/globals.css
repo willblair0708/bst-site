@@ -27,6 +27,7 @@
     /* Semantic Additions from @design.mdc */
     --warn-bg: 45 100% 95%; /* Light warning #FFF7E6 */
     --info-bg: 210 100% 96%; /* Light info #E5F0FF */
+    --viz-purple: 258 77% 68%; /* viz-purple-500 #A855F7 */
   }
 
   .dark {
@@ -54,6 +55,7 @@
     /* Semantic Additions from @design.mdc */
     --warn-bg: 30 100% 15%; /* Dark warning #4D3900 */
     --info-bg: 215 82% 16%; /* Dark info #08254A */
+    --viz-purple: 258 77% 68%; /* viz-purple-500 #A855F7 */
   }
 
   * {
@@ -95,6 +97,19 @@
     letter-spacing: 0.01em;
   }
   
+  /* Force design.mdc colors to show up */
+  .text-primary-500 {
+    color: #0436FF !important;
+  }
+  
+  .text-accent-500 {
+    color: #18E0C8 !important;
+  }
+  
+  .text-viz-purple-500 {
+    color: #A855F7 !important;
+  }
+
   /* Global Motion & Transition */
   * {
     scroll-behavior: smooth;

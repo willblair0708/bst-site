@@ -1478,34 +1478,55 @@ export default function ModelPage({ params }: ModelPageProps) {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.5 }}
           >
-            <Button size="lg" className="bg-gradient-to-r from-primary to-primary/90 hover:from-primary/90 hover:to-primary/80 shadow-md hover:shadow-lg transition-all">
-              <Play className="h-4 w-4 mr-2" />
-              Run Model
+            <Button 
+              size="lg" 
+              className="bg-gradient-to-r from-primary to-primary/90 hover:from-primary/90 hover:to-primary/80 shadow-md hover:shadow-lg transition-all whitespace-nowrap"
+            >
+              <Play className="h-4 w-4 mr-2 flex-shrink-0" />
+              <span>Run Model</span>
             </Button>
             
-            <Button variant="outline" size="lg" className="border-border/50 hover:bg-muted/50 transition-colors">
-              <Download className="h-4 w-4 mr-2" />
-              Download
+            <Button 
+              variant="outline" 
+              size="lg" 
+              className="border-border/50 hover:bg-muted/50 transition-colors whitespace-nowrap"
+            >
+              <Download className="h-4 w-4 mr-2 flex-shrink-0" />
+              <span>Download</span>
             </Button>
             
-            <Button variant="outline" size="lg" className="border-border/50 hover:bg-muted/50 transition-colors">
-              <GitFork className="h-4 w-4 mr-2" />
-              Fork
+            <Button 
+              variant="outline" 
+              size="lg" 
+              className="border-border/50 hover:bg-muted/50 transition-colors whitespace-nowrap"
+            >
+              <GitFork className="h-4 w-4 mr-2 flex-shrink-0" />
+              <span>Fork</span>
             </Button>
             
-            <Button variant="outline" size="lg" asChild className="border-border/50 hover:bg-muted/50 transition-colors">
-              <Link href={model.codeUrl} target="_blank">
-                <Code className="h-4 w-4 mr-2" />
-                View Code
-                <ExternalLink className="h-3 w-3 ml-1" />
+            <Button 
+              variant="outline" 
+              size="lg" 
+              asChild 
+              className="border-border/50 hover:bg-muted/50 transition-colors whitespace-nowrap"
+            >
+              <Link href={model.codeUrl} target="_blank" className="flex items-center">
+                <Code className="h-4 w-4 mr-2 flex-shrink-0" />
+                <span>View Code</span>
+                <ExternalLink className="h-3 w-3 ml-1 flex-shrink-0" />
               </Link>
             </Button>
             
-            <Button variant="outline" size="lg" asChild className="border-border/50 hover:bg-muted/50 transition-colors">
-              <Link href={model.paperUrl} target="_blank">
-                <FileText className="h-4 w-4 mr-2" />
-                Read Paper
-                <ExternalLink className="h-3 w-3 ml-1" />
+            <Button 
+              variant="outline" 
+              size="lg" 
+              asChild 
+              className="border-border/50 hover:bg-muted/50 transition-colors whitespace-nowrap"
+            >
+              <Link href={model.paperUrl} target="_blank" className="flex items-center">
+                <FileText className="h-4 w-4 mr-2 flex-shrink-0" />
+                <span>Read Paper</span>
+                <ExternalLink className="h-3 w-3 ml-1 flex-shrink-0" />
               </Link>
             </Button>
           </motion.div>

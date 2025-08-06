@@ -63,7 +63,7 @@ export function Navigation() {
               </div>
             </div>
             <div className="hidden md:block">
-              <Badge variant="info">Phase I</Badge>
+              <Badge variant="info" className="rounded-full">Phase I</Badge>
             </div>
           </div>
           <div className="flex items-center space-x-4">
@@ -99,7 +99,7 @@ export function Navigation() {
                 <Icon className="w-4 h-4" />
                 <span>{item.name}</span>
                 {item.count && (
-                  <Badge variant="secondary" className="ml-1">
+                  <Badge variant="secondary" className="ml-1 rounded-full">
                     {item.count}
                   </Badge>
                 )}

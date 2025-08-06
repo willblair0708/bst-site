@@ -57,7 +57,7 @@ export function MicroTooltip({
             transition={{ duration: 0.2, ease: [0.22, 0.61, 0.36, 1] }}
             className={`absolute z-50 ${positionClasses[position]} pointer-events-none`}
           >
-            <div className="glass-card border border-primary-500/20 shadow-elevation-3 rounded-lg px-3 py-2 backdrop-blur-md">
+            <div className="bg-card/90 border border-primary-500/20 shadow-elevation-2 rounded-xl px-3 py-2 backdrop-blur-sm">
               <div className="text-xs font-medium text-foreground whitespace-nowrap">
                 {content}
               </div>

@@ -52,7 +52,7 @@ export function StatusRibbon({ power, diversity, part11Status, twinAUC }: Status
         <div className="flex items-center gap-4 flex-wrap">
           <Tooltip>
             <TooltipTrigger asChild>
-              <Badge variant={power >= 0.8 ? 'success' : 'destructive'} className="flex items-center gap-1.5 pl-2 cursor-pointer">
+              <Badge variant={power >= 0.8 ? 'success' : 'destructive'} className="flex items-center gap-1.5 pl-2 cursor-pointer rounded-full">
                 {power >= 0.8 ? <CheckCircle2 className="w-4 h-4" /> : <AlertCircle className="w-4 h-4" />}
                 <span className="font-semibold">Power:</span>
                 <span>{power.toFixed(2)}</span>
@@ -64,7 +64,7 @@ export function StatusRibbon({ power, diversity, part11Status, twinAUC }: Status
             </TooltipContent>
           </Tooltip>
 
-          <Badge variant={diversity === 'Gold' ? 'gold' : 'secondary'} className="flex items-center gap-1.5 pl-2">
+          <Badge variant={diversity === 'Gold' ? 'gold' : 'secondary'} className="flex items-center gap-1.5 pl-2 rounded-full">
             {getDiversityIcon(diversity)}
             <span className="font-semibold">Diversity:</span>
             <span>{diversity}</span>
@@ -72,7 +72,7 @@ export function StatusRibbon({ power, diversity, part11Status, twinAUC }: Status
 
           <Tooltip>
             <TooltipTrigger asChild>
-              <Badge variant={twinAUC > 0.75 ? 'success' : 'warning'} className="flex items-center gap-1.5 pl-2 cursor-pointer">
+              <Badge variant={twinAUC > 0.75 ? 'success' : 'warning'} className="flex items-center gap-1.5 pl-2 cursor-pointer rounded-full">
                 <TestTube2 className="w-4 h-4" />
                 <span className="font-semibold">Twin-AUC:</span>
                 <span>{twinAUC.toFixed(2)}</span>
@@ -86,7 +86,7 @@ export function StatusRibbon({ power, diversity, part11Status, twinAUC }: Status
         </div>
 
         <div className="flex items-center gap-2">
-          <Badge variant={part11Status === 'Signed' ? 'success' : 'destructive'} className="flex items-center gap-1.5 pl-2">
+          <Badge variant={part11Status === 'Signed' ? 'success' : 'destructive'} className="flex items-center gap-1.5 pl-2 rounded-full">
             <Shield className="w-4 h-4" />
             <span className="font-semibold">Part 11:</span>
             <span>{part11Status}</span>

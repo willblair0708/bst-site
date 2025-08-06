@@ -82,17 +82,17 @@ export function TrialNavigation() {
                     {trialInfo.id}
                   </Link>
                   {trialInfo.isPrivate && (
-                    <Badge variant="outline" className="text-xs">Private</Badge>
+                    <Badge variant="outline" className="text-xs rounded-full">Private</Badge>
                   )}
                 </div>
                 <p className="text-sm text-gray-600 mt-1">{trialInfo.title}</p>
               </div>
             </div>
             <div className="flex items-center space-x-2">
-              <Badge variant="info" className="text-xs">{trialInfo.phase}</Badge>
+              <Badge variant="info" className="text-xs rounded-full">{trialInfo.phase}</Badge>
               <Badge 
                 variant={trialInfo.status === 'Active' ? 'success' : 'secondary'} 
-                className="text-xs"
+                className="text-xs rounded-full"
               >
                 <Activity className="w-3 h-3 mr-1" />
                 {trialInfo.status}
@@ -106,21 +106,21 @@ export function TrialNavigation() {
               <Button variant="outline" size="sm" className="text-xs">
                 <Bell className="w-3 h-3 mr-1" />
                 Notifications
-                <Badge variant="secondary" className="ml-1 text-xs">
+                <Badge variant="secondary" className="ml-1 text-xs rounded-full">
                   {trialInfo.watching}
                 </Badge>
               </Button>
               <Button variant="outline" size="sm" className="text-xs">
                 <Star className="w-3 h-3 mr-1" />
                 Star
-                <Badge variant="secondary" className="ml-1 text-xs">
+                <Badge variant="secondary" className="ml-1 text-xs rounded-full">
                   {trialInfo.stars}
                 </Badge>
               </Button>
               <Button variant="outline" size="sm" className="text-xs">
                 <GitFork className="w-3 h-3 mr-1" />
                 Fork
-                <Badge variant="secondary" className="ml-1 text-xs">
+                <Badge variant="secondary" className="ml-1 text-xs rounded-full">
                   {trialInfo.forks}
                 </Badge>
               </Button>
@@ -148,7 +148,7 @@ export function TrialNavigation() {
                 <Icon className="w-4 h-4" />
                 <span>{item.name}</span>
                 {item.count && (
-                  <Badge variant="secondary" className="ml-1 text-xs">
+                  <Badge variant="secondary" className="ml-1 text-xs rounded-full">
                     {item.count}
                   </Badge>
                 )}

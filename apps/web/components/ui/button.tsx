@@ -6,7 +6,7 @@ import { cva, type VariantProps } from "class-variance-authority"
 import { cn } from "@/lib/utils"
 
 const buttonVariants = cva(
-  "inline-flex items-center justify-center text-sm font-medium transition-all duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 relative overflow-hidden",
+  "inline-flex items-center justify-center text-sm font-medium transition-all duration-150 focus-ring disabled:pointer-events-none disabled:opacity-50 relative overflow-hidden rounded-xl",
   {
     variants: {
       variant: {
@@ -14,14 +14,14 @@ const buttonVariants = cva(
         destructive: "soft-ui bg-gradient-to-r from-destructive-500 to-destructive-500/90 text-white hover:from-destructive-500/90 hover:to-destructive-500",
         outline: "soft-ui border border-primary-500/30 bg-primary-500/5 text-primary-500 hover:bg-primary-500/10 hover:border-primary-500/50",
         secondary: "soft-ui bg-secondary/10 text-secondary-foreground border border-secondary/20 hover:bg-secondary/20 hover:border-secondary/30",
-        ghost: "rounded-lg hover:bg-accent-500/10 hover:text-accent-500 text-muted-foreground transition-all duration-150 hover:-translate-y-px",
-        link: "text-primary-500 underline-offset-4 hover:underline hover:text-primary-600",
+        ghost: "rounded-xl hover:bg-accent-500/10 hover:text-accent-500 text-muted-foreground transition-all duration-150 hover:-translate-y-px",
+        link: "text-primary-500 underline-offset-4 hover:underline hover:text-primary-600 rounded-none",
       },
       size: {
         default: "h-10 px-4 py-2",
-        sm: "h-8 rounded-lg px-3 text-xs",
-        lg: "h-12 rounded-lg px-8 text-base font-semibold",
-        icon: "h-10 w-10 rounded-lg",
+        sm: "h-8 rounded-xl px-3 text-xs",
+        lg: "h-12 rounded-xl px-8 text-base font-semibold",
+        icon: "h-10 w-10 rounded-xl",
       },
     },
     defaultVariants: {

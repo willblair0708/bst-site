@@ -446,7 +446,7 @@ export function NotificationCenter() {
                                   <Badge 
                                     variant={notification.priority === 'critical' ? "destructive" : "secondary"}
                                     className={cn(
-                                      "text-2xs px-2 py-0.5 font-mono font-medium",
+                                      "text-2xs px-2 py-0.5 font-mono font-medium rounded-full",
                                       notification.priority === 'critical' && "shadow-sm shadow-destructive/20"
                                     )}
                                   >

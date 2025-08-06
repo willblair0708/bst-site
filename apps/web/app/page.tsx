@@ -273,7 +273,7 @@ export default function LandingPage() {
           >
             <motion.div whileHover={{ scale: 1.05 }} className="inline-block mb-4">
               <MicroTooltip content="🗂️ Immutable history - Every change tracked with SHA-256 provenance">
-                <Badge className="bg-primary-500/15 text-primary-500 border border-primary-500/30 font-medium">
+                <Badge className="bg-primary-500/15 text-primary-500 border border-primary-500/30 font-medium rounded-full px-4 py-1.5">
                   {PILLARS.VERSIONED_KNOWLEDGE.emoji} Versioned Knowledge
                 </Badge>
               </MicroTooltip>
@@ -407,7 +407,7 @@ export default function LandingPage() {
           >
             <motion.div whileHover={{ scale: 1.05 }} className="inline-block mb-4">
               <MicroTooltip content="🛠️ Plug-and-play - Foundation models and simulators ready to integrate">
-                <Badge className="bg-accent-500/15 text-accent-500 border border-accent-500/30 font-medium">
+                <Badge className="bg-accent-500/15 text-accent-500 border border-accent-500/30 font-medium rounded-full px-4 py-1.5">
                   {PILLARS.COMPOSABLE_MODELS.emoji} Composable Models & Tools
                 </Badge>
               </MicroTooltip>
@@ -464,7 +464,7 @@ export default function LandingPage() {
           >
             <motion.div whileHover={{ scale: 1.05 }} className="inline-block mb-4">
               <MicroTooltip content="🤝 Social science - Live agent suggestions and peer review workflows">
-                <Badge className="bg-viz-purple-500/15 text-viz-purple-500 border border-viz-purple-500/30 font-medium">
+                <Badge className="bg-viz-purple-500/15 text-viz-purple-500 border border-viz-purple-500/30 font-medium rounded-full px-4 py-1.5">
                   {PILLARS.HUMAN_AI_COLLAB.emoji} Human–AI Collaboration
                 </Badge>
               </MicroTooltip>
@@ -526,10 +526,10 @@ export default function LandingPage() {
               {/* Peer review card */}
               <motion.div
                 variants={fadeInUp}
-                className="rounded-xl border border-border bg-card p-6 shadow-elevation-1"
+                className="rounded-2xl border border-border bg-card p-6 shadow-sm"
               >
                 <div className="flex items-start gap-4">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-viz-purple-500/10">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-viz-purple-500/10">
                     <MessageSquare className="h-5 w-5 text-viz-purple-500" />
                   </div>
                   <div className="flex-1">
@@ -548,7 +548,7 @@ export default function LandingPage() {
                       </div>
                     </div>
                     <div className="mt-4">
-                      <Badge variant="outline" className="text-xs">
+                      <Badge variant="outline" className="text-xs rounded-full">
                         <Users className="mr-1 h-3 w-3" />
                         12 reviewers
                       </Badge>
@@ -560,10 +560,10 @@ export default function LandingPage() {
               {/* Lineage graph card */}
               <motion.div
                 variants={fadeInUp}
-                className="rounded-xl border border-border bg-card p-6 shadow-elevation-1 lg:col-span-2"
+                className="rounded-2xl border border-border bg-card p-6 shadow-sm lg:col-span-2"
               >
                 <div className="flex items-start gap-4">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-viz-purple-500/10">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-viz-purple-500/10">
                     <Workflow className="h-5 w-5 text-viz-purple-500" />
                   </div>
                   <div className="flex-1">
@@ -584,7 +584,7 @@ export default function LandingPage() {
                         >
                           <div className="flex flex-col items-center">
                             <motion.div 
-                              className={`h-12 w-12 rounded-lg border-2 ${
+                              className={`h-12 w-12 rounded-xl border-2 ${
                                 i === 3 ? "border-accent bg-accent/10" : "border-border bg-card"
                               } flex items-center justify-center`}
                               whileHover={{ scale: 1.1, rotate: 5 }}

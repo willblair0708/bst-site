@@ -32,8 +32,8 @@ export function HashChip({ hash, className, showToast }: HashChipProps) {
     <motion.button
       onClick={copyHash}
       className={cn(
-        // Design.mdc v0.4 Hash Chip - mono, copy-toast
-        "inline-flex items-center gap-2 px-3 py-1.5 rounded-lg",
+        // Design.mdc v0.5 Hash Chip - mono, copy-toast, rounded-full
+        "inline-flex items-center gap-2 px-3 py-1.5 rounded-full",
         "bg-primary-100 border border-primary-500/20",
         "font-mono text-sm text-primary-500",
         "transition-all duration-150",

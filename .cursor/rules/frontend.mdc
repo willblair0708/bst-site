@@ -1,0 +1,234 @@
+---
+description: General frontend changes
+alwaysApply: false
+---
+
+## Platform Overview
+Runix is a "GitHub for Clinical Trials" platform that applies software development best practices to clinical trial protocol management. The frontend provides a comprehensive GitHub-style interface for scientific collaboration, protocol management, and trial execution.
+
+## Core Architectural Principles
+
+### 1. GitHub-Style UX Pattern
+- **Repository Model**: Each clinical trial is treated like a Git repository
+- **Familiar Navigation**: Use GitHub's proven navigation patterns (tabs, breadcrumbs, action bars)
+- **Collaborative Features**: Issues, Pull Requests, Project Boards for scientific workflows
+- **File Management**: Version-controlled protocols with diff viewing and syntax highlighting
+
+### 2. Clinical Trial Domain Integration
+- **Protocol-as-Code**: YAML-based protocol definitions with Monaco editor
+- **Safety Monitoring**: Real-time dashboards with automated alerts
+- **Regulatory Compliance**: Built-in 21 CFR Part 11, GDPR, HIPAA compliance indicators
+- **Audit Trails**: Immutable logging with blockchain verification
+- **Synthetic Twins**: AEGIS simulation integration and visualization
+
+### 3. Component Architecture
+
+#### Base UI Components (`/components/ui/`)
+- Use **Radix UI primitives** as foundation
+- Apply **class-variance-authority (CVA)** for variant management
+- Follow **compound component patterns** (Card = Header + Content + Footer)
+- Maintain **forward refs** for all components
+- Use **cn() utility** for conditional className merging
+
+#### Domain Components (`/components/`)
+- **Single Responsibility**: Each component handles one domain concern
+- **Composition over Inheritance**: Build complex UIs by composing smaller components
+- **Clinical Context**: Components should understand trial/protocol context
+- **Real-time Updates**: Support live data updates for monitoring dashboards
+
+### 4. TypeScript Standards
+
+#### Interface Design
+```typescript
+// Domain interfaces should be explicit and well-typed
+interface Patient {
+  id: string
+  screeningNumber: string
+  site: string
+  status: 'screened' | 'enrolled' | 'completed' | 'withdrawn'
+  demographics: {
+    age: number
+    gender: 'M' | 'F'
+    ethnicity: string
+  }
+}
+
+// Props interfaces should extend HTML attributes
+interface ButtonProps 
+  extends React.ButtonHTMLAttributes<HTMLButtonElement>,
+    VariantProps<typeof buttonVariants> {
+  asChild?: boolean
+}
+```
+
+#### Component Patterns
+- Use **React.forwardRef** for all UI components
+- Implement **displayName** for debugging
+- Apply **generic constraints** for reusable components
+- Export **type definitions** alongside components
+
+### 5. Styling Guidelines
+
+#### Tailwind CSS Usage
+- Use **semantic color tokens** (bg-primary, text-muted-foreground)
+- Apply **responsive design first** (mobile-first approach)
+- Leverage **CSS variables** for theming
+- Maintain **consistent spacing scale** (space-y-1.5, p-6, etc.)
+
+#### Component Variants
+```typescript
+const buttonVariants = cva(
+  "base-classes",
+  {
+    variants: {
+      variant: {
+        default: "bg-primary text-primary-foreground hover:bg-primary/90",
+        destructive: "bg-destructive text-destructive-foreground hover:bg-destructive/90",
+        outline: "border border-input bg-background hover:bg-accent",
+      },
+      size: {
+        default: "h-10 px-4 py-2",
+        sm: "h-9 rounded-md px-3",
+        lg: "h-11 rounded-md px-8",
+      },
+    },
+  }
+)
+```
+
+### 6. Data Flow & State Management
+
+#### Real-time Updates
+- Use **React Server Components** for initial data
+- Implement **optimistic updates** for user interactions
+- Apply **SWR/React Query** for data fetching and caching
+- Support **WebSocket connections** for live monitoring
+
+#### Form Handling
+- Use **controlled components** for form inputs
+- Implement **validation schemas** with Zod
+- Apply **progressive enhancement** patterns
+- Support **auto-save** for protocol editing
+
+### 7. Clinical Trial Specific Patterns
+
+#### Protocol Management
+- **YAML Editor**: Monaco editor with syntax highlighting and validation
+- **Version Control**: Git-style diff viewing and merge conflict resolution
+- **Collaborative Editing**: Real-time collaboration indicators
+- **Compliance Checking**: Automated validation with regulatory feedback
+
+#### Safety Monitoring
+- **Alert System**: Tiered alert levels (info, warning, critical)
+- **Real-time Dashboards**: Live metric updates with WebSocket connections
+- **Event Logging**: Immutable audit trail with timestamps
+- **Escalation Workflows**: Automated notification chains
+
+#### Analytics & Reporting
+- **Interactive Charts**: Use Plotly.js for scientific visualizations
+- **Export Capabilities**: PDF/CSV generation for regulatory submissions
+- **Filtering & Searching**: Advanced query interfaces
+- **Drill-down Navigation**: From summary to detailed views
+
+### 8. Navigation & Layout
+
+#### App Structure
+```
+/trial/[trialId]/
+├── overview (repository-style main page)
+├── files (protocol browser with version control)
+├── issues (amendments & regulatory feedback)
+├── pull-requests (collaborative protocol changes)
+├── actions (automated validation workflows)
+├── analytics (enrollment, safety, efficacy dashboards)
+├── projects (kanban boards for trial management)
+├── people (team management with roles)
+├── wiki (collaborative documentation)
+└── settings (trial configuration)
+```
+
+#### Global Navigation
+- **Header**: Trial selector, global search (⌘K), user profile
+- **Tabs**: Main section navigation (Files, Issues, Analytics, etc.)
+- **Breadcrumbs**: Hierarchical navigation within sections
+- **Context Actions**: Page-specific action buttons
+
+### 9. Performance Optimization
+
+#### Code Splitting
+- Use **dynamic imports** for heavy components (Monaco editor, charts)
+- Implement **lazy loading** for dashboard widgets
+- Apply **route-based splitting** for major sections
+
+#### Data Loading
+- **Incremental Static Regeneration (ISR)** for protocol pages
+- **Streaming SSR** for dashboard components
+- **Optimistic updates** for user interactions
+- **Background prefetching** for likely user paths
+
+### 10. Accessibility & Compliance
+
+#### WCAG Compliance
+- Maintain **semantic HTML structure**
+- Implement **keyboard navigation** for all interactive elements
+- Provide **screen reader support** with proper ARIA labels
+- Ensure **color contrast** meets AA standards
+
+#### Clinical Compliance
+- **Audit Logging**: Log all user interactions for regulatory review
+- **Data Privacy**: Implement proper data masking and consent flows
+- **Role-based Access**: Granular permissions for different user types
+- **Validation Workflows**: Multi-step approval processes
+
+### 11. Testing Strategy
+
+#### Component Testing
+- **Visual Regression**: Storybook with Chromatic
+- **Unit Testing**: Vitest for component logic
+- **Integration Testing**: Playwright for user workflows
+- **Accessibility Testing**: Automated a11y checks
+
+#### Clinical Workflow Testing
+- **Protocol Validation**: Test YAML parsing and validation
+- **Safety Alerts**: Verify alert triggering and escalation
+- **Audit Trail**: Ensure complete action logging
+- **Compliance Checks**: Validate regulatory requirement adherence
+
+### 12. Development Workflow
+
+#### File Organization
+```
+components/
+├── ui/ (base components)
+├── domain-specific/ (trial-dashboard, protocol-editor)
+├── layout/ (navigation, headers)
+└── forms/ (protocol-forms, safety-forms)
+
+lib/
+├── utils.ts (shared utilities)
+├── api.ts (API client)
+├── validation.ts (schema validation)
+└── constants.ts (clinical constants)
+```
+
+#### Best Practices
+- **Component Co-location**: Keep related files together
+- **Export Consistency**: Use named exports for components
+- **Type Safety**: Strict TypeScript with no any types
+- **Error Boundaries**: Graceful error handling for clinical contexts
+
+### 13. Integration Points
+
+#### External Services
+- **AEGIS Simulation**: Embed simulation results and controls
+- **Vigil OS**: Trial execution status and real-time monitoring
+- **Blockchain**: Audit trail verification and display
+- **GitHub**: Version control integration for protocol files
+
+#### API Patterns
+- **RESTful endpoints** for CRUD operations
+- **GraphQL subscriptions** for real-time updates
+- **Server-sent events** for monitoring dashboards
+- **Webhook handling** for external system notifications
+
+This frontend architecture supports the unique requirements of clinical trial management while maintaining familiar GitHub-style workflows that scientific teams can quickly adopt.

@@ -32,7 +32,7 @@ export function StatusRibbon({ power, diversity, part11Status, twinAUC }: Status
   const mockJobs = [
     {
       name: 'Protocol Validation',
-      status: 'success',
+      status: 'success' as const,
       log: 'All validation checks passed.',
       artifacts: [
         { name: 'validation_report.pdf', url: '#', size: '1.2 MB' },
@@ -40,7 +40,7 @@ export function StatusRibbon({ power, diversity, part11Status, twinAUC }: Status
     },
     {
       name: 'Synthetic Twin Simulation',
-      status: 'running',
+      status: 'running' as const,
       log: 'Simulation in progress... 25% complete.',
       artifacts: [],
     },

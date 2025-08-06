@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button'
 import { GlobalSearch } from '@/components/global-search'
 import { NotificationCenter } from '@/components/notifications'
 import { ThemeToggle } from '@/components/theme-toggle'
-import { Shield, GitFork } from 'lucide-react'
+import { Shield } from 'lucide-react'
 
 
 
@@ -22,29 +22,29 @@ const currentUser = {
 
 export function GitHubHeader() {
   return (
-    <header className="sticky top-0 z-50 border-b bg-background/95 backdrop-blur-sm">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16">
+    <header className="sticky top-0 z-50 border-b border-black/5 bg-background/90 backdrop-blur-sm">
+      <div className="max-w-7xl mx-auto px-6 lg:px-8">
+        <div className="flex items-center justify-between h-[64px]">
           {/* Left side - Logo */}
           <div className="flex items-center">
             <Link href="/" className="flex items-center space-x-3 group">
               <motion.div 
-                className="bg-foreground p-2.5 rounded-lg"
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-                transition={{ duration: 0.15 }}
+                className="bg-primary-500 p-2.5 rounded-2xl border border-black/5"
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                transition={{ duration: 0.2 }}
               >
-                <Shield className="w-4 h-4 text-background" />
+                <Shield className="w-4 h-4 text-white" />
               </motion.div>
-              <span className="text-lg font-semibold text-foreground">Runix Hub</span>
+              <span className="text-xl font-bold text-foreground">Runix Hub</span>
             </Link>
           </div>
 
           {/* Center - Search and Current Pipeline */}
           <div className="flex-1 flex items-center justify-center space-x-6 max-w-2xl mx-8">
             <div className="hidden md:block">
-              <Link href="/repo/mskcc/CTP-ABC123" className="flex items-center space-x-2 text-sm group">
-                <div className="w-2 h-2 bg-green-500 rounded-full" title="Pipeline running" />
+              <Link href="/repo/mskcc/CTP-ABC123" className="flex items-center space-x-2 text-sm group bg-muted/50 px-3 py-1.5 rounded-full border border-black/5 hover:bg-muted/70 transition-all duration-200">
+                <div className="w-2 h-2 bg-accent-500 rounded-full" title="Pipeline running" />
                 <span className="font-mono text-muted-foreground group-hover:text-foreground transition-colors">
                   mitochondrial-ros-sensor
                 </span>
@@ -59,31 +59,25 @@ export function GitHubHeader() {
           {/* Right side - Navigation and User */}
           <div className="flex items-center space-x-4">
             {/* Navigation */}
-            <nav className="hidden lg:flex items-center space-x-6">
+            <nav className="hidden lg:flex items-center space-x-2">
+              <Link 
+                href="/dashboard" 
+                className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors px-3 py-1.5 rounded-xl hover:bg-muted/50"
+              >
+                Dashboard
+              </Link>
               <Link 
                 href="/models" 
-                className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
+                className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors px-3 py-1.5 rounded-xl hover:bg-muted/50"
               >
                 Models
               </Link>
             </nav>
 
-            {/* Fork button */}
-            <div className="hidden md:block">
-              <Button 
-                variant="outline" 
-                size="sm" 
-                className="font-medium h-9"
-              >
-                <GitFork className="w-4 h-4 mr-2" />
-                Fork
-              </Button>
-            </div>
-
 
 
             {/* User Actions */}
-            <div className="flex items-center space-x-2">
+            <div className="flex items-center space-x-3">
               {/* Theme toggle */}
               <ThemeToggle />
 
@@ -92,10 +86,10 @@ export function GitHubHeader() {
 
               {/* User avatar */}
               <motion.button 
-                className="w-8 h-8 bg-foreground rounded-full flex items-center justify-center text-background text-xs font-medium hover:bg-muted-foreground transition-colors ml-2"
+                className="w-9 h-9 bg-primary-500 rounded-full flex items-center justify-center text-white text-xs font-semibold border border-black/5 transition-all duration-200 ml-2"
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
-                transition={{ duration: 0.15 }}
+                transition={{ duration: 0.2 }}
               >
                 {currentUser.name.split(' ').map(n => n[0]).join('')}
               </motion.button>

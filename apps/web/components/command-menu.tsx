@@ -42,12 +42,12 @@ export function CommandMenu() {
     <>
         <Button
             variant="outline"
-            className="w-64 justify-start text-muted-foreground"
+            className="w-64 justify-start text-muted-foreground rounded-2xl border-border/50 bg-muted/30 hover:bg-muted/50"
             onClick={() => setOpen(true)}
         >
             <Search className="h-4 w-4 mr-2" />
             Search protocols, users...
-            <kbd className="pointer-events-none ml-auto inline-flex h-5 select-none items-center gap-1 rounded border bg-muted px-1.5 font-mono text-[10px] font-medium text-muted-foreground opacity-100">
+            <kbd className="pointer-events-none ml-auto inline-flex h-5 select-none items-center gap-1 rounded-xl border bg-background px-1.5 font-mono text-[10px] font-medium text-muted-foreground opacity-100 shadow-sm">
                 <span className="text-xs">⌘</span>K
             </kbd>
       </Button>

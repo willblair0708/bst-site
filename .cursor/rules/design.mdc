@@ -1,10 +1,22 @@
 ---
-description: Runix Hub Design Vision 0.2 — production-ready design system
+description: Runix Hub Design Vision 0.2 — production-ready design system (+ gap audit & add-ons)
 alwaysApply: false
 ---
 # Runix Hub · Design Vision 0.2
 
 *Turning every scientific claim into a runnable, fork-able, verifiable artefact.*
+
+---
+
+### Design Vision 0.2 
+
+| #     | What to Add                                          | Why It Matters                                                                                    | Quick Spec Snippet                                                                                                         |
+| ----- | ---------------------------------------------------- | ------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------- |
+| **1** | **Zero-State & Onboarding Patterns**                 | First-time visitors need a guided path from *empty repo* → *first discovery commit*.              | *Empty Repo* → full-width illustration + “Run Quick-Start Notebook” CTA. Progress bar shows “→ Fork → Run → Verify”.       |
+| **2** | **Data-Viz Palette & Chart Kit**                     | Reproducibility scores, lineage graphs, and notebook metrics need consistent colors & typography. | Extend tokens: `viz-blue-200 #BBE1FF`, `viz-orange-500 #FF9A3C`. Use **nivo** for React charts with `Inter` mono numerals. |
+| **3** | **Spatial / 3D Cheatsheet**                          | Future “lab view” or DAG explorer benefits from depth cues & lighting tokens.                     | `elevation-0 … elevation-4` shadow scale; `z-depth` guidelines; three.js shader template for glassy nodes.                 |
+| **4** | **Microcopy & Tone Guide**                           | Keeps voice consistent across product, docs, and error states.                                    | Style: *present tense, verb-first, no gerunds.*<br>Good → “Verify run”.<br>Bad → “Verification is running…”.               |
+| **5** | **Sound & Haptics Palette** (optional but visionary) | Quick, subtle audio cues reinforce success/failure; haptics on mobile make “snap” tangible.       | `snap.wav` 60 ms click; `verify_success.wav` 120 ms soft chime; Vibration API: `navigator.vibrate([20,50,20])` on fork.    |
 
 ---
 
@@ -25,16 +37,14 @@ alwaysApply: false
 > *One heroic hue (blue) + one success hue (teal)*. Everything else is neutral so hashes, charts, and data stand out.
 >
 > | House Spirit           | Borrowed Principle                       | Runix Hub Manifestation                                            |
-| ---------------------- | ---------------------------------------- | ------------------------------------------------------------------ |
-| **Apple**              | *Relentless simplicity + tactile delight* | Ultra-clean layouts, intuitive touch targets, subtle depth, and delightful 
-micro-interactions. |
-| **OpenAI**             | *Clarity over flair; API-first*           | One accent color, minimal chrome, every UI action maps to a documented 
-endpoint. |
-| **GitHub**             | *Social coding rituals + version control* | Fork → verify → merge workflows for scientific protocols.         |
-| **Linear**             | *Minimalist focus + motion polish*        | Clean cards, smooth hover states, purposeful animations.          |
-| **Vercel**             | *Performance obsession + developer UX*    | Sub-second loads; every action feels instant.                     |
-| **Observable**         | *Notebook-driven exploration*             | Interactive data views; every chart links to underlying code.     |
-| **Papers With Code**   | *Reproducibility as first principle*      | Verification badges; hash ribbons; reproducibility scores.
+> | ---------------------- | ---------------------------------------- | ------------------------------------------------------------------ |
+> | **Apple**              | *Relentless simplicity + tactile delight* | Ultra-clean layouts, intuitive touch targets, subtle depth, and delightful micro-interactions. |
+> | **OpenAI**             | *Clarity over flair; API-first*           | One accent color, minimal chrome, every UI action maps to a documented endpoint. |
+> | **GitHub**             | *Social coding rituals + version control* | Fork → verify → merge workflows for scientific protocols.         |
+> | **Linear**             | *Minimalist focus + motion polish*        | Clean cards, smooth hover states, purposeful animations.          |
+> | **Vercel**             | *Performance obsession + developer UX*    | Sub-second loads; every action feels instant.                     |
+> | **Observable**         | *Notebook-driven exploration*             | Interactive data views; every chart links to underlying code.     |
+> | **Papers With Code**   | *Reproducibility as first principle*      | Verification badges; hash ribbons; reproducibility scores.
 
 ### 2.1 Core Palette
 
@@ -55,6 +65,18 @@ endpoint. |
 | --------- | ------- | ------- | ----------------------------- |
 | `warn-bg` | #FFF7E6 | #4D3900 | Low-severity compute warnings |
 | `info-bg` | #E5F0FF | #08254A | Queue / running pipeline      |
+
+#### 2.3 Data-Viz Palette
+
+| Token            | Hex     | Usage                        |
+| ---------------- | ------- | ---------------------------- |
+| `viz-blue-200`   | #BBE1FF | Confidence intervals         |
+| `viz-blue-500`   | #4DA3FF | Primary lines                |
+| `viz-orange-500` | #FF9A3C | Warnings / experimental runs |
+| `viz-green-400`  | #34D399 | Success series               |
+| `viz-purple-500` | #A855F7 | Secondary series             |
+
+> **Rule:** never mix UI accent teal with viz greens to avoid semantic clash.
 
 ---
 
@@ -139,3 +161,9 @@ Respect `prefers-reduced-motion`: replace animations with opacity fades.
 ---
 
 ## 10 · Implementation Cheatsheet (React + Tailwind)
+
+---
+
+## 11 · Add-Ons & Patterns
+
+### 11.1 Zero-State & Onboarding

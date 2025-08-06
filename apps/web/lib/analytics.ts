@@ -1,5 +1,6 @@
 /**
  * Analytics event tracking for the landing page
+ * Updated for Design.mdc v0.4
  */
 
 export type AnalyticsEvent = 
@@ -10,6 +11,7 @@ export type AnalyticsEvent =
   | 'model_card_clicked'
   | 'repo_card_clicked'
   | 'proof_runway_step_hovered'
+  | 'verify_button_demo'
 
 interface AnalyticsProperties {
   [key: string]: string | number | boolean

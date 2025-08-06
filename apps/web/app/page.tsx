@@ -13,14 +13,38 @@ import { useToast } from "@/components/ui/toast"
 import { getLangColor } from "@/lib/icon-utils"
 import { MicroTooltip } from "@/components/ui/micro-tooltip"
 import { RepoCardSkeleton, ModelCardSkeleton } from "@/components/ui/skeleton-loader"
-import { Suspense, useState, useEffect } from "react"
+import { HashChip } from "@/components/ui/hash-chip"
+import { VerifyButton } from "@/components/ui/verify-button"
+import React, { Suspense, useState, useEffect } from "react"
 import { trackEvent, trackPageView } from "@/lib/analytics"
+import { MOTION } from "@/lib/motion/tokens"
 
-// Three Pillars from design system
+// Three Pillars - Transparent Bento (Strict Color Separation)
 const PILLARS = {
-  VERSIONED_KNOWLEDGE: { icon: FileJson, color: "primary", emoji: "🗂️" },
-  COMPOSABLE_MODELS: { icon: Bot, color: "accent", emoji: "🛠️" },
-  HUMAN_AI_COLLAB: { icon: Users, color: "purple", emoji: "🤝" },
+  VERSIONED_KNOWLEDGE: { 
+    icon: Hash, 
+    color: "primary-500", 
+    bg: "primary-100",
+    emoji: "🗂️",
+    motion: "snap",
+    description: "Every claim becomes verifiable, forkable knowledge"
+  },
+  COMPOSABLE_MODELS: { 
+    icon: FlaskConical, 
+    color: "accent-500", 
+    bg: "accent-100",
+    emoji: "🛠️",
+    motion: "spark-glow",
+    description: "Models and simulations that compose and scale"
+  },
+  HUMAN_AI_COLLAB: { 
+    icon: Users, 
+    color: "collaboration-500", 
+    bg: "collaboration-100",
+    emoji: "🤝",
+    motion: "pulse-success",
+    description: "Human expertise amplified by AI agents"
+  },
 };
 
 interface Repository {
@@ -162,21 +186,15 @@ export default function LandingPage() {
     trackPageView('landing_page')
   }, [])
 
-  const copyHash = async (hash: string) => {
-    try {
-      await navigator.clipboard.writeText(hash)
-      addToast('Hash copied to clipboard!')
-      trackEvent('hash_copied', { hash })
-    } catch (err) {
-      addToast('Failed to copy hash', 'error')
-    }
-  }
+
 
   return (
     <div className="bg-background text-foreground antialiased">
-      {/* Hero Section */}
-      <header>
-        <AnimatedHero />
+      {/* Hero Section - Story Layer (Transparent Bento) */}
+      <header className="relative">
+        <div className="story-glass shadow-elevation-4 rounded-2xl mx-6 lg:mx-8 mt-6">
+          <AnimatedHero />
+        </div>
       </header>
 
       <main>
@@ -244,6 +262,25 @@ export default function LandingPage() {
               </div>
             </div>
           </div>
+          
+          {/* Component Showcase CTA - Design.mdc v0.4 */}
+          <motion.div 
+            className="mt-20 text-center"
+            initial="initial"
+            whileInView="animate"
+            variants={fadeInUp}
+            viewport={{ once: true }}
+          >
+            <VerifyButton 
+              onVerify={() => {
+                addToast("Demo verification complete! ✓")
+                trackEvent('verify_button_demo', { section: 'proof_runway' })
+              }}
+            />
+            <p className="mt-4 text-sm text-muted-foreground">
+              Experience the Soft-UI tactile feedback
+            </p>
+          </motion.div>
         </div>
       </section>
 
@@ -277,24 +314,30 @@ export default function LandingPage() {
             </p>
           </motion.div>
 
+          {/* Data Layer - Pastel Bento Tiles with perfect 12-column grid */}
           <motion.div
-            className="mx-auto mt-16 grid max-w-2xl grid-cols-1 gap-8 lg:mx-0 lg:max-w-none lg:grid-cols-3"
+            className="mx-auto mt-16 max-w-7xl"
             variants={staggerContainer}
             initial="initial"
             whileInView="animate"
             viewport={{ once: true }}
           >
-            <Suspense fallback={
-              Array(3).fill(0).map((_, i) => <RepoCardSkeleton key={i} />)
-            }>
-            {featuredRepositories.map((repo) => (
-              <motion.div
-                key={repo.name}
-                variants={fadeInUp}
-                transition={{ duration: 0.6 }}
-                whileHover={{ y: -4, scale: 1.01 }}
-                className="group relative flex flex-col overflow-hidden rounded-xl border border-border/50 bg-card/95 backdrop-blur-sm shadow-elevation-1 transition-all duration-300 hover:shadow-elevation-2 hover:border-accent-500/30"
-              >
+            <div className="grid grid-cols-1 gap-8 lg:grid-cols-12">
+              <Suspense fallback={
+                Array(3).fill(0).map((_, i) => (
+                  <div key={i} className="lg:col-span-4">
+                    <RepoCardSkeleton />
+                  </div>
+                ))
+              }>
+              {featuredRepositories.map((repo) => (
+                <div key={repo.name} className="lg:col-span-4">
+                  <motion.div
+                    variants={fadeInUp}
+                    transition={{ duration: 0.6 }}
+                    whileHover={MOTION.bento_hover}
+                    className={`group relative flex flex-col h-full overflow-hidden rounded-xl border border-border bg-${PILLARS[repo.pillar].bg} shadow-elevation-1 transition-all duration-300 hover:shadow-elevation-4 hover:border-${PILLARS[repo.pillar].color}/30`}
+                  >
                 {/* Verification badge */}
                 {repo.verified && (
                   <div className="absolute right-4 top-4 z-10">
@@ -305,20 +348,30 @@ export default function LandingPage() {
                 )}
 
                 <div className="flex-1 p-6">
-                  <div className="flex items-center gap-2">
+                  {/* Pillar Declaration - Transparent Bento (strict color separation) */}
+                  <div className="flex items-center justify-between mb-4">
+                    <div className="flex items-center gap-2">
+                      <span className="text-lg">{PILLARS[repo.pillar].emoji}</span>
+                      <div className={`p-2 rounded-lg bg-${PILLARS[repo.pillar].color}/10 border border-${PILLARS[repo.pillar].color}/20`}>
+                        {React.createElement(PILLARS[repo.pillar].icon, { 
+                          className: `h-4 w-4 text-${PILLARS[repo.pillar].color}` 
+                        })}
+                      </div>
+                    </div>
                     {repo.isPrivate ? (
                       <Lock className="h-4 w-4 text-muted-foreground" strokeWidth={1.5} />
                     ) : (
                       <Globe className="h-4 w-4 text-muted-foreground" strokeWidth={1.5} />
                     )}
-                    <Link
-                      href={`/repo/${repo.owner}/${repo.name}`}
-                      className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors"
-                      onClick={() => trackEvent('repo_card_clicked', { repo: repo.name, owner: repo.owner })}
-                    >
-                      {repo.owner} / <span className="font-bold text-foreground">{repo.name}</span>
-                    </Link>
                   </div>
+                  
+                  <Link
+                    href={`/repo/${repo.owner}/${repo.name}`}
+                    className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors"
+                    onClick={() => trackEvent('repo_card_clicked', { repo: repo.name, owner: repo.owner })}
+                  >
+                    {repo.owner} / <span className="font-bold text-foreground">{repo.name}</span>
+                  </Link>
 
                   <p className="mt-4 text-sm text-muted-foreground line-clamp-2">
                         {repo.description}
@@ -335,22 +388,10 @@ export default function LandingPage() {
                     </div>
                   </div>
 
-                  {/* Hash with copy button */}
-                  <div className="mt-4 flex items-center gap-2 rounded-md bg-primary-500/5 border border-primary-500/15 px-3 py-2">
-                    <Hash className="h-3 w-3 text-primary-500" aria-hidden="true" />
-                    <code className="flex-1 font-mono text-xs text-primary-500 font-medium">
-                        {repo.hash}
-                    </code>
-                    <motion.button 
-                      className="text-primary-500 hover:text-accent-500 transition-colors"
-                      whileHover={{ scale: 1.1 }}
-                      whileTap={{ scale: 0.9 }}
-                      onClick={() => copyHash(repo.hash)}
-                      aria-label="Copy hash to clipboard"
-                    >
-                      <Copy className="h-3 w-3" />
-                    </motion.button>
-                    </div>
+                  {/* Hash Chip - Design.mdc v0.4 Component Showcase */}
+                  <div className="mt-4">
+                    <HashChip hash={repo.hash} showToast={addToast} />
+                  </div>
                 </div>
 
                 <div className="border-t border-border bg-primary-500/5 px-6 py-4">
@@ -368,9 +409,11 @@ export default function LandingPage() {
                     <span>{repo.updatedAt}</span>
                   </div>
                 </div>
-              </motion.div>
-            ))}
-            </Suspense>
+                  </motion.div>
+                </div>
+              ))}
+              </Suspense>
+            </div>
           </motion.div>
         </div>
       </section>
@@ -405,20 +448,29 @@ export default function LandingPage() {
             </p>
           </motion.div>
 
+          {/* Data Layer - Model Bento Tiles (Composable Models Pillar) */}
           <motion.div
-            className="mx-auto mt-16 grid max-w-2xl grid-cols-1 gap-8 lg:mx-0 lg:max-w-none lg:grid-cols-3"
+            className="mx-auto mt-16 max-w-7xl"
             variants={staggerContainer}
             initial="initial"
             whileInView="animate"
             viewport={{ once: true }}
           >
-            <Suspense fallback={
-              Array(3).fill(0).map((_, i) => <ModelCardSkeleton key={i} />)
-            }>
-            {featuredModels.map((model) => (
-              <ModelCard key={model.name} model={model} variants={fadeInUp} />
-            ))}
-            </Suspense>
+            <div className="grid grid-cols-1 gap-8 lg:grid-cols-12">
+              <Suspense fallback={
+                Array(3).fill(0).map((_, i) => (
+                  <div key={i} className="lg:col-span-4">
+                    <ModelCardSkeleton />
+                  </div>
+                ))
+              }>
+              {featuredModels.map((model) => (
+                <div key={model.name} className="lg:col-span-4">
+                  <ModelCard model={model} variants={fadeInUp} />
+                </div>
+              ))}
+              </Suspense>
+            </div>
           </motion.div>
         </div>
       </section>
@@ -461,14 +513,17 @@ export default function LandingPage() {
               whileInView="animate"
               viewport={{ once: true }}
             >
-              {/* Agent suggestion card */}
+              {/* Agent suggestion card - Human-AI Collaboration Pillar (Action Layer) */}
               <motion.div
                 variants={fadeInUp}
-                className="rounded-xl border border-border bg-card p-6 shadow-elevation-1"
+                className="soft-ui bg-collaboration-100 border border-collaboration-500/20 p-6"
               >
                 <div className="flex items-start gap-4">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-viz-purple-500/10">
-                    <Brain className="h-5 w-5 text-viz-purple-500" />
+                  <div className="flex items-center gap-2">
+                    <span className="text-lg">🤝</span>
+                    <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-collaboration-500/10 border border-collaboration-500/20">
+                      <Brain className="h-5 w-5 text-collaboration-500" />
+                    </div>
                   </div>
                   <div className="flex-1">
                     <h3 className="font-semibold">Agent Suggestions</h3>

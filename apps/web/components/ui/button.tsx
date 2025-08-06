@@ -6,15 +6,15 @@ import { cva, type VariantProps } from "class-variance-authority"
 import { cn } from "@/lib/utils"
 
 const buttonVariants = cva(
-  "inline-flex items-center justify-center rounded-lg text-sm font-medium transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 relative overflow-hidden",
+  "inline-flex items-center justify-center text-sm font-medium transition-all duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 relative overflow-hidden",
   {
     variants: {
       variant: {
-        default: "bg-gradient-to-r from-primary-500 to-primary-600 text-white hover:from-primary-600 hover:to-primary-500 shadow-sm hover:shadow-md hover:scale-105",
-        destructive: "bg-gradient-to-r from-destructive-500 to-destructive-500/90 text-white hover:from-destructive-500/90 hover:to-destructive-500 shadow-sm hover:shadow-md",
-        outline: "border border-primary-500/30 bg-transparent text-primary-500 hover:bg-primary-500/5 hover:border-primary-500/50 backdrop-blur-sm",
-        secondary: "bg-secondary/10 text-secondary-foreground border border-secondary/20 hover:bg-secondary/20 hover:border-secondary/30",
-        ghost: "hover:bg-accent-500/10 hover:text-accent-500 text-muted-foreground",
+        default: "soft-ui bg-gradient-to-r from-primary-500 to-primary-600 text-white hover:from-primary-600 hover:to-primary-500",
+        destructive: "soft-ui bg-gradient-to-r from-destructive-500 to-destructive-500/90 text-white hover:from-destructive-500/90 hover:to-destructive-500",
+        outline: "soft-ui border border-primary-500/30 bg-primary-500/5 text-primary-500 hover:bg-primary-500/10 hover:border-primary-500/50",
+        secondary: "soft-ui bg-secondary/10 text-secondary-foreground border border-secondary/20 hover:bg-secondary/20 hover:border-secondary/30",
+        ghost: "rounded-lg hover:bg-accent-500/10 hover:text-accent-500 text-muted-foreground transition-all duration-150 hover:-translate-y-px",
         link: "text-primary-500 underline-offset-4 hover:underline hover:text-primary-600",
       },
       size: {

@@ -27,6 +27,7 @@ const config = {
         primary: {
           DEFAULT: "hsl(var(--primary))",
           foreground: "hsl(var(--primary-foreground))",
+          100: "hsl(var(--primary-100))",
           500: "hsl(var(--primary))",
           600: "#002BCC",
         },
@@ -46,7 +47,17 @@ const config = {
         accent: {
           DEFAULT: "hsl(var(--accent))",
           foreground: "hsl(var(--accent-foreground))",
+          100: "hsl(var(--accent-100))",
           500: "hsl(var(--accent))",
+        },
+        // Design.mdc v3 Color Tokens
+        collaboration: {
+          100: "hsl(var(--collaboration-100))",
+          500: "hsl(var(--viz-purple))",
+        },
+        error: {
+          100: "hsl(var(--error-100))",
+          500: "hsl(var(--destructive))",
         },
         popover: {
           DEFAULT: "hsl(var(--popover))",
@@ -137,10 +148,14 @@ const config = {
           'runix': 'cubic-bezier(.22,.61,.36,1)',
       },
       boxShadow: {
+        // Transparent Bento Design System
         'elevation-1': '0 1px 4px rgba(0,0,0,0.03)',
-        'elevation-2': '0 4px 8px rgba(0,0,0,0.06)',
-        'elevation-3': '0 8px 16px rgba(0,0,0,0.09)',
         'elevation-4': '0 12px 32px rgba(0,0,0,0.12)',
+        'soft': 'var(--soft-inner), var(--soft-outer)',
+      },
+      backdropBlur: {
+        // Story Layer - Static blur only
+        'story': 'var(--story-blur-radius)',
       }
     },
   },

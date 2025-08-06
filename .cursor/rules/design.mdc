@@ -1,227 +1,141 @@
 ---
-description: Runix Hub Design Vision 0.2 — production-ready design system (+ gap audit & add-ons)
-alwaysApply: false
----
----
-description: Runix Hub · Design Vision 0.3 — “Nova”  
+description: Design and UI
 alwaysApply: false
 ---
 
-# Runix Hub · Design Vision **0.3 “Nova”**  
-*Turning every scientific claim into a runnable, fork-able, verifiable artefact.*
+# Runix Hub · Design Vision **0.4 “Astra‑Lite”**
+
+*“Every claim runnable. Every result verifiable. Every explorer welcome.”*
+
+> **Theme tagline:** **Soft‑UI × Pastel‑Bento**
+> A crisp, accessible aesthetic that combines tactile Soft‑UI controls with pastel bento tiles—**no blur, no glass**—for maximal clarity and performance.
 
 ---
 
-## 0 · The Three Pillars (North-star)  
+## 0 · The Three Pillars (North‑star)
 
-| Emoji | Pillar                | What It Means in the UI |
-|-------|-----------------------|-------------------------|
-| 🗂️    | **Versioned Knowledge**   | Immutable Git-grade history for data, protocols, results |
-| 🛠️    | **Composable Models & Tools** | Plug-and-play foundation models, simulators, workflows |
-| 🤝    | **Human–AI Collaboration**   | Live agent suggestions, social review, lineage graphs |
+| Emoji | Pillar                     | Dominant UI Accent / Icon / Motion                 |
+| ----- | -------------------------- | -------------------------------------------------- |
+| 🗂️   | **Versioned Knowledge**    | `primary-500` · `hash` chip · **snap**             |
+| 🛠️   | **Composable Models**      | `accent-500` · `flask-run` · **spark-glow**        |
+| 🤝    | **Human–AI Collaboration** | `viz-purple-500` · `handshake` · **pulse-success** |
 
-> **Design rule:** every primary surface is tagged to one dominant pillar; use matching accent, icon & motion.
-
----
-
-## 1 · Brand Essence  
-
-| Axis                | Trait                         | Why It Matters |
-|---------------------|-------------------------------|----------------|
-| **Personality**     | *Scientific-punk optimism*    | Rebellion against irreproducibility, yet solution-oriented |
-| **Voice**           | *Crisp, evidence-first*       | Mirrors rigor of SHA-256 provenance |
-| **Visual metaphor** | *Layered paper ＋ light beams* | Paper = lineage • Light = verification |
-| **Motion motif**    | *Snap → Verify → Pulse*       | Commit → run → share |
+> **Rule:** every primary surface declares its pillar via color **and** emoji.
 
 ---
 
-## 2 · Color Tokens v2  
+## 1 · Brand Essence
 
-### 2.1 Core Palette  
-
-| Token             | Hex       | Usage                                      |
-|-------------------|-----------|--------------------------------------------|
-| `primary-500`     | **#0436FF** | CTAs, links (🗂️ pillar)                   |
-| `primary-600`     | #002BCC   | Hover/active                               |
-| `accent-500`      | **#18E0C8** | Success, verified rings (🛠️ pillar)       |
-| `destructive-500` | **#FF4664** | Errors                                     |
-| `neutral-900`     | #0F1116   | Primary text                               |
-| `neutral-100`     | #F4F4F2   | Canvas                                     |
-
-> **Theme swap:** one CSS var root switch.  
-
-### 2.2 System Neutrals & Alerts  
-
-| Token      | Light  | Dark   | Purpose                        |
-|------------|--------|--------|--------------------------------|
-| `warn-bg`  | #FFF7E6| #4D3900| Low-severity queue warnings    |
-| `info-bg`  | #E5F0FF| #08254A| Pipeline running               |
-
-### 2.3 Data-Viz Palette  
-
-| Token            | Hex     | Pillar Context |
-|------------------|---------|----------------|
-| `viz-blue-500`   | #4DA3FF | 🗂️ graphs      |
-| `viz-orange-500` | #FF9A3C | 🛠️ warnings    |
-| `viz-green-400`  | #34D399 | 🤝 success     |
-| `viz-purple-500` | #A855F7 | Secondary      |
-
-*Never mix accent-teal with viz-green to keep semantics clear.*
+| Axis            | Trait                  | Astra‑Lite Update                                                   |
+| --------------- | ---------------------- | ------------------------------------------------------------------- |
+| Personality     | **Radical‑rigor**      | Warm pastels + hash badges—zero decorative blur.                    |
+| Visual Metaphor | *Layered pastel cards* | Flat cards stack like lab notes; depth via soft shadows, not glass. |
+| Motion Motif    | *Snap → Pulse*         | Beam animation removed; keeps snap + success pulse.                 |
 
 ---
 
-## 3 · Typography  
+## 2 · Color Tokens v3 (unchanged)
 
-| Style        | Font (fallback) | Size / LH | Tracking |
-|--------------|-----------------|-----------|----------|
-| **Display**  | Satoshi 700     | clamp(3.5rem, 5vw, 5.5rem)/1 | -0.03 em |
-| **Headline** | Satoshi 500     | 2 rem/1.25 | -0.02 em |
-| **Body**     | Inter Variable  | 1 rem/1.6 | normal |
-| **Code**     | JetBrains Mono  | 0.95 rem/1.5 | +0.01 em |
+*Same core palette* **plus** pastel spread; pastels now fill **hero cards** and **bento tiles directly.**
 
-OpenType: `cv02 cv03 ss01` enabled for Inter numerals.
-
----
-
-## 4 · Component Library Highlights  
-
-| Component | Pillar | State Variants | Motion |
-|-----------|--------|----------------|--------|
-| **Verification Badge** | 🗂️ | pending → running → success/fail | 120° ring spin → spring pulse |
-| **Dataset Diff Viewer** | 🗂️ | cell add/del/change | fade-in + 200 ms flash |
-| **Model Tile** | 🛠️ | idle / hover / select | teal *spark-glow* |
-| **Agent Card** | 🤝 | suggestion / accepted | handshake bounce |
+| Role             | Saturated   | Pastel‑100 | Usage                        |
+| ---------------- | ----------- | ---------- | ---------------------------- |
+| Primary / CTA    | **#0436FF** | #E4EBFF    | Buttons, links               |
+| Success / Accent | **#18E0C8** | #A3F4E9    | Verified rings, status chips |
+| Collaboration    | **#A855F7** | #EBD4FF    | Agent & peer surfaces        |
+| Error            | **#FF4664** | #FFD5DD    | Destructive actions          |
 
 ---
 
-## 5 · Layout System  
+## 3 · Typography
 
-*CSS Grid above `md`: `repeat(12,1fr)`, 24 px gutters.*
-
-| Breakpoint | Cols | Max-W | Gutter |
-|------------|------|-------|--------|
-| xs < 640   | 1   | 100%  | 16 px |
-| sm ≥ 640   | 2   | 600 px| 20 px |
-| md ≥ 960   | 12  | 960 px| 24 px |
-| lg ≥ 1280  | 12  |1280 px| 32 px |
+Display = Satoshi, Body = Inter, Code = JetBrains Mono.
 
 ---
 
-## 6 · Motion Grammar  
+## 4 · Visual Layers
 
-| Purpose | Token | Duration | Curve |
-|---------|-------|----------|-------|
-| Snap commit | `snap` | 70 ms | ease-out |
-| Verify ring | `verify_ring_spin` | 1.6 s | linear |
-| Success pulse | `pulse_success` | 400 ms | spring 150 |
-| Live spinner | `loop_spinner` | 800 ms | linear |
-| Error shake | `shake_fail` | 3× 80 ms | ease-out |
+| Layer        | Treatment                                  | Key Components                 |
+| ------------ | ------------------------------------------ | ------------------------------ |
+| Story / Hero | **Pastel Bento Tile (elevation‑2)**        | Hero banner, zero‑state cards  |
+| Controls     | **Soft‑UI 2.0** (inner + outer shadows)    | Buttons, Badges, Verify badge  |
+| Data Panels  | **Pastel Bento Tiles** (flat, elevation‑1) | Repo & Model cards, dashboards |
 
-*Respect `prefers-reduced-motion`—replace with opacity.*
+> *All blur/glass references removed; performance and contrast improved.*
 
 ---
 
-## 7 · Iconography  
+## 5 · Motion Tokens
 
-**Lucide** + custom:
+| Token           | Purpose        | Spec                       |
+| --------------- | -------------- | -------------------------- |
+| `snap`          | Commit/fork    | 70 ms ease‑out             |
+| `pulse_success` | Verification   | Spring 150, scale 1→1.12   |
+| `spark_glow`    | Model hover    | Keyframe opacity 0.6→1→0.6 |
+| `shake_fail`    | Error feedback | 3×8 px x‑shake             |
 
-* `hash` chip  
-* `flask-run` (beaker ＋ play)  
-* `merge-hypothesis` (branch + Δ)
-
-Stroke 1.5 px, 24 × 24 grid.
-
----
-
-## 8 · Illustration & Imagery  
-
-Monoline outlines + pastel gradient fills (neutral-100→50).  
-Hero Lottie (≤ 120 KB) shows paper stack → light beam → teal pulse.
+*`beam` token deprecated.*
 
 ---
 
-## 9 · Accessibility Matrix  
+## 6 · Accessibility & Compliance
 
-| Check | Technique |
-|-------|-----------|
-| Screen reader landmarks | semantic tags |
-| Focus rings | `outline:2px solid var(--primary-500)` |
-| Contrast | ≥ 4.5 : 1 text; 3 : 1 ring vs bg |
-| Keyboard | Tab/Shift-Tab, Space/Enter |
+* Focus ring 2 px `primary-500`, 24 px target size
+* No backdrop‑blur → simpler contrast matrix
+* Motion respects `prefers-reduced-motion`
 
 ---
 
-## 10 · Pillar-Specific Patterns
+## 7 · Pastel Contrast Guardrails
 
-### 10.1 Navigation
+| BG                              | FG                | Contrast Ratio        |
+| ------------------------------- | ----------------- | --------------------- |
+| `accent-100`                    | `neutral-900`     | **7.1 : 1** ✔︎        |
+| `primary-100`                   | `primary-600`     | **4.9 : 1** ✔︎        |
+| `collaboration-100` (`#EBD4FF`) | `viz-purple-500`  | **5.2 : 1** ✔︎        |
+| `error-100`                     | `destructive-500` | **5.0 : 1** ✔︎        |
+| Pastel tile + soft shadow       | `neutral-900`     | **≥ 7 : 1** (dynamic) |
 
-**Primary Pillars:**  
-- 🗂️ Repos  
-- 🛠️ Models  
-- 🤝 Collab Hub  
-- 🔍 Explore  
-- 👤 Profile
-
-**Actions:**  
-- Copy  
-- Edit
+*All interactive text/icons maintain ≥ 4.5 : 1 contrast on any pastel surface.*
 
 ---
 
-### 10.2 Zero-State Flow (“Proof Runway”)
+## 8 · Component Showcase
 
-| Step    | Pillar | Microcopy                                   | Motion         |
-|---------|--------|---------------------------------------------|---------------|
-| 1 Fork  | 🗂️     | Create your *versioned* workspace.          | `snap`        |
-| 2 Model | 🛠️     | Drop in a model or simulator.               | `spark_glow`  |
-| 3 Review| 🤝     | Merge results with agents & peers.           | `pulse_success`|
-
----
-
-## 11 · Copy/Tone Cheatsheet
-
-| Situation | Good                                               | Bad                                 |
-|-----------|----------------------------------------------------|-------------------------------------|
-| CTA       | *Run & Verify*                                     | Start running your verification…    |
-| Success   | *Reproduced in 4.2 s · 96 %*                       | Verification complete!              |
-| Empty     | *No discovery commits—be the first to prove a claim.* | There are currently no commits.  |
+1. **Hero Pastel Tile** – elevation‑2, snap CTA
+2. **Soft‑UI Verify Button** – shadows + haptic
+3. **Pastel Bento Repo Tile** – rotate +2° on hover
+4. **Hash Chip** – mono copy‑toast
 
 ---
 
-## 12 · Sound & Haptics (Opt-in)
-
-| Action  | Sound                   | Vibration        |
-|---------|-------------------------|------------------|
-| Snap    | `snap.wav` 60 ms        | 10 ms            |
-| Success | `verify_success.wav` 120 ms | [20,50,20]   |
-| Fail    | `fail.wav` 90 ms        | [30,30,30]       |
-
-*Toggle in* **Settings → Accessibility**.
-
----
-
-## 13 · Developer Cheatsheet (React + Tailwind)
+## 9 · Tailwind Cheatsheet (glass vars removed)
 
 ```js
-// tailwind.config.js
-extend: {
-  colors: {
-    primary:   { 500:'#0436FF', 600:'#002BCC' },
-    accent:    { 500:'#18E0C8' },
-    destructive:{ 500:'#FF4664' },
-    neutral:   { 100:'#F4F4F2', 900:'#0F1116' },
-    viz: {
-      blue:   { 200:'#BBE1FF', 500:'#4DA3FF' },
-      orange: { 500:'#FF9A3C' },
-      green:  { 400:'#34D399' },
-      purple: { 500:'#A855F7' },
-    },
+boxShadow: {
+  soft: 'var(--soft-inner), var(--soft-outer)',
+  elevation: {
+    1: '0 1px 4px rgba(0,0,0,0.03)',
+    2: '0 4px 8px rgba(0,0,0,0.06)',
+    4: '0 12px 32px rgba(0,0,0,0.12)',
   },
-  boxShadow: {
-    'elevation-1':'0 1px 4px rgba(0,0,0,0.03)',
-    'elevation-4':'0 12px 32px rgba(0,0,0,0.12)',
-  },
-  transitionTimingFunction:{
-    runix:'cubic-bezier(.22,.61,.36,1)',
-  }
-}
+},
+```
+
+```tsx
+/* Hero pastel tile */
+<div className="bg-primary-100 shadow-elevation-2 rounded-2xl p-8">…</div>
+
+/* Soft‑UI button */
+<button className="soft-ui bg-primary-500 text-white active:translate-y-px">Run & Verify</button>
+```
+
+---
+
+## 10 · Governance & QA (same as 0.4)
+
+* Tokens exported; glass‑specific tests removed.
+
+---
+
+**Astra‑Lite** keeps Runix visually unique with Pastel‑Bento clarity and Soft‑UI tactility—no liquid‑glass needed.

@@ -28,6 +28,31 @@
     --warn-bg: 45 100% 95%; /* Light warning #FFF7E6 */
     --info-bg: 210 100% 96%; /* Light info #E5F0FF */
     --viz-purple: 258 77% 68%; /* viz-purple-500 #A855F7 */
+
+    /* Transparent Bento Design Paradigm */
+    
+    /* Story Layer - Precision Glass (hero, zero-state, modals only) */
+    --story-glass-bg: rgba(244,244,242,0.10); /* 10% opacity pastel tint */
+    --story-glass-border: rgba(255,255,255,0.18);
+    --story-blur-radius: 12px;
+    
+    /* Action Layer - Soft-UI 2.0 (4px depth) */
+    --soft-inner: inset 2px 2px 4px rgba(0,0,0,0.04);
+    --soft-outer: 0 2px 4px rgba(0,0,0,0.08);
+
+    /* Enhanced depth system */
+    --elevation-1: 0 1px 4px rgba(0,0,0,0.03);
+    --elevation-4: 0 12px 32px rgba(0,0,0,0.12);
+
+    /* Color Tokens v3 - Core & Pastel Spread */
+    --primary-100: 228 235 255; /* #E4EBFF - Primary pastel */
+    --accent-100: 163 244 233; /* #A3F4E9 - Success/Accent pastel */
+    --collaboration-100: 235 212 255; /* #EBD4FF - Collaboration pastel */
+    --error-100: 255 213 221; /* #FFD5DD - Error pastel */
+    
+    /* Design.mdc v3 Simplified - Pastel-Bento × Soft-UI 2.0 */
+    --soft-inner: inset 2px 2px 4px rgba(0,0,0,0.04);
+    --soft-outer: 0 2px 4px rgba(0,0,0,0.08);
   }
 
   .dark {
@@ -56,6 +81,31 @@
     --warn-bg: 30 100% 15%; /* Dark warning #4D3900 */
     --info-bg: 215 82% 16%; /* Dark info #08254A */
     --viz-purple: 258 77% 68%; /* viz-purple-500 #A855F7 */
+
+    /* Transparent Bento Design Paradigm - Dark Mode */
+    
+    /* Story Layer - Dark Mode */
+    --story-glass-bg: rgba(15,17,22,0.15); /* 15% opacity for better visibility */
+    --story-glass-border: rgba(255,255,255,0.08);
+    --story-blur-radius: 12px;
+    
+    /* Action Layer - Dark Mode */
+    --soft-inner: inset 2px 2px 4px rgba(0,0,0,0.12);
+    --soft-outer: 0 2px 4px rgba(0,0,0,0.16);
+
+    /* Enhanced depth system - Dark Mode */
+    --elevation-1: 0 1px 4px rgba(0,0,0,0.08);
+    --elevation-4: 0 12px 32px rgba(0,0,0,0.24);
+
+    /* Color Tokens v3 - Dark Mode Pastels */
+    --primary-100: 20 22 28; /* Dark primary pastel */
+    --accent-100: 18 25 23; /* Dark accent pastel */
+    --collaboration-100: 25 20 28; /* Dark collaboration pastel */
+    --error-100: 28 20 22; /* Dark error pastel */
+    
+    /* Design.mdc v3 Simplified - Dark Mode */
+    --soft-inner: inset 2px 2px 4px rgba(0,0,0,0.12);
+    --soft-outer: 0 2px 4px rgba(0,0,0,0.16);
   }
 
   * {
@@ -145,11 +195,38 @@
     transition: all 250ms cubic-bezier(0.22, 0.61, 0.36, 1);
   }
 
-  /* Focus States */
+  /* EAA Compliance - 2px focus ring, 24px hit areas */
   :focus-visible {
     outline: 2px solid hsl(var(--primary));
     outline-offset: 2px;
     border-radius: var(--radius);
+  }
+  
+  /* Minimum 24px hit targets */
+  button, 
+  a,
+  [role="button"],
+  [tabindex]:not([tabindex="-1"]) {
+    min-height: 24px;
+    min-width: 24px;
+  }
+  
+  /* Reduced Motion Support */
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+    
+    .verify-ring::before,
+    .spark-glow::before,
+    .spark-glow::after {
+      animation: none !important;
+    }
   }
 
   /* Paper Layer Effect - more subtle */
@@ -222,11 +299,88 @@
     .text-balance {
         text-wrap: balance;
     }
+    
+    /* Story Layer - Precision Glass (hero, zero-state, modals only) */
+    .story-glass {
+        background: var(--story-glass-bg);
+        backdrop-filter: blur(var(--story-blur-radius));
+        border: 1px solid var(--story-glass-border);
+        /* WCAG 2.2 AA Fallback - solid bg when backdrop-filter unsupported */
+        @supports not (backdrop-filter: blur(4px)) {
+            background: rgba(244,244,242,0.95);
+        }
+    }
+    
+    .dark .story-glass {
+        @supports not (backdrop-filter: blur(4px)) {
+            background: rgba(15,17,22,0.95);
+        }
+    }
+    
+    /* Action Layer - Soft-UI 2.0 */
+    .soft-ui {
+        box-shadow: var(--soft-inner), var(--soft-outer);
+        border-radius: 0.75rem;
+        transition: all 150ms cubic-bezier(0.22, 0.61, 0.36, 1);
+    }
+    
+    .soft-ui:hover {
+        transform: translateY(-1px);
+    }
+    
+    /* Pastel background utilities */
+    .bg-pastel-primary {
+        background-color: hsl(var(--primary-100));
+    }
+    
+    .bg-pastel-accent {
+        background-color: hsl(var(--accent-100) / 0.3);
+    }
+    
+    .bg-pastel-secondary {
+        background-color: hsl(var(--secondary-bg));
+    }
+
+    /* Performance Tenets - LCP < 2s on 3G, glass blur never animates */
+    .story-glass {
+        /* Static blur only - never animate backdrop-filter for performance */
+        will-change: auto;
+    }
+    
+    /* Respect prefers-reduced-motion for all story elements */
+    @media (prefers-reduced-motion: reduce) {
+        .story-glass {
+            backdrop-filter: none;
+            background: rgba(244,244,242,0.95);
+        }
+        
+        .dark .story-glass {
+            background: rgba(15,17,22,0.95);
+        }
+    }
+
+
+    /* Story Layer - Light Beam Effects */
     .light-beam {
         background: linear-gradient(180deg, hsl(var(--primary) / 0.1) 0%, transparent 100%);
+        animation: light-beam-pulse 3.2s ease-in-out infinite;
     }
+    
     .dark .light-beam {
         background: linear-gradient(180deg, hsl(var(--primary) / 0.2) 0%, transparent 100%);
+    }
+    
+    /* Data-Reactive Beam - Optional enhancement */
+    .beam-reactive {
+        background: linear-gradient(180deg, 
+            hsl(var(--primary) / 0.1) 0%, 
+            hsl(var(--accent) / 0.05) 50%,
+            transparent 100%);
+    }
+    
+    @keyframes light-beam-pulse {
+        0%, 100% { opacity: 0.6; }
+        50% { opacity: 1; }
     }
     
     /* Enhanced Verification ring animation */
@@ -252,6 +406,7 @@
         );
         -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
         -webkit-mask-composite: xor;
+        mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
         mask-composite: exclude;
         animation: verify-ring-spin 1.6s linear infinite;
         filter: blur(0.5px);
@@ -363,26 +518,7 @@
         );
     }
     
-    /* Glass morphism effects */
-    .glass-card {
-        background: linear-gradient(
-            135deg,
-            hsl(0 0% 100% / 0.95) 0%,
-            hsl(0 0% 100% / 0.8) 100%
-        );
-        backdrop-filter: blur(16px);
-        border: 1px solid hsl(0 0% 100% / 0.2);
-    }
-    
-    .glass-card-dark {
-        background: linear-gradient(
-            135deg,
-            hsl(220 20% 10% / 0.95) 0%,
-            hsl(220 20% 8% / 0.9) 100%
-        );
-        backdrop-filter: blur(16px);
-        border: 1px solid hsl(220 20% 20% / 0.3);
-    }
+
     
     /* Floating animation */
     .float {

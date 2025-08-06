@@ -8,6 +8,7 @@ import { trackEvent } from "@/lib/analytics"
 import { Bot } from "lucide-react"
 import { GitFork } from "lucide-react"
 import { Star } from "lucide-react"
+import { MOTION } from "@/lib/motion/tokens"
 
 import { Variants } from "framer-motion"
 
@@ -25,16 +26,29 @@ export const ModelCard = ({ model, variants }: { model: Model, variants: Variant
   return (
     <motion.div
       variants={variants}
-      whileHover={{ y: -4, scale: 1.01 }}
-      transition={{ duration: 0.3, ease: "easeOut" }}
-      className="glass-card border border-border/50 rounded-xl shadow-elevation-1 overflow-hidden hover:shadow-elevation-2 transition-all duration-300 hover:border-accent-500/30 group backdrop-blur-md"
+      whileHover={MOTION.bento_hover}
+      animate={{
+        opacity: [0.9, 1, 0.9]
+      }}
+      transition={{
+        opacity: {
+          duration: MOTION.spark_glow.duration,
+          ease: MOTION.spark_glow.ease,
+          repeat: Infinity
+        }
+      }}
+      className="border border-border rounded-xl bg-accent-100 shadow-elevation-1 overflow-hidden hover:shadow-elevation-4 transition-all duration-300 hover:border-accent-500/30 group"
     >
       <div className="p-6">
         <div className="flex items-start justify-between">
           <div className="flex items-center space-x-4">
-            <div className="relative bg-gradient-to-br from-accent-500/10 to-accent-500/5 p-3 rounded-xl border border-accent-500/20 group-hover:border-accent-500/30 transition-colors">
-              <Bot className="w-6 h-6 text-accent-500" aria-hidden="true" />
-              <div className="absolute inset-0 bg-accent-500/5 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity" />
+            {/* Composable Models Pillar Declaration */}
+            <div className="flex items-center gap-2">
+              <span className="text-lg">🛠️</span>
+              <div className="relative bg-gradient-to-br from-accent-500/10 to-accent-500/5 p-3 rounded-xl border border-accent-500/20 group-hover:border-accent-500/30 transition-colors">
+                <Bot className="w-6 h-6 text-accent-500" aria-hidden="true" />
+                <div className="absolute inset-0 bg-accent-500/5 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity" />
+              </div>
             </div>
             <div className="flex-1">
               <Link 

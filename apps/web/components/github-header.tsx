@@ -145,23 +145,16 @@ export function GitHubHeader() {
               animate={{ opacity: 1 }}
               transition={{ delay: 0.5, duration: 0.5 }}
             >
-              {[
-                { href: "/explore", label: "Pipelines" },
-                { href: "/evidence", label: "Data" },
-                { href: "/safety", label: "Runs" }
-              ].map((item, index) => (
-                <motion.div
-                  key={item.href}
-                  initial={{ opacity: 0, y: -10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.6 + index * 0.1, duration: 0.3 }}
-                  whileHover={{ y: -2 }}
-                >
-                  <Link href={item.href} className="text-sm font-medium text-muted-foreground hover:text-foreground transition-medium">
-                    {item.label}
-                  </Link>
-                </motion.div>
-              ))}
+              <motion.div
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.6, duration: 0.3 }}
+                whileHover={{ y: -2 }}
+              >
+                <Link href="/models" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-medium">
+                  Models
+                </Link>
+              </motion.div>
             </motion.nav>
 
             {/* Fork button */}

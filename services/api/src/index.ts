@@ -11,22 +11,22 @@ import dotenv from 'dotenv';
 import pino from 'pino';
 
 // Import routes
-import authRoutes from './routes/auth';
-import userRoutes from './routes/users';
-import repositoryRoutes from './routes/repositories';
-import protocolRoutes from './routes/protocols';
-import pullRequestRoutes from './routes/pullRequests';
-import simulationRoutes from './routes/simulations';
-import packageRoutes from './routes/packages';
-import aiRoutes from './routes/ai';
-import auditRoutes from './routes/audit';
-import webhookRoutes from './routes/webhooks';
-import metricsRoutes from './routes/metrics';
+import authRoutes from './routes/auth.js';
+import userRoutes from './routes/users.js';
+import repositoryRoutes from './routes/repositories.js';
+import protocolRoutes from './routes/protocols.js';
+import pullRequestRoutes from './routes/pullRequests.js';
+import simulationRoutes from './routes/simulations.js';
+import packageRoutes from './routes/packages.js';
+import aiRoutes from './routes/ai.js';
+import auditRoutes from './routes/audit.js';
+import webhookRoutes from './routes/webhooks.js';
+import metricsRoutes from './routes/metrics.js';
 
 // Import middleware
-import { errorHandler } from './middleware/errorHandler';
-import { setupPassport } from './config/passport';
-import { auditLogger } from './middleware/auditLogger';
+import { errorHandler } from './middleware/errorHandler.js';
+import { setupPassport } from './config/passport.js';
+import { auditLogger } from './middleware/auditLogger.js';
 
 dotenv.config();
 

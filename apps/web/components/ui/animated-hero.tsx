@@ -102,7 +102,7 @@ const PaperStack = () => {
           damping: 12
         }}
       >
-                  <Hash className="w-12 h-12 text-primary" strokeWidth={1.5} aria-hidden="true" />
+                  <Hash className="w-12 h-12 text-primary-500" strokeWidth={1.5} aria-hidden="true" />
       </motion.div>
     </motion.div>
   )

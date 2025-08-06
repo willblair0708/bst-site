@@ -51,16 +51,23 @@ export function MicroTooltip({
       <AnimatePresence>
         {isVisible && (
           <motion.div
-            initial={{ opacity: 0, scale: 0.8, y: position === "top" ? 10 : -10 }}
+            initial={{ opacity: 0, scale: 0.9, y: position === "top" ? 8 : -8 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.8, y: position === "top" ? 10 : -10 }}
-            transition={{ duration: 0.15, ease: "easeOut" }}
+            exit={{ opacity: 0, scale: 0.9, y: position === "top" ? 8 : -8 }}
+            transition={{ duration: 0.2, ease: [0.22, 0.61, 0.36, 1] }}
             className={`absolute z-50 ${positionClasses[position]} pointer-events-none`}
           >
-            <div className="bg-card border border-border shadow-elevation-2 rounded-lg px-2 py-1 backdrop-blur-sm">
+            <div className="glass-card border border-primary-500/20 shadow-elevation-3 rounded-lg px-3 py-2 backdrop-blur-md">
               <div className="text-xs font-medium text-foreground whitespace-nowrap">
                 {content}
               </div>
+              {/* Subtle arrow indicator */}
+              <div className={`absolute w-2 h-2 bg-card border-l border-t border-primary-500/20 transform rotate-45 ${
+                position === "top" ? "top-full left-1/2 -translate-x-1/2 -translate-y-1/2" :
+                position === "bottom" ? "bottom-full left-1/2 -translate-x-1/2 translate-y-1/2" :
+                position === "left" ? "left-full top-1/2 -translate-y-1/2 -translate-x-1/2" :
+                "right-full top-1/2 -translate-y-1/2 translate-x-1/2"
+              }`} />
             </div>
           </motion.div>
         )}

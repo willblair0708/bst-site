@@ -9,7 +9,7 @@ interface SkeletonProps {
 }
 
 export function Skeleton({ className, variant = "text" }: SkeletonProps) {
-  const baseClasses = "bg-muted animate-pulse rounded-md"
+  const baseClasses = "bg-gradient-to-r from-muted via-muted/50 to-muted animate-pulse rounded-md relative overflow-hidden"
   
   const variantClasses = {
     text: "h-4 w-full",
@@ -24,35 +24,48 @@ export function Skeleton({ className, variant = "text" }: SkeletonProps) {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.3 }}
-    />
+    >
+      {/* Shimmer effect */}
+      <motion.div
+        className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/20 to-transparent"
+        animate={{
+          x: ["-100%", "200%"]
+        }}
+        transition={{
+          duration: 1.5,
+          repeat: Infinity,
+          ease: "linear"
+        }}
+      />
+    </motion.div>
   )
 }
 
 export function ModelCardSkeleton() {
   return (
-    <div className="bg-card border border-border rounded-xl shadow-elevation-1 overflow-hidden p-5">
-      <div className="flex items-start justify-between mb-4">
-        <div className="flex items-center space-x-3">
-          <Skeleton variant="avatar" className="rounded-lg" />
+    <div className="glass-card border border-border/50 rounded-xl shadow-elevation-1 overflow-hidden p-6">
+      <div className="flex items-start justify-between mb-5">
+        <div className="flex items-center space-x-4">
+          <Skeleton variant="avatar" className="rounded-xl w-12 h-12" />
           <div className="space-y-2">
-            <Skeleton className="h-4 w-24" />
-            <Skeleton className="h-3 w-16" />
+            <Skeleton className="h-5 w-28" />
+            <Skeleton className="h-4 w-20" />
           </div>
         </div>
-        <Skeleton variant="button" className="h-6 w-12" />
+        <Skeleton className="h-6 w-16 rounded-full" />
       </div>
       
-      <div className="space-y-2 mb-4">
-        <Skeleton className="h-3 w-full" />
-        <Skeleton className="h-3 w-3/4" />
+      <div className="space-y-2 mb-5">
+        <Skeleton className="h-4 w-full" />
+        <Skeleton className="h-4 w-4/5" />
       </div>
       
-      <div className="flex items-center justify-between">
-        <div className="flex items-center space-x-3">
-          <Skeleton className="h-3 w-8" />
-          <Skeleton className="h-3 w-8" />
+      <div className="flex items-center justify-between pt-4 border-t border-border/50">
+        <div className="flex items-center space-x-4">
+          <Skeleton className="h-4 w-10" />
+          <Skeleton className="h-4 w-10" />
         </div>
-        <Skeleton variant="button" className="h-8 w-20" />
+        <Skeleton className="h-8 w-24 rounded-lg" />
       </div>
     </div>
   )
@@ -60,37 +73,37 @@ export function ModelCardSkeleton() {
 
 export function RepoCardSkeleton() {
   return (
-    <div className="bg-card border border-border rounded-xl shadow-elevation-1 overflow-hidden">
+    <div className="bg-card border border-border rounded-xl shadow-elevation-1 overflow-hidden group">
       <div className="p-6">
         <div className="flex items-center gap-2 mb-4">
-          <Skeleton className="h-4 w-4" />
-          <Skeleton className="h-4 w-32" />
+          <Skeleton className="h-4 w-4 rounded" />
+          <Skeleton className="h-4 w-36" />
         </div>
         
-        <div className="space-y-2 mb-6">
+        <div className="space-y-3 mb-6">
           <Skeleton className="h-4 w-full" />
-          <Skeleton className="h-4 w-2/3" />
+          <Skeleton className="h-4 w-3/4" />
         </div>
         
-        <div className="flex items-center gap-4 text-xs mb-4">
+        <div className="flex items-center gap-4 mb-4">
+          <Skeleton className="h-3 w-20" />
           <Skeleton className="h-3 w-16" />
-          <Skeleton className="h-3 w-12" />
         </div>
         
-        <div className="flex items-center gap-2 rounded-md bg-muted/50 px-3 py-2">
-          <Skeleton className="h-3 w-3" />
-          <Skeleton className="h-3 w-16" />
-          <Skeleton className="h-3 w-3 ml-auto" />
+        <div className="flex items-center gap-2 rounded-lg bg-primary-500/5 border border-primary-500/15 px-3 py-2">
+          <Skeleton className="h-3 w-3 rounded" />
+          <Skeleton className="h-3 w-20" />
+          <Skeleton className="h-3 w-3 ml-auto rounded" />
         </div>
       </div>
       
-      <div className="border-t border-border bg-muted/30 px-6 py-4">
+      <div className="border-t border-border bg-primary-500/5 px-6 py-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-4">
-            <Skeleton className="h-3 w-8" />
-            <Skeleton className="h-3 w-8" />
+            <Skeleton className="h-3 w-10" />
+            <Skeleton className="h-3 w-10" />
           </div>
-          <Skeleton className="h-3 w-12" />
+          <Skeleton className="h-3 w-16" />
         </div>
       </div>
     </div>

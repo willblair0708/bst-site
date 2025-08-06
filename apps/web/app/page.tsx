@@ -292,8 +292,8 @@ export default function LandingPage() {
                 key={repo.name}
                 variants={fadeInUp}
                 transition={{ duration: 0.6 }}
-                whileHover={{ y: -8, scale: 1.02 }}
-                className="group relative flex flex-col overflow-hidden rounded-xl border border-border bg-card shadow-elevation-1 transition-all duration-300 hover:shadow-elevation-3 hover:border-accent/30 spark-glow"
+                whileHover={{ y: -4, scale: 1.01 }}
+                className="group relative flex flex-col overflow-hidden rounded-xl border border-border/50 bg-card/95 backdrop-blur-sm shadow-elevation-1 transition-all duration-300 hover:shadow-elevation-2 hover:border-accent-500/30"
               >
                 {/* Verification badge */}
                 {repo.verified && (

@@ -185,10 +185,12 @@ export default function LandingPage() {
             viewport={{ once: true }}
             transition={{ duration: 0.6, ease: "easeOut" }}
           >
-            <Badge variant="outline" className="mb-4">
-              <Sparkles className="w-3 h-3 mr-1" />
-              Proof Runway
-            </Badge>
+            <motion.div whileHover={{ scale: 1.05 }} className="inline-block mb-4">
+              <Badge variant="outline" className="border-primary/20 bg-primary/5">
+                <Sparkles className="w-3 h-3 mr-1 text-primary animate-pulse" />
+                Proof Runway
+              </Badge>
+            </motion.div>
             <h2 className="font-display text-3xl tracking-tight sm:text-4xl">
               From hypothesis to verified result in 3 steps
             </h2>
@@ -254,9 +256,11 @@ export default function LandingPage() {
             viewport={{ once: true }}
             transition={{ duration: 0.6 }}
           >
-            <Badge className="mb-4 bg-primary/10 text-primary">
-              {PILLARS.VERSIONED_KNOWLEDGE.emoji} Versioned Knowledge
-            </Badge>
+            <motion.div whileHover={{ scale: 1.05 }} className="inline-block mb-4">
+              <Badge className="bg-primary/10 text-primary border border-primary/20">
+                {PILLARS.VERSIONED_KNOWLEDGE.emoji} Versioned Knowledge
+              </Badge>
+            </motion.div>
             <h2 className="font-display text-3xl tracking-tight sm:text-4xl">
               Immutable Git-grade history
             </h2>
@@ -337,11 +341,15 @@ export default function LandingPage() {
                     <code className="flex-1 font-mono text-xs text-muted-foreground">
                         {repo.hash}
                     </code>
-                    <button className="text-muted-foreground hover:text-foreground transition-colors">
+                    <motion.button 
+                      className="text-muted-foreground hover:text-accent transition-colors"
+                      whileHover={{ scale: 1.1 }}
+                      whileTap={{ scale: 0.9 }}
+                    >
                       <svg className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
                       </svg>
-                    </button>
+                    </motion.button>
                     </div>
                 </div>
 
@@ -377,9 +385,11 @@ export default function LandingPage() {
                 viewport={{ once: true }}
             transition={{ duration: 0.6 }}
           >
-            <Badge className="mb-4 bg-accent/10 text-accent">
-              {PILLARS.COMPOSABLE_MODELS.emoji} Composable Models & Tools
-            </Badge>
+            <motion.div whileHover={{ scale: 1.05 }} className="inline-block mb-4">
+              <Badge className="bg-accent/10 text-accent border border-accent/20">
+                {PILLARS.COMPOSABLE_MODELS.emoji} Composable Models & Tools
+              </Badge>
+            </motion.div>
             <h2 className="font-display text-3xl tracking-tight sm:text-4xl">
               Plug-and-play foundation models
             </h2>
@@ -417,9 +427,11 @@ export default function LandingPage() {
             viewport={{ once: true }}
             transition={{ duration: 0.6 }}
           >
-            <Badge className="mb-4 bg-viz-purple-500/10 text-viz-purple-500">
-              {PILLARS.HUMAN_AI_COLLAB.emoji} Human–AI Collaboration
-            </Badge>
+            <motion.div whileHover={{ scale: 1.05 }} className="inline-block mb-4">
+              <Badge className="bg-viz-purple-500/10 text-viz-purple-500 border border-viz-purple-500/20">
+                {PILLARS.HUMAN_AI_COLLAB.emoji} Human–AI Collaboration
+              </Badge>
+            </motion.div>
             <h2 className="font-display text-3xl tracking-tight sm:text-4xl">
               Live agent suggestions & social review
             </h2>
@@ -456,12 +468,16 @@ export default function LandingPage() {
                       for improved stability. Similar work by Chen et al. (2023) showed 15% better yields."
                     </p>
                     <div className="mt-4 flex items-center gap-2">
-                      <Button size="sm" className="bg-viz-purple-500 hover:bg-viz-purple-500/90">
-                        Accept & Run
-                      </Button>
-                      <Button size="sm" variant="outline">
-                        View Details
-                      </Button>
+                      <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                        <Button size="sm" className="bg-viz-purple-500 hover:bg-viz-purple-500/90 text-white">
+                          Accept & Run
+                        </Button>
+                      </motion.div>
+                      <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                        <Button size="sm" variant="outline" className="border-viz-purple-500/20 hover:border-viz-purple-500/40">
+                          View Details
+                        </Button>
+                      </motion.div>
                     </div>
                   </div>
                 </div>
@@ -519,23 +535,40 @@ export default function LandingPage() {
                     {/* Simple lineage visualization */}
                     <div className="mt-6 flex items-center justify-center gap-4">
                       {["Initial", "Fork A", "Fork B", "Merged"].map((stage, i) => (
-                        <div key={stage} className="flex items-center">
+                        <motion.div 
+                          key={stage} 
+                          className="flex items-center"
+                          initial={{ opacity: 0, y: 20 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          transition={{ delay: i * 0.1, duration: 0.5 }}
+                        >
                           <div className="flex flex-col items-center">
-                            <div className={`h-12 w-12 rounded-lg border-2 ${
-                              i === 3 ? "border-accent bg-accent/10" : "border-border bg-card"
-                            } flex items-center justify-center`}>
+                            <motion.div 
+                              className={`h-12 w-12 rounded-lg border-2 ${
+                                i === 3 ? "border-accent bg-accent/10" : "border-border bg-card"
+                              } flex items-center justify-center`}
+                              whileHover={{ scale: 1.1, rotate: 5 }}
+                              transition={{ type: "spring", stiffness: 300 }}
+                            >
                               {i === 3 ? (
                                 <CheckCircle2 className="h-5 w-5 text-accent" />
                               ) : (
                                 <GitBranch className="h-5 w-5 text-muted-foreground" />
                               )}
-                            </div>
+                            </motion.div>
                             <span className="mt-2 text-xs text-muted-foreground">{stage}</span>
                           </div>
                           {i < 3 && (
-                            <ArrowRight className="mx-2 h-4 w-4 text-muted-foreground" />
+                            <motion.div
+                              initial={{ scaleX: 0 }}
+                              animate={{ scaleX: 1 }}
+                              transition={{ delay: i * 0.1 + 0.2, duration: 0.3 }}
+                              className="origin-left"
+                            >
+                              <ArrowRight className="mx-2 h-4 w-4 text-muted-foreground" />
+                            </motion.div>
                           )}
-                        </div>
+                        </motion.div>
                       ))}
                     </div>
                   </div>
@@ -598,12 +631,20 @@ export default function LandingPage() {
                                 viewport={{ once: true }}
                     transition={{ duration: 0.6, ease: "easeOut" }}
                             >
-                                <dt className="flex items-center gap-x-3 text-base font-semibold leading-7 text-foreground">
-                                    <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10">
-                                        <Icon className="h-6 w-6 text-primary" aria-hidden="true" strokeWidth={1.5} />
-                                    </div>
-                                    {feature.title}
-                                </dt>
+                                                    <dt className="flex items-center gap-x-3 text-base font-semibold leading-7 text-foreground">
+                      <motion.div 
+                        className="flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10"
+                        whileHover={{ 
+                          scale: 1.1, 
+                          backgroundColor: "rgba(4, 54, 255, 0.2)",
+                          rotate: 5 
+                        }}
+                        transition={{ type: "spring", stiffness: 300 }}
+                      >
+                        <Icon className="h-6 w-6 text-primary" aria-hidden="true" strokeWidth={1.5} />
+                      </motion.div>
+                      {feature.title}
+                    </dt>
                                 <dd className="mt-4 flex flex-auto flex-col text-base leading-7 text-muted-foreground">
                                     <p className="flex-auto">{feature.description}</p>
                                 </dd>
@@ -619,12 +660,13 @@ export default function LandingPage() {
       <section className="py-24 sm:py-32">
           <div className="mx-auto max-w-7xl px-6 lg:px-8">
                         <motion.div 
-            className="relative isolate overflow-hidden rounded-3xl bg-gradient-to-br from-primary to-primary-600 px-6 py-24 text-center shadow-2xl sm:px-16"
-                initial="initial"
-                whileInView="animate"
-                variants={fadeInUp}
-                viewport={{ once: true }}
-                transition={{ duration: 0.8, ease: "easeOut" }}
+            className="relative isolate overflow-hidden rounded-3xl bg-gradient-to-br from-primary via-primary-600 to-accent/20 px-6 py-24 text-center shadow-2xl sm:px-16"
+                            initial="initial"
+                            whileInView="animate"
+                            variants={fadeInUp}
+                            viewport={{ once: true }}
+                            transition={{ duration: 0.8, ease: "easeOut" }}
+            whileHover={{ scale: 1.01 }}
               >
                   <h2 className="mx-auto max-w-2xl font-display text-3xl font-bold tracking-tight text-primary-foreground sm:text-4xl">
               Ready to transform your research?
@@ -633,26 +675,42 @@ export default function LandingPage() {
               Join scientists worldwide building the future of reproducible discovery.
                   </p>
                   <div className="mt-10 flex items-center justify-center gap-x-6">
-              <Link href="/explore">
-                <Button size="lg" className="bg-white text-primary hover:bg-white/90">
-                  <FlaskConical className="mr-2 h-4 w-4" />
-                  Start Building
+              <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                <Link href="/explore">
+                  <Button size="lg" className="bg-white text-primary hover:bg-white/90 shadow-lg hover:shadow-xl transition-all">
+                    <FlaskConical className="mr-2 h-4 w-4" />
+                    Start Building
                       </Button>
-              </Link>
-              <Link href="/docs">
-                <Button
-                  size="lg"
-                  variant="outline"
-                  className="border-primary-foreground/20 text-primary-foreground hover:bg-primary-foreground/10"
-                >
-                  View Docs
-                  <ArrowRight className="ml-2 h-4 w-4" />
+                </Link>
+              </motion.div>
+              <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                <Link href="/docs">
+                  <Button
+                    size="lg"
+                    variant="outline"
+                    className="border-primary-foreground/20 text-primary-foreground hover:bg-primary-foreground/10 backdrop-blur-sm"
+                  >
+                    View Docs
+                    <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
                       </Button>
-              </Link>
-            </div>
+                </Link>
+              </motion.div>
+                  </div>
 
-            {/* Background decoration */}
-            <div className="absolute -top-24 right-0 -z-10 transform-gpu blur-3xl" aria-hidden="true">
+                        {/* Background decoration */}
+            <motion.div 
+              className="absolute -top-24 right-0 -z-10 transform-gpu blur-3xl" 
+                      aria-hidden="true"
+              animate={{
+                rotate: [0, 5, 0],
+                scale: [1, 1.1, 1],
+              }}
+              transition={{
+                duration: 20,
+                repeat: Infinity,
+                ease: "easeInOut"
+              }}
+            >
               <div
                 className="aspect-[1404/767] w-[87.75rem] bg-gradient-to-r from-accent to-accent/50 opacity-25"
                 style={{
@@ -660,7 +718,7 @@ export default function LandingPage() {
                     "polygon(73.6% 51.7%, 91.7% 11.8%, 100% 46.4%, 97.4% 82.2%, 92.5% 84.9%, 75.7% 64%, 55.3% 47.5%, 46.5% 49.4%, 45% 62.9%, 50.3% 87.2%, 21.3% 64.1%, 0.1% 100%, 5.4% 51.1%, 21.4% 63.9%, 58.9% 0.2%, 73.6% 51.7%)",
                 }}
               />
-                  </div>
+            </motion.div>
               </motion.div>
           </div>
       </section>
@@ -669,30 +727,47 @@ export default function LandingPage() {
       <footer className="border-t border-border bg-background">
           <div className="mx-auto max-w-7xl overflow-hidden px-6 py-20 sm:py-24 lg:px-8">
               <nav className="-mb-6 columns-2 sm:flex sm:justify-center sm:space-x-12" aria-label="Footer">
-            <div className="pb-6">
-              <Link href="/docs" className="text-sm leading-6 text-muted-foreground hover:text-foreground">
-                Documentation
-              </Link>
-            </div>
-            <div className="pb-6">
-              <Link href="/explore" className="text-sm leading-6 text-muted-foreground hover:text-foreground">
-                Explore
-              </Link>
-            </div>
-            <div className="pb-6">
-              <Link href="/models" className="text-sm leading-6 text-muted-foreground hover:text-foreground">
-                Models
-              </Link>
-            </div>
-            <div className="pb-6">
-              <Link href="/mission" className="text-sm leading-6 text-muted-foreground hover:text-foreground">
-                Mission
-              </Link>
-            </div>
+            {[
+              { href: "/docs", label: "Documentation" },
+              { href: "/explore", label: "Explore" },
+              { href: "/models", label: "Models" },
+              { href: "/mission", label: "Mission" },
+            ].map((link) => (
+              <motion.div 
+                key={link.href} 
+                className="pb-6"
+                whileHover={{ y: -2 }}
+                transition={{ type: "spring", stiffness: 300 }}
+              >
+                <Link 
+                  href={link.href} 
+                  className="text-sm leading-6 text-muted-foreground hover:text-primary transition-colors duration-200"
+                >
+                  {link.label}
+                </Link>
+              </motion.div>
+            ))}
               </nav>
-              <p className="mt-10 text-center text-xs leading-5 text-muted-foreground">
-            &copy; {new Date().getFullYear()} Runix Hub. Turning every scientific claim into a runnable, forkable, verifiable artefact.
-              </p>
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.5 }}
+            className="mt-10 flex items-center justify-center gap-2"
+          >
+            <p className="text-center text-xs leading-5 text-muted-foreground">
+              &copy; {new Date().getFullYear()} Runix Hub.
+            </p>
+            <motion.span 
+              className="text-xs text-accent"
+              animate={{ opacity: [0.5, 1, 0.5] }}
+              transition={{ duration: 2, repeat: Infinity }}
+            >
+              •
+            </motion.span>
+            <p className="text-center text-xs leading-5 text-muted-foreground">
+              Turning every scientific claim into a runnable, forkable, verifiable artefact.
+            </p>
+          </motion.div>
           </div>
       </footer>
     </div>

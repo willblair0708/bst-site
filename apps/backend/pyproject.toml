@@ -27,6 +27,7 @@ dev = [
 
 [project.scripts]
 runix-backend = "app.main:main"
+runix-agents = "app.cli:main"
 
 [tool.uv]
 index-url = "https://pypi.org/simple"

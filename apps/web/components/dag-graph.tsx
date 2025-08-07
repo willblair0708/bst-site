@@ -30,6 +30,7 @@ interface DAGGraphProps {
   onNodeClick?: (node: DAGNode) => void
   onRunPipeline?: () => void
   className?: string
+  height?: number | string
 }
 
 const mockNodes: DAGNode[] = [
@@ -113,7 +114,7 @@ const getStatusColor = (status: string) => {
   }
 }
 
-export function DAGGraph({ nodes = mockNodes, onNodeClick, onRunPipeline, className = "" }: DAGGraphProps) {
+export function DAGGraph({ nodes = mockNodes, onNodeClick, onRunPipeline, className = "", height = 400 }: DAGGraphProps) {
   const [hoveredNode, setHoveredNode] = useState<string | null>(null)
   const [isIdle, setIsIdle] = useState(false)
   const [runningNodes, setRunningNodes] = useState<Set<string>>(new Set())
@@ -220,7 +221,7 @@ export function DAGGraph({ nodes = mockNodes, onNodeClick, onRunPipeline, classN
         animate={{ opacity: 1, scale: 1 }}
         transition={{ delay: 0.4, duration: 0.6, ease: "easeOut" }}
         className="relative overflow-hidden bg-card rounded-xl border border-border" 
-        style={{ height: '400px' }}
+        style={{ height }}
       >
         <svg
           width="100%"

@@ -378,104 +378,134 @@ const ChatPage = () => {
         
         {/* Main Content with Inspector panel */}
         <div className="flex-1 grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_340px] overflow-hidden">
-          {messages.length === 0 ? (
-            <div className="flex-1 flex flex-col justify-center items-center p-8">
-              <div className="max-w-2xl w-full">
-                <div className="text-center mb-12">
-                  <div className="w-16 h-16 rounded-full bg-muted flex items-center justify-center mx-auto mb-6">
-                    <Hash className="w-8 h-8 text-muted-foreground" />
-                  </div>
-                  <h2 className="text-3xl font-bold mb-4 text-foreground">
-                    Unlock Your Next Breakthrough
-                  </h2>
-                  <p className="text-muted-foreground max-w-lg mx-auto">
-                    I'm an AI research assistant, ready to help you analyze data, generate hypotheses, and accelerate your scientific discovery.
-                  </p>
-                </div>
-                
-                {/* Example Prompts */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  {[
-                    "Analyze the impact of HTRA1 mutations on macular degeneration.",
-                    "Simulate electron transfer dynamics in protein complexes.",
-                    "Evaluate the therapeutic potential of targeting PTHR in small cell lung cancer.",
-                    "What are the physical limits of light detection in mammalian eyes?"
-                  ].map((prompt, index) => (
-                    <button
-                      key={index}
-                      onClick={() => setInputValue(prompt)}
-                      className="p-4 text-left border rounded-lg hover:bg-muted transition-colors text-sm text-foreground h-full"
-                    >
-                      <Sparkles className="w-4 h-4 mb-3 text-muted-foreground" />
-                      <p className="font-medium leading-relaxed">{prompt}</p>
-                    </button>
-                  ))}
-                </div>
-              </div>
-            </div>
-          ) : (
-            <div className="flex-1 border-r bg-gradient-to-b from-background to-muted/20 overflow-hidden">
-              <div className="max-w-2xl mx-auto px-6 py-8 space-y-6 overflow-hidden">
-                {messages.slice(-MAX_MESSAGES).map((message, index) => {
-                  const isUser = message.author === 'User';
-                  return (
-                    <motion.div
-                      key={message.id}
-                      className={cn("group/message relative flex", isUser ? "justify-end" : "justify-start")}
-                      variants={fadeInUp}
-                      initial="initial"
-                      animate="animate"
-                      transition={{ delay: index * 0.05, duration: 0.35 }}
-                    >
-                      <Card className={cn("max-w-[68ch] rounded-2xl text-sm", isUser ? "bg-foreground text-background" : "bg-card/60")}
-                        variant={isUser ? undefined : "glass" as any}>
-                        <CardContent className="px-4 py-3">
-                          <ReactMarkdown remarkPlugins={[remarkGfm]}>
-                            {message.content}
-                          </ReactMarkdown>
-                          {!isUser && extractLinks(message.content).length > 0 && (
-                            <div className="mt-3 flex flex-wrap gap-2">
-                              {extractLinks(message.content).map((l, i) => (
-                                <a key={i} href={l.href} target="_blank" rel="noreferrer" className="text-xs inline-flex items-center gap-1 px-2 py-1 rounded-full border bg-background/50 hover:bg-background transition-colors">
-                                  <Globe className="w-3.5 h-3.5" /> {l.text}
-                                </a>
-                              ))}
-                            </div>
-                          )}
-                          {/* Hover toolbar */}
-                          <div className="absolute -top-3 right-2 hidden group-hover/message:flex gap-1">
-                            <button className="px-2 py-1 text-[11px] rounded-md border bg-background/90 hover:bg-background" onClick={() => copyToClipboard(message.content)}>Copy</button>
-                            {!isUser && (
-                              <button className="px-2 py-1 text-[11px] rounded-md border bg-background/90 hover:bg-background" onClick={() => regenerateFromAI(index)}>Regenerate</button>
-                            )}
-                          </div>
-                          <div className="mt-1 text-[11px] text-muted-foreground opacity-0 group-hover/message:opacity-100 transition-opacity">
-                            {new Date(message.createdAt || Date.now()).toLocaleTimeString()}
-                          </div>
-                        </CardContent>
-                      </Card>
-                    </motion.div>
-                  );
-                })}
-                {isAiTyping && (
-                  <motion.div
-                    className="flex justify-start"
-                    variants={fadeInUp}
-                    initial="initial"
-                    animate="animate"
-                  >
-                    <div className="rounded-2xl px-4 py-3 text-sm shadow-sm bg-muted">
-                      <div className="flex items-center gap-2">
-                        <motion.div className="w-2 h-2 rounded-full bg-muted-foreground" animate={{ opacity: [0.3, 1, 0.3] }} transition={{ repeat: Infinity, duration: 1 }} />
-                        <motion.div className="w-2 h-2 rounded-full bg-muted-foreground" animate={{ opacity: [0.3, 1, 0.3] }} transition={{ repeat: Infinity, duration: 1, delay: 0.15 }} />
-                        <motion.div className="w-2 h-2 rounded-full bg-muted-foreground" animate={{ opacity: [0.3, 1, 0.3] }} transition={{ repeat: Infinity, duration: 1, delay: 0.3 }} />
+          <section className="flex flex-col border-r bg-gradient-to-b from-background to-muted/20 overflow-hidden">
+            <div className="flex-1 overflow-hidden">
+              {messages.length === 0 ? (
+                <div className="h-full flex flex-col justify-center items-center p-8">
+                  <div className="max-w-2xl w-full">
+                    <div className="text-center mb-12">
+                      <div className="w-16 h-16 rounded-full bg-muted flex items-center justify-center mx-auto mb-6">
+                        <Hash className="w-8 h-8 text-muted-foreground" />
                       </div>
+                      <h2 className="text-3xl font-bold mb-4 text-foreground">Unlock Your Next Breakthrough</h2>
+                      <p className="text-muted-foreground max-w-lg mx-auto">I'm an AI research assistant, ready to help you analyze data, generate hypotheses, and accelerate your scientific discovery.</p>
                     </div>
-                  </motion.div>
-                )}
+                    {/* Example Prompts */}
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      {[
+                        "Analyze the impact of HTRA1 mutations on macular degeneration.",
+                        "Simulate electron transfer dynamics in protein complexes.",
+                        "Evaluate the therapeutic potential of targeting PTHR in small cell lung cancer.",
+                        "What are the physical limits of light detection in mammalian eyes?"
+                      ].map((prompt, index) => (
+                        <button key={index} onClick={() => setInputValue(prompt)} className="p-4 text-left border rounded-lg hover:bg-muted transition-colors text-sm text-foreground h-full">
+                          <Sparkles className="w-4 h-4 mb-3 text-muted-foreground" />
+                          <p className="font-medium leading-relaxed">{prompt}</p>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                <div className="h-full overflow-hidden">
+                  <div className="max-w-2xl mx-auto px-6 py-8 space-y-6 overflow-hidden">
+                    {messages.slice(-MAX_MESSAGES).map((message, index) => {
+                      const isUser = message.author === 'User';
+                      return (
+                        <motion.div
+                          key={message.id}
+                          className={cn("group/message relative flex", isUser ? "justify-end" : "justify-start")}
+                          variants={fadeInUp}
+                          initial="initial"
+                          animate="animate"
+                          transition={{ delay: index * 0.05, duration: 0.35 }}
+                        >
+                          <Card className={cn("max-w-[68ch] rounded-2xl text-sm", isUser ? "bg-foreground text-background" : "bg-card/60")} variant={isUser ? undefined : "glass" as any}>
+                            <CardContent className="px-4 py-3">
+                              <ReactMarkdown remarkPlugins={[remarkGfm]}>{message.content}</ReactMarkdown>
+                              {!isUser && extractLinks(message.content).length > 0 && (
+                                <div className="mt-3 flex flex-wrap gap-2">
+                                  {extractLinks(message.content).map((l, i) => (
+                                    <a key={i} href={l.href} target="_blank" rel="noreferrer" className="text-xs inline-flex items-center gap-1 px-2 py-1 rounded-full border bg-background/50 hover:bg-background transition-colors">
+                                      <Globe className="w-3.5 h-3.5" /> {l.text}
+                                    </a>
+                                  ))}
+                                </div>
+                              )}
+                              {/* Hover toolbar */}
+                              <div className="absolute -top-3 right-2 hidden group-hover/message:flex gap-1">
+                                <button className="px-2 py-1 text-[11px] rounded-md border bg-background/90 hover:bg-background" onClick={() => copyToClipboard(message.content)}>Copy</button>
+                                {!isUser && (
+                                  <button className="px-2 py-1 text-[11px] rounded-md border bg-background/90 hover:bg-background" onClick={() => regenerateFromAI(index)}>Regenerate</button>
+                                )}
+                              </div>
+                              <div className="mt-1 text-[11px] text-muted-foreground opacity-0 group-hover/message:opacity-100 transition-opacity">
+                                {new Date(message.createdAt || Date.now()).toLocaleTimeString()}
+                              </div>
+                            </CardContent>
+                          </Card>
+                        </motion.div>
+                      );
+                    })}
+                    {isAiTyping && (
+                      <motion.div className="flex justify-start" variants={fadeInUp} initial="initial" animate="animate">
+                        <div className="rounded-2xl px-4 py-3 text-sm shadow-sm bg-muted">
+                          <div className="flex items-center gap-2">
+                            <motion.div className="w-2 h-2 rounded-full bg-muted-foreground" animate={{ opacity: [0.3, 1, 0.3] }} transition={{ repeat: Infinity, duration: 1 }} />
+                            <motion.div className="w-2 h-2 rounded-full bg-muted-foreground" animate={{ opacity: [0.3, 1, 0.3] }} transition={{ repeat: Infinity, duration: 1, delay: 0.15 }} />
+                            <motion.div className="w-2 h-2 rounded-full bg-muted-foreground" animate={{ opacity: [0.3, 1, 0.3] }} transition={{ repeat: Infinity, duration: 1, delay: 0.3 }} />
+                          </div>
+                        </div>
+                      </motion.div>
+                    )}
+                  </div>
+                </div>
+              )}
+            </div>
+            {/* Input area inside center pane */}
+            <div className="p-4 sm:p-6 bg-background/80 border-t backdrop-blur supports-[backdrop-filter]:bg-background/60">
+              <div className="max-w-2xl mx-auto">
+                <motion.div className="relative bg-background rounded-2xl border focus-within:border-ring transition-colors shadow-sm" variants={fadeInUp} initial="initial" animate="animate" transition={{ delay: 0.2, duration: 0.5 }}>
+                  <div className="flex items-center p-2">
+                    <Textarea
+                      placeholder="Ask me about research, analysis, or any scientific concept..."
+                      className="flex-1 bg-transparent border-0 px-4 py-2 text-sm text-foreground placeholder:text-muted-foreground resize-none focus:outline-none min-h-[40px] max-h-[96px] leading-relaxed"
+                      value={inputValue}
+                      onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setInputValue(e.target.value)}
+                      onKeyPress={(e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+                        if (e.key === "Enter" && !e.shiftKey) {
+                          e.preventDefault();
+                          handleSendMessage();
+                        }
+                      }}
+                      rows={1}
+                    />
+                    <div className="flex items-center gap-2">
+                      {isAiTyping ? (
+                        <Button size="icon" onClick={handleStop} className="rounded-lg h-8 w-8" title="Stop">
+                          <Square className="w-4 h-4" />
+                        </Button>
+                      ) : (
+                        <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                          <Button size="icon" onClick={() => handleSendMessage()} disabled={!inputValue.trim()} className="rounded-lg h-8 w-8 bg-foreground text-background hover:bg-foreground/80 disabled:opacity-30 disabled:pointer-events-none">
+                            <ArrowUp className="w-4 h-4" />
+                          </Button>
+                        </motion.div>
+                      )}
+                    </div>
+                  </div>
+                </motion.div>
+                <div className="mt-2 flex items-center justify-between text-xs text-muted-foreground">
+                  <div>Enter to send • Shift+Enter for newline</div>
+                  {messages.length > 0 && messages[messages.length - 1]?.author === 'AI' && (
+                    <button className="inline-flex items-center gap-1 hover:text-foreground" onClick={handleRegenerate}>
+                      <RotateCcw className="w-3.5 h-3.5" /> Regenerate
+                    </button>
+                  )}
+                </div>
               </div>
             </div>
-          )}
+          </section>
           {/* Inspector Panel */}
           <aside className="hidden lg:flex flex-col max-h-full overflow-hidden border-l bg-background/40">
             <div className="px-4 py-3 border-b bg-background/80 backdrop-blur">
@@ -525,60 +555,6 @@ const ChatPage = () => {
             </div>
           </aside>
         </div>
-          {/* Input Area - fixed height to avoid vertical scroll */}
-          <div className="p-4 sm:p-6 bg-background/80 border-t backdrop-blur supports-[backdrop-filter]:bg-background/60">
-            <div className="max-w-3xl mx-auto">
-              <motion.div 
-                className="relative bg-background rounded-2xl border focus-within:border-ring transition-colors shadow-sm"
-                variants={fadeInUp}
-                initial="initial"
-                animate="animate"
-                transition={{ delay: 0.2, duration: 0.5 }}
-              >
-                <div className="flex items-center p-2">
-                  <Textarea
-                    placeholder="Ask me about research, analysis, or any scientific concept..."
-                    className="flex-1 bg-transparent border-0 px-4 py-2 text-sm text-foreground placeholder:text-muted-foreground resize-none focus:outline-none min-h-[40px] max-h-[96px] leading-relaxed"
-                    value={inputValue}
-                    onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setInputValue(e.target.value)}
-                    onKeyPress={(e: React.KeyboardEvent<HTMLTextAreaElement>) => {
-                      if (e.key === "Enter" && !e.shiftKey) {
-                        e.preventDefault();
-                        handleSendMessage();
-                      }
-                    }}
-                    rows={1}
-                  />
-                  <div className="flex items-center gap-2">
-                    {isAiTyping ? (
-                      <Button size="icon" onClick={handleStop} className="rounded-lg h-8 w-8" title="Stop">
-                        <Square className="w-4 h-4" />
-                      </Button>
-                    ) : (
-                      <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-                        <Button
-                          size="icon"
-                          onClick={() => handleSendMessage()}
-                          disabled={!inputValue.trim()}
-                          className="rounded-lg h-8 w-8 bg-foreground text-background hover:bg-foreground/80 disabled:opacity-30 disabled:pointer-events-none"
-                        >
-                          <ArrowUp className="w-4 h-4" />
-                        </Button>
-                      </motion.div>
-                    )}
-                  </div>
-                </div>
-              </motion.div>
-              <div className="mt-2 flex items-center justify-between text-xs text-muted-foreground">
-                <div>Enter to send • Shift+Enter for newline</div>
-                {messages.length > 0 && messages[messages.length - 1]?.author === 'AI' && (
-                  <button className="inline-flex items-center gap-1 hover:text-foreground" onClick={handleRegenerate}>
-                    <RotateCcw className="w-3.5 h-3.5" /> Regenerate
-                  </button>
-                )}
-              </div>
-            </div>
-          </div>
       </main>
       {/* API Key Modal */}
       <Dialog open={showKeyModal} onOpenChange={setShowKeyModal}>

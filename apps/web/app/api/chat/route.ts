@@ -5,16 +5,31 @@ export const dynamic = 'force-dynamic';
 
 // Proxy to Python backend to support agents and streaming
 export async function POST(req: NextRequest) {
-  const backendUrl = process.env.RUNIX_BACKEND_URL || 'http://localhost:8787/chat';
-  const body = await req.text();
+  const defaultBase = process.env.RUNIX_BACKEND_BASE || 'http://localhost:8787';
+  const bodyText = await req.text();
+  let json: any = {};
+  try { json = JSON.parse(bodyText || '{}'); } catch {}
+  const stream = !!json?.stream;
+  const agent = (json?.agent || '').toString();
+  const messages = Array.isArray(json?.messages) ? json.messages : [];
+  const lastUser = [...messages].reverse().find((m: any) => m?.author === 'User' || m?.role === 'user');
+  const query = (lastUser?.content || '').toString();
   const auth = req.headers.get('authorization') || '';
-  const res = await fetch(backendUrl, {
+  const targetUrl = stream
+    ? `${defaultBase}/v1/tasks`
+    : `${defaultBase}/chat`;
+
+  const bodyToSend = stream
+    ? JSON.stringify({ agent: 'DIRECTOR', query, stream: true })
+    : bodyText;
+
+  const res = await fetch(targetUrl, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
       ...(auth ? { 'Authorization': auth } : {}),
     },
-    body,
+    body: bodyToSend,
   });
 
   // passthrough streaming if SSE
@@ -30,6 +45,6 @@ export async function POST(req: NextRequest) {
     });
   }
 
-  const json = await res.json().catch(() => ({ error: 'Invalid backend response' }));
-  return new Response(JSON.stringify(json), { status: res.status, headers: { 'Content-Type': 'application/json' } });
+  const jsonRes = await res.json().catch(() => ({ error: 'Invalid backend response' }));
+  return new Response(JSON.stringify(jsonRes), { status: res.status, headers: { 'Content-Type': 'application/json' } });
 }

@@ -78,6 +78,7 @@ const ChatPage = () => {
   const [showKeyModal, setShowKeyModal] = useState(false);
   const [inputValue, setInputValue] = useState("");
   const [isAiTyping, setIsAiTyping] = useState(false);
+  const [events, setEvents] = useState<Array<{ ts: number; type: string; detail?: string }>>([]);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const abortControllerRef = useRef<AbortController | null>(null);
   // Defaults kept; controls hidden for simplicity
@@ -218,13 +219,22 @@ const ChatPage = () => {
             const parts = partial.split(/\n\n/);
             partial = parts.pop() || '';
             for (const block of parts) {
-              const line = block.split("\n").find(l => l.startsWith("data:"));
-              if (!line) continue;
-              const payload = line.replace(/^data:\s?/, "");
+              const lines = block.split("\n");
+              const evtLine = lines.find(l => l.startsWith("event:"));
+              const dataLine = lines.find(l => l.startsWith("data:"));
+              if (!dataLine) continue;
+              const evtType = evtLine ? evtLine.replace(/^event:\s?/, "").trim() : '';
+              const payload = dataLine.replace(/^data:\s?/, "");
               try {
                 const evt = JSON.parse(payload);
+                if (evtType && evtType !== 'open') {
+                  setEvents(prev => [...prev, { ts: Date.now(), type: evtType, detail: JSON.stringify(evt) }]);
+                }
                 if (evt.delta) {
                   setSessions(prev => prev.map(s => s.id === sessionId ? { ...s, messages: s.messages.map(m => m.id === aiId ? { ...m, content: m.content + evt.delta } : m) } : s));
+                }
+                if (evt.event && (evt.event === 'tool_call' || evt.event === 'tool_result')) {
+                  setEvents(prev => [...prev, { ts: Date.now(), type: evt.event, detail: evt.tool }]);
                 }
                 if (evt.done && evt.message) {
                   setSessions(prev => prev.map(s => s.id === sessionId ? { ...s, messages: s.messages.map(m => m.id === aiId ? { ...evt.message, id: aiId, createdAt: Date.now() } : m) } : s));
@@ -527,6 +537,19 @@ const ChatPage = () => {
                   </motion.div>
                 )}
                 <div ref={messagesEndRef} />
+                {/* Tool/Orchestration Timeline */}
+                {events.length > 0 && (
+                  <div className="mt-6 p-4 border rounded-xl bg-muted">
+                    <div className="text-xs font-semibold mb-2">Orchestration Events</div>
+                    <div className="space-y-1 max-h-48 overflow-auto text-xs">
+                      {events.slice(-200).map((e, i) => (
+                        <div key={i} className="font-mono">
+                          [{new Date(e.ts).toLocaleTimeString()}] {e.type}{e.detail ? ` — ${e.detail}` : ''}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
           )}

@@ -32,9 +32,15 @@ def build_mcp_servers() -> List[Any]:
             params = MCPServerStreamableHttpParams(
                 url=spec["url"],
                 headers=spec.get("headers", {}),
-                timeout=float(spec.get("timeout", 30.0)),
+                timeout=float(spec.get("timeout", 60.0)),
             )
-            servers.append(MCPServerStreamableHttp(params, name=name))
+            servers.append(
+                MCPServerStreamableHttp(
+                    params,
+                    name=name,
+                    client_session_timeout_seconds=int(spec.get("client_session_timeout_seconds", 120)),
+                )
+            )
         elif "command" in spec and MCPServerStdio and MCPServerStdioParams:
             params = MCPServerStdioParams(
                 command=spec["command"],
@@ -42,7 +48,13 @@ def build_mcp_servers() -> List[Any]:
                 env=spec.get("env", {}),
                 cwd=spec.get("cwd"),
             )
-            servers.append(MCPServerStdio(params, name=name))
+            servers.append(
+                MCPServerStdio(
+                    params,
+                    name=name,
+                    client_session_timeout_seconds=int(spec.get("client_session_timeout_seconds", 120)),
+                )
+            )
     return servers
 
 

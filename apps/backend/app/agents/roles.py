@@ -174,6 +174,7 @@ def build_agents(mcp_servers: list[Any] | None = None) -> dict[str, Any]:
         instructions=_scout_instructions(),
         tools=[rag_search, rag_expand, format_markdown_with_refs],
         model=os.getenv("MODEL_SCOUT", "gpt-4o-mini"),
+        mcp_servers=mcp_servers or [],
         model_settings=common_settings,
     )
 
@@ -182,6 +183,7 @@ def build_agents(mcp_servers: list[Any] | None = None) -> dict[str, Any]:
         instructions=_scholar_instructions(),
         tools=[rag_search, rag_expand, format_markdown_with_refs],
         model=os.getenv("MODEL_SCHOLAR", "gpt-4o"),
+        mcp_servers=mcp_servers or [],
         model_settings=common_settings,
     )
 
@@ -190,6 +192,7 @@ def build_agents(mcp_servers: list[Any] | None = None) -> dict[str, Any]:
         instructions=_archivist_instructions(),
         tools=[rag_search, format_markdown_with_refs],
         model=os.getenv("MODEL_ARCHIVIST", "gpt-4o-mini"),
+        mcp_servers=mcp_servers or [],
         model_settings=common_settings,
     )
 
@@ -198,6 +201,7 @@ def build_agents(mcp_servers: list[Any] | None = None) -> dict[str, Any]:
         instructions=_alchemist_instructions(),
         tools=[chem_design, chem_calc],
         model=os.getenv("MODEL_ALCHEMIST", "gpt-4o-mini"),
+        mcp_servers=mcp_servers or [],
         model_settings=common_settings,
     )
 
@@ -206,6 +210,7 @@ def build_agents(mcp_servers: list[Any] | None = None) -> dict[str, Any]:
         instructions=_analyst_instructions(),
         tools=[],
         model=os.getenv("MODEL_ANALYST", "gpt-4o-mini"),
+        mcp_servers=mcp_servers or [],
         model_settings=common_settings,
     )
 

@@ -17,8 +17,6 @@ import remarkGfm from "remark-gfm";
 import { cn } from "@/lib/utils";
 import { ThemeToggle } from "@/components/theme-toggle";
 import Textarea from "react-textarea-autosize";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 // Simplified UI: sliders/selects removed
 
@@ -39,7 +37,6 @@ const ChatPage = () => {
   const [currentAgent, setCurrentAgent] = useState<AgentId>("crow");
   const [useDirector, setUseDirector] = useState<boolean>(true);
   const [apiKey, setApiKey] = useState<string>("");
-  const [showKeyModal, setShowKeyModal] = useState(false);
   const [inputValue, setInputValue] = useState("");
   const [isAiTyping, setIsAiTyping] = useState(false);
   type TraceEvent = { ts: number; type: string; detail?: string };
@@ -285,15 +282,7 @@ const ChatPage = () => {
     return links;
   };
 
-  const exportConversation = (session: ChatSession) => {
-    const blob = new Blob([JSON.stringify(session, null, 2)], { type: 'application/json' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `${session.title || 'chat'}.json`;
-    a.click();
-    URL.revokeObjectURL(url);
-  };
+  // exportConversation removed per design simplification
 
   // Suggestions removed to reduce visual load
 
@@ -359,12 +348,8 @@ const ChatPage = () => {
 
       {/* Actions */}
       <div className="mt-auto space-y-2">
-        <Button variant="outline" className="w-full rounded-lg" onClick={() => setShowKeyModal(true)}>API Key</Button>
         {activeSession && (
-          <div className="grid grid-cols-2 gap-2">
-            <Button variant="outline" className="rounded-lg" onClick={() => exportConversation(activeSession)}>Export</Button>
-            <Button variant="destructive" className="rounded-lg" onClick={() => setSessions(prev => prev.map(s => s.id === activeSessionId ? { ...s, messages: [] } : s))}>Clear</Button>
-          </div>
+          <Button variant="destructive" className="w-full rounded-lg" onClick={() => setSessions(prev => prev.map(s => s.id === activeSessionId ? { ...s, messages: [] } : s))}>Clear</Button>
         )}
       </div>
     </aside>
@@ -465,7 +450,7 @@ const ChatPage = () => {
             {/* Input area inside center pane */}
             <div className="p-4 sm:p-6 bg-background/80 border-t backdrop-blur supports-[backdrop-filter]:bg-background/60">
               <div className="max-w-2xl mx-auto">
-                <motion.div className="relative bg-background rounded-2xl border focus-within:border-ring transition-colors shadow-sm" variants={fadeInUp} initial="initial" animate="animate" transition={{ delay: 0.2, duration: 0.5 }}>
+                <motion.div className="relative bg-background rounded-2xl border focus-within:border-ring transition-colors shadow-soft" variants={fadeInUp} initial="initial" animate="animate" transition={{ delay: 0.2, duration: 0.5 }}>
                   <div className="flex items-center p-2">
                     <Textarea
                       placeholder="Ask me about research, analysis, or any scientific concept..."
@@ -487,7 +472,7 @@ const ChatPage = () => {
                         </Button>
                       ) : (
                         <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-                          <Button size="icon" onClick={() => handleSendMessage()} disabled={!inputValue.trim()} className="rounded-lg h-8 w-8 bg-foreground text-background hover:bg-foreground/80 disabled:opacity-30 disabled:pointer-events-none">
+                          <Button size="icon" onClick={() => handleSendMessage()} disabled={!inputValue.trim()} className="rounded-xl h-8 w-8 bg-primary text-primary-foreground hover:bg-primary/90 disabled:opacity-30 disabled:pointer-events-none btn-primary-glow">
                             <ArrowUp className="w-4 h-4" />
                           </Button>
                         </motion.div>
@@ -510,16 +495,16 @@ const ChatPage = () => {
           <aside className="hidden lg:flex flex-col max-h-full overflow-hidden border-l bg-background/40">
             <div className="px-4 py-3 border-b bg-background/80 backdrop-blur">
               <div className="text-sm font-semibold">Run Inspector</div>
-              <div className="mt-2 flex items-center gap-2">
-                <span className="text-[10px] px-2 py-1 rounded-full border">Events: {events.length}</span>
-                <span className="text-[10px] px-2 py-1 rounded-full border">Tools: {Array.from(new Set(toolTrace.map(t=>t.tool))).length}</span>
-                <span className="text-[10px] px-2 py-1 rounded-full border">{runDuration!==null?`${(runDuration/1000).toFixed(1)}s`:'—'}</span>
+              <div className="mt-2 grid grid-cols-3 gap-2">
+                <span className="text-[10px] px-2 py-1 rounded-full border bg-primary-100/40 text-foreground">Events: {events.length}</span>
+                <span className="text-[10px] px-2 py-1 rounded-full border bg-accent-100/40 text-foreground">Tools: {Array.from(new Set(toolTrace.map(t=>t.tool))).length}</span>
+                <span className="text-[10px] px-2 py-1 rounded-full border bg-collaboration-100/40 text-foreground">{runDuration!==null?`${(runDuration/1000).toFixed(1)}s`:'—'}</span>
               </div>
             </div>
             <div className="flex-1 p-4 space-y-4 overflow-hidden">
               {/* Events - compact list */}
               {events.length > 0 && (
-                <Card variant="bento">
+                <Card variant="bento" className="bg-primary-100 shadow-elevation-1">
                   <CardHeader className="py-3 px-3"><CardTitle className="text-xs">Events</CardTitle></CardHeader>
                   <CardContent className="px-3 pb-3">
                     <ul className="text-xs space-y-1">
@@ -533,7 +518,7 @@ const ChatPage = () => {
 
               {/* Tool Trace - compact list */}
               {toolTrace.length > 0 && (
-                <Card variant="bento">
+                <Card variant="bento" className="bg-collaboration-100 shadow-elevation-1">
                   <CardHeader className="py-3 px-3"><CardTitle className="text-xs">Tools</CardTitle></CardHeader>
                   <CardContent className="px-3 pb-3">
                     <ul className="text-xs space-y-2">
@@ -556,22 +541,7 @@ const ChatPage = () => {
           </aside>
         </div>
       </main>
-      {/* API Key Modal */}
-      <Dialog open={showKeyModal} onOpenChange={setShowKeyModal}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>API Key</DialogTitle>
-            <DialogDescription>Saved locally and used as a Bearer token for /api/chat requests.</DialogDescription>
-          </DialogHeader>
-          <div className="space-y-3">
-            <Input placeholder="sk-..." value={apiKey} onChange={(e) => setApiKey(e.target.value)} />
-            <div className="flex justify-end gap-2">
-              <Button variant="outline" onClick={() => setApiKey("")}>Clear</Button>
-              <Button onClick={() => { localStorage.setItem('runix_api_key', apiKey); setShowKeyModal(false); }}>Save</Button>
-            </div>
-          </div>
-        </DialogContent>
-      </Dialog>
+      {/* API Key modal removed per design.mdc simplification */}
     </div>
   );
 };

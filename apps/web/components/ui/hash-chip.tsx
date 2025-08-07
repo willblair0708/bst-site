@@ -33,9 +33,9 @@ export function HashChip({ hash, className, showToast }: HashChipProps) {
       onClick={copyHash}
       className={cn(
         // Design.mdc v0.5 Hash Chip - mono, copy-toast, rounded-full
-        "inline-flex items-center gap-2 px-3 py-1.5 rounded-full",
-        "bg-primary-100 border border-primary-500/20",
-        "font-mono text-sm text-primary-500",
+        "inline-flex items-center gap-2 px-3 py-1.5 rounded-full shadow-soft",
+        "bg-primary-100/80 border border-primary-500/20 backdrop-blur-sm",
+        "font-mono text-xs text-primary-600",
         "transition-all duration-150",
         "hover:bg-primary-100/80 hover:border-primary-500/30",
         "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2",
@@ -45,7 +45,7 @@ export function HashChip({ hash, className, showToast }: HashChipProps) {
       whileTap={{ scale: 0.98 }}
       transition={MOTION.snap}
     >
-      <span className="font-mono text-xs font-medium">
+      <span className="font-mono text-[10px] font-medium tracking-tight">
         {hash}
       </span>
       

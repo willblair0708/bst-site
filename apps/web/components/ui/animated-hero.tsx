@@ -155,7 +155,7 @@ export function AnimatedHero() {
             <motion.div 
               variants={itemVariants}
             >
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-accent-500/20 bg-accent-100 mb-6">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border bg-muted mb-6">
                 <Sparkles className="w-4 h-4 text-accent-500" />
                 <span className="text-sm font-semibold text-accent-500">Astra-Lite UI</span>
               </div>

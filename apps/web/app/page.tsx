@@ -189,10 +189,10 @@ export default function LandingPage() {
 
 
   return (
-    <div className="bg-background text-foreground antialiased">
+    <div className="relative bg-background text-foreground antialiased">
       {/* Hero Section - Astra-Lite Story Layer */}
       <header className="relative">
-        <div className="bg-primary-100/50 shadow-elevation-2 rounded-2xl mx-4 lg:mx-8 mt-4 border border-black/5">
+        <div className="relative mx-4 mt-4 rounded-3xl border border-black/5 bg-primary-100/40 shadow-elevation-2 lg:mx-8">
           <AnimatedHero />
         </div>
       </header>
@@ -308,12 +308,12 @@ export default function LandingPage() {
               }>
               {featuredRepositories.map((repo) => (
                 <div key={repo.name} className="lg:col-span-4">
-                  <motion.div
-                    variants={fadeInUp}
-                    transition={{ duration: 0.6 }}
-                    whileHover={MOTION.bento_hover}
-                    className={`group relative flex flex-col h-full overflow-hidden rounded-2xl border bg-card shadow-sm`}
-                  >
+                    <motion.div
+                      variants={fadeInUp}
+                      transition={{ duration: 0.6 }}
+                      whileHover={MOTION.bento_hover}
+                      className={`group relative flex h-full flex-col overflow-hidden rounded-3xl border bg-card shadow-elevation-1 transition-shadow hover:shadow-elevation-2`}
+                    >
                 {/* Verification badge */}
                 {repo.verified && (
                   <div className="absolute right-4 top-4 z-10">
@@ -325,16 +325,16 @@ export default function LandingPage() {
 
                 <div className="flex-1 p-6">
                   {/* Pillar Declaration - Transparent Bento (strict color separation) */}
-                  <div className="flex items-center justify-between mb-4">
+                  <div className="mb-4 flex items-center justify-between">
                     <div className="flex items-center gap-2">
                       <span className="text-lg">{PILLARS[repo.pillar].emoji}</span>
-                      <div className={`p-2 rounded-lg bg-${PILLARS[repo.pillar].color}/10 border border-${PILLARS[repo.pillar].color}/20`}>
+                      <div className={`rounded-xl border p-2 bg-${PILLARS[repo.pillar].color}/10 border-${PILLARS[repo.pillar].color}/20`}>
                         {React.createElement(PILLARS[repo.pillar].icon, { 
                           className: `h-4 w-4 text-${PILLARS[repo.pillar].color}` 
                         })}
                       </div>
                     </div>
-                    <div className="bg-muted/50 rounded-lg p-1">
+                    <div className="rounded-lg bg-muted/50 p-1">
                       {repo.isPrivate ? (
                         <Lock className="h-3 w-3 text-muted-foreground" strokeWidth={2} />
                       ) : (
@@ -345,7 +345,7 @@ export default function LandingPage() {
                   
                   <Link
                     href={`/repo/${repo.owner}/${repo.name}`}
-                    className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors"
+                    className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 rounded"
                     onClick={() => trackEvent('repo_card_clicked', { repo: repo.name, owner: repo.owner })}
                   >
                     {repo.owner} / <span className="font-bold text-foreground">{repo.name}</span>
@@ -372,7 +372,7 @@ export default function LandingPage() {
                   </div>
                 </div>
 
-                <div className="border-t border-border bg-primary-500/5 px-6 py-4">
+                <div className="border-t border-border bg-primary-100/40 px-6 py-4">
                   <div className="flex items-center justify-between text-xs text-muted-foreground">
                     <div className="flex items-center gap-4">
                       <div className="flex items-center gap-1">
@@ -494,10 +494,10 @@ export default function LandingPage() {
               {/* Agent suggestion card - Human-AI Collaboration Pillar (Action Layer) */}
               <motion.div
                 variants={fadeInUp}
-                className="rounded-2xl border border-border bg-card p-6 shadow-sm"
+                className="rounded-3xl border bg-card p-6 shadow-elevation-1"
               >
                 <div className="flex items-start gap-4">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-collaboration-100/80">
+                  <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-muted">
                     <Brain className="h-5 w-5 text-viz-purple-500" />
                   </div>
                   <div className="flex-1">
@@ -517,7 +517,7 @@ export default function LandingPage() {
                       >
                         Accept & Run
                       </Button>
-                      <Button size="sm" variant="outline" className="soft-ui bg-card hover:bg-muted">
+                      <Button size="sm" variant="outline">
                         View Details
                       </Button>
                     </div>
@@ -528,10 +528,10 @@ export default function LandingPage() {
               {/* Peer review card */}
               <motion.div
                 variants={fadeInUp}
-                className="rounded-2xl border border-border bg-card p-6 shadow-sm"
+                className="rounded-3xl border bg-card p-6 shadow-elevation-1"
               >
                 <div className="flex items-start gap-4">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-viz-purple-500/10">
+                  <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-viz-purple-500/10 shadow-soft">
                     <MessageSquare className="h-5 w-5 text-viz-purple-500" />
                   </div>
                   <div className="flex-1">
@@ -550,7 +550,7 @@ export default function LandingPage() {
                       </div>
                     </div>
                     <div className="mt-4">
-                      <Badge variant="outline" className="text-xs rounded-full">
+                      <Badge variant="outline" className="rounded-full text-xs">
                         <Users className="mr-1 h-3 w-3" />
                         12 reviewers
                       </Badge>
@@ -562,10 +562,10 @@ export default function LandingPage() {
               {/* Lineage graph card */}
               <motion.div
                 variants={fadeInUp}
-                className="rounded-2xl border border-border bg-card p-6 shadow-sm lg:col-span-2"
+                className="rounded-3xl border bg-card p-6 shadow-elevation-1 lg:col-span-2"
               >
                 <div className="flex items-start gap-4">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-viz-purple-500/10">
+                  <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-viz-purple-500/10 shadow-soft">
                     <Workflow className="h-5 w-5 text-viz-purple-500" />
                   </div>
                   <div className="flex-1">
@@ -641,60 +641,69 @@ export default function LandingPage() {
           </motion.div>
 
               <div className="mx-auto mt-16 max-w-2xl sm:mt-20 lg:mt-24 lg:max-w-none">
-                  <dl className="grid max-w-xl grid-cols-1 gap-x-8 gap-y-16 lg:max-w-none lg:grid-cols-3">
-              {[
-                {
-                  icon: GitBranch,
-                  title: "Git-Based Provenance",
-                  description:
-                    "Every dataset, model, and result is a verifiable commit in a content-addressed repository.",
-                },
-                {
-                  icon: ShieldCheck,
-                  title: "Verifiable Pipelines",
-                  description:
-                    "Execute research workflows in secure, reproducible environments, from anywhere.",
-                },
-                {
-                  icon: Database,
-                  title: "Interoperable Data",
-                  description:
-                    "Connect disparate datasets and models into a single, computable graph of knowledge.",
-                },
-              ].map((feature) => {
-                          const Icon = feature.icon;
-                          return (
-                            <motion.div 
-                                key={feature.title} 
-                                className="flex flex-col items-center text-center"
-                                initial="initial"
-                                whileInView="animate"
-                                variants={fadeInUp}
-                                viewport={{ once: true }}
-                                transition={{ duration: 0.5, ease: "easeOut" }}
-                            >
-                              <dt className="flex flex-col items-center gap-y-4">
-                                <div 
-                                  className="flex h-14 w-14 items-center justify-center rounded-2xl bg-muted border"
-                                >
-                                  <Icon className="h-6 w-6 text-foreground" aria-hidden="true" strokeWidth={2} />
-                                </div>
-                                <span className="text-base font-semibold leading-7 text-foreground">{feature.title}</span>
-                              </dt>
-                              <dd className="mt-2 flex flex-auto flex-col text-base leading-7 text-muted-foreground">
-                                  <p className="flex-auto">{feature.description}</p>
-                              </dd>
-                            </motion.div>
-                );
-                        })}
-                  </dl>
+                <div className="grid max-w-xl grid-cols-1 gap-8 lg:max-w-none lg:grid-cols-3">
+                  {[
+                    {
+                      icon: GitBranch,
+                      title: "Git-Based Provenance",
+                      description:
+                        "Every dataset, model, and result is a verifiable commit in a content-addressed repository.",
+                      bg: "",
+                      text: "text-foreground",
+                    },
+                    {
+                      icon: ShieldCheck,
+                      title: "Verifiable Pipelines",
+                      description:
+                        "Execute research workflows in secure, reproducible environments, from anywhere.",
+                      bg: "",
+                      text: "text-foreground",
+                    },
+                    {
+                      icon: Database,
+                      title: "Interoperable Data",
+                      description:
+                        "Connect disparate datasets and models into a single, computable graph of knowledge.",
+                      bg: "",
+                      text: "text-foreground",
+                    },
+                  ].map((feature, idx) => {
+                    const Icon = feature.icon
+                    return (
+                      <motion.div
+                        key={feature.title}
+                        initial="initial"
+                        whileInView="animate"
+                        variants={fadeInUp}
+                        viewport={{ once: true }}
+                        transition={{ duration: 0.5, ease: "easeOut" }}
+                        className={`group relative flex h-full flex-col items-center justify-start overflow-hidden rounded-3xl border bg-card p-8 text-center shadow-elevation-1 transition-shadow hover:shadow-elevation-2`}
+                      >
+                        <div className="absolute inset-0 pointer-events-none bg-[radial-gradient(120%_60%_at_50%_-10%,rgba(255,255,255,0.7),transparent_60%)]" />
+                        <div className="relative z-10 flex flex-col items-center gap-y-4">
+                          <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-muted border">
+                            <Icon className={`h-7 w-7 ${feature.text}`} aria-hidden="true" strokeWidth={2} />
+                          </div>
+                          <span className="text-base font-semibold leading-7 text-foreground">{feature.title}</span>
+                          <p className="mt-2 text-base leading-7 text-muted-foreground">
+                            {feature.description}
+                          </p>
+                        </div>
+                        <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-border to-transparent" />
+                      </motion.div>
+                    )
+                  })}
+                </div>
               </div>
           </div>
       </section>
 
         {/* CTA Section */}
         <section className="py-24 sm:py-32" role="region" aria-labelledby="cta-heading">
-          <div className="mx-auto max-w-7xl px-6 lg:px-8">
+          <div className="relative mx-auto max-w-7xl px-6 lg:px-8">
+            {/* CTA glow accents */}
+            <div aria-hidden className="pointer-events-none absolute -top-8 left-12 -z-10 h-48 w-48 rounded-full bg-white/20 blur-2xl" />
+            <div aria-hidden className="pointer-events-none absolute -bottom-8 right-12 -z-10 h-56 w-56 rounded-full bg-accent-100/60 blur-3xl" />
                         <motion.div 
             className="relative isolate overflow-hidden rounded-3xl bg-gradient-to-br from-primary via-primary-600 to-accent/30 px-6 py-24 text-center shadow-2xl sm:px-16 border border-primary/20"
                             initial="initial"

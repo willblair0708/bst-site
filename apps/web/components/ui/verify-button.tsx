@@ -37,14 +37,13 @@ export function VerifyButton({
       onClick={onVerify}
       disabled={isVerifying || isVerified}
       className={cn(
-        // Design.mdc v0.4 Soft-UI 2.0
         "soft-ui text-primary-foreground font-semibold",
         "px-6 py-3 rounded-xl",
-        "transition-colors duration-200",
+        "transition-colors duration-150",
         "disabled:opacity-60 disabled:cursor-not-allowed",
         "focus-visible:outline-none focus-ring",
-        "min-h-[48px]", // EAA compliance
-        isVerified ? "bg-accent-500 hover:bg-accent-500/90" : "bg-primary-500 hover:bg-primary-500/90",
+        "min-h-[48px]",
+        isVerified ? "bg-accent-500 hover:bg-accent-600" : "bg-primary-500 hover:bg-primary-600",
         className
       )}
       variants={buttonVariants}
@@ -52,7 +51,7 @@ export function VerifyButton({
       whileTap="tap"
       animate={isVerified ? "hover" : "rest"}
       transition={{ type: "spring", stiffness: 400, damping: 15 }}
-    >
+      >
       <span className="flex items-center justify-center gap-2">
         {isVerifying ? (
           <>

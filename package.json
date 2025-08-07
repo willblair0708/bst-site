@@ -36,6 +36,7 @@
   },
   "packageManager": "npm@10.0.0",
   "devDependencies": {
+    "@tailwindcss/typography": "^0.5.16",
     "eslint": "^8.55.0",
     "prettier": "^3.1.0",
     "tailwindcss-themer": "^4.1.1",
@@ -55,11 +56,14 @@
     "@radix-ui/react-label": "^2.1.7",
     "@radix-ui/react-scroll-area": "^1.2.9",
     "@radix-ui/react-select": "^2.2.5",
+    "ai": "^5.0.5",
     "antd": "^5.26.7",
     "clsx": "^2.1.1",
     "cmdk": "^1.1.1",
     "framer-motion": "^12.23.12",
+    "react-markdown": "^10.1.0",
     "react-textarea-autosize": "^8.5.9",
+    "remark-gfm": "^4.0.1",
     "tailwind-merge": "^3.3.1"
   }
 }

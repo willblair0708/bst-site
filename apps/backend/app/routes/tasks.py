@@ -98,9 +98,8 @@ async def create_task(req: Request):
 
     auth = req.headers.get("authorization") or ""
     bearer = auth.split(" ", 1)[1] if auth.lower().startswith("bearer ") and len(auth.split(" ", 1)) > 1 else None
-    fake = os.getenv("RUNIX_FAKE_OAI", "") == "1"
     api_key = bearer or os.getenv("OPENAI_API_KEY", "")
-    if not api_key and not fake:
+    if not api_key:
         return JSONResponse({"error": "Missing OpenAI API key"}, status_code=401)
 
     task_id = str(uuid.uuid4())
@@ -120,9 +119,9 @@ async def create_task(req: Request):
     conn.commit()
     conn.close()
 
-    client = OpenAI(api_key=api_key) if api_key else OpenAI()
+    client = OpenAI(api_key=api_key)
 
-    if payload.stream and not fake and (payload.agent or "").strip().upper() in {"DIRECTOR", "AUTO"}:
+    if payload.stream and (payload.agent or "").strip().upper() in {"DIRECTOR", "AUTO"}:
         # Multi-step streaming using Agents SDK orchestration for DIRECTOR
         async def agen():
             yield "event: open\n\n"
@@ -215,7 +214,7 @@ async def create_task(req: Request):
         headers = {"Cache-Control": "no-cache", "X-Accel-Buffering": "no"}
         return StreamingResponse(agen(), media_type="text/event-stream", headers=headers)
 
-    if payload.stream and not fake:
+    if payload.stream:
         def gen():
             from app.main import build_system_prompt  # lazy import
 
@@ -264,7 +263,7 @@ async def create_task(req: Request):
         headers = {"Cache-Control": "no-cache", "X-Accel-Buffering": "no"}
         return StreamingResponse(gen(), media_type="text/event-stream", headers=headers)
 
-    # Non-streaming path: prefer Agents SDK if available (unless fake mode)
+    # Non-streaming path: prefer Agents SDK if available
     text = ""
     used_agents_sdk = False
     try:
@@ -272,7 +271,7 @@ async def create_task(req: Request):
         from agents import Runner  # type: ignore
 
         agent = get_agent(payload.agent)
-        if agent is not None and not fake:
+        if agent is not None:
             TOOL_TRACE_CVAR.set([])
             # If asked to use multi-agent director, delegate
             if payload.agent.strip().upper() in {"DIRECTOR", "AUTO"}:
@@ -290,9 +289,7 @@ async def create_task(req: Request):
     except Exception:
         used_agents_sdk = False
 
-    if fake:
-        text = f"[FAKE] Answer to: {payload.query}\n\nReferences:\n[1] Example Study — 10.1000/example"
-    elif not used_agents_sdk:
+    if not used_agents_sdk:
         from app.main import build_system_prompt  # lazy import
         resp = client.responses.create(
             model="gpt-4o-mini",

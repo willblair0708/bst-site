@@ -375,18 +375,6 @@ const ChatPage = () => {
       <Sidebar />
       
       <main className="flex-1 flex flex-col bg-background">
-        {/* Compact Header */}
-        <div className="border-b bg-background/80 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-          <div className="max-w-5xl mx-auto px-6 h-12 flex items-center gap-3">
-            <label className="inline-flex items-center gap-2 text-xs border rounded-full px-2 py-1 cursor-pointer bg-background/60">
-              <input type="checkbox" className="accent-foreground" checked={useDirector} onChange={(e) => setUseDirector(e.target.checked)} />
-              Director
-            </label>
-            {runDuration !== null && (
-              <span className="ml-1 text-xs text-muted-foreground">{(runDuration/1000).toFixed(1)}s</span>
-            )}
-          </div>
-        </div>
         
         {/* Main Content with Inspector panel */}
         <div className="flex-1 grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_340px] overflow-hidden">

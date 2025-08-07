@@ -21,7 +21,6 @@ except Exception as _e:  # pragma: no cover
 
 INTERNAL_BEARER = os.getenv("ACTIONS_BEARER", "dev-token")
 BASE_URL = os.getenv("RUNIX_BASE_URL", "http://localhost:8787")
-FIRECRAWL_API_KEY = os.getenv("FIRECRAWL_API_KEY", "")
 
 
 async def _get_headers() -> Dict[str, str]:
@@ -93,25 +92,34 @@ def chem_calc(smiles: str) -> str:
     reraise=True,
     stop=stop_after_attempt(3),
     wait=wait_exponential(multiplier=0.2, min=0.2, max=2),
-    retry=retry_if_exception_type(httpx.HTTPError),
+    retry=retry_if_exception_type(Exception),
 )
-async def web_scrape_firecrawl(url: str, mode: str = "scrape") -> str:
-    if not FIRECRAWL_API_KEY:
-        return json.dumps({"error": "FIRECRAWL_API_KEY not configured"})
+async def web_search_openai(q: str, max_results: int = 5) -> str:
+    # Uses OpenAI Responses API built-in Web Search tool
     start = time.perf_counter()
-    headers = {"Content-Type": "application/json", "x-api-key": FIRECRAWL_API_KEY}
-    async with httpx.AsyncClient(timeout=45) as client:
-        resp = await client.post(
-            "https://api.firecrawl.dev/v1/scrape",
-            headers=headers,
-            json={"url": url, "formats": ["markdown"], "mode": mode},
+    api_key = os.getenv("OPENAI_API_KEY", "")
+    fake = os.getenv("RUNIX_FAKE_OAI", "") == "1"
+    if not api_key and not fake:
+        return json.dumps({"error": "Missing OPENAI_API_KEY"})
+    try:
+        from openai import OpenAI  # lazy import
+        client = OpenAI(api_key=api_key) if api_key else OpenAI()
+        resp = client.responses.create(
+            model=os.getenv("MODEL_WEB_SEARCH", "gpt-4o-mini"),
+            input=q,
+            tools=[{"type": "web_search"}],
+            tool_choice="auto",
+            max_output_tokens=1000,
+            extra_body={"web_search": {"max_results": max_results}},
         )
-        resp.raise_for_status()
-        out = resp.json()
+        text = getattr(resp, "output_text", "") or ""
+        out = {"text": text}
+    except Exception as e:
+        out = {"error": str(e)}
     elapsed = int((time.perf_counter() - start) * 1000)
     trace = TOOL_TRACE_CVAR.get()
     if trace is not None:
-        trace.append({"tool": "web.firecrawl", "args": {"url": url, "mode": mode}, "t_ms": elapsed})
+        trace.append({"tool": "web.openai_search", "args": {"q": q[:200], "max_results": max_results}, "t_ms": elapsed})
     return json.dumps(out)
 
 @function_tool
@@ -208,7 +216,7 @@ def build_agents(mcp_servers: list[Any] | None = None) -> dict[str, Any]:
     scholar = Agent(
         name="SCHOLAR",
         instructions=_scholar_instructions(),
-        tools=[rag_search, rag_expand, format_markdown_with_refs, web_scrape_firecrawl],
+        tools=[rag_search, rag_expand, format_markdown_with_refs, web_search_openai],
         model=os.getenv("MODEL_SCHOLAR", "gpt-4o"),
         mcp_servers=mcp_servers or [],
         model_settings=common_settings,
@@ -217,7 +225,7 @@ def build_agents(mcp_servers: list[Any] | None = None) -> dict[str, Any]:
     archivist = Agent(
         name="ARCHIVIST",
         instructions=_archivist_instructions(),
-        tools=[rag_search, format_markdown_with_refs, web_scrape_firecrawl],
+        tools=[rag_search, format_markdown_with_refs, web_search_openai],
         model=os.getenv("MODEL_ARCHIVIST", "gpt-4o-mini"),
         mcp_servers=mcp_servers or [],
         model_settings=common_settings,

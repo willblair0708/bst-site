@@ -170,17 +170,16 @@ export default function ModelsPage() {
       exit="exit"
     >
       <motion.div 
-        className="absolute inset-0 bg-gradient-to-b from-primary-50/20 via-transparent to-accent-50/10"
+        className="absolute inset-0 bg-gradient-to-b from-primary-100/20 via-transparent to-accent-100/10"
         style={{ y: backgroundY }}
       />
       
-      {/* Subtle geometric elements with design system colors */}
+      {/* Subtle geometric elements with @design.mdc colors */}
       <motion.div
-        className="absolute w-96 h-96 rounded-full opacity-[0.04]"
+        className="absolute w-96 h-96 rounded-full opacity-[0.04] bg-primary-500"
         style={{ 
           top: '5%', 
           left: '10%',
-          background: 'radial-gradient(circle, hsl(var(--primary)) 0%, transparent 70%)',
           filter: 'blur(80px)'
         }}
         animate={{ 
@@ -191,11 +190,10 @@ export default function ModelsPage() {
         transition={{ duration: 40, repeat: Infinity, ease: "easeInOut" }}
       />
       <motion.div
-        className="absolute w-80 h-80 rounded-full opacity-[0.04]"
+        className="absolute w-80 h-80 rounded-full opacity-[0.04] bg-accent-500"
         style={{ 
           bottom: '10%', 
           right: '15%',
-          background: 'radial-gradient(circle, hsl(var(--accent)) 0%, transparent 70%)',
           filter: 'blur(70px)'
         }}
         animate={{ 
@@ -214,26 +212,26 @@ export default function ModelsPage() {
           variants={heroVariants}
         >
           <motion.div
-            className="inline-block bg-gradient-to-br from-primary-100 to-primary-50 rounded-full p-3 mb-4 shadow-soft"
+            className="inline-block bg-gradient-to-br from-primary-100 to-primary-100/50 rounded-2xl p-3 mb-4 shadow-elevation-2"
             variants={heroVariants}
           >
             <motion.div 
-              className="relative flex items-center justify-center bg-gradient-to-br from-primary-500 to-primary-600 rounded-full p-2 shadow-soft"
+              className="relative flex items-center justify-center bg-primary-500 rounded-2xl p-3 shadow-soft"
               animate={{ rotate: [0, 10, -5, 0] }}
               transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
             >
-              <Brain size={28} className="text-white" />
+              <Brain size={32} className="text-foreground" />
             </motion.div>
           </motion.div>
           <motion.h1 
-            className="text-3xl sm:text-4xl lg:text-5xl font-semibold tracking-tight bg-gradient-to-r from-neutral-900 via-neutral-800 to-neutral-700 bg-clip-text text-transparent"
+            className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-foreground mb-4"
             variants={heroVariants}
           >
             Scientific Models
           </motion.h1>
           
           <motion.p 
-            className="text-base md:text-lg text-neutral-600 max-w-2xl mx-auto mt-3 mb-6 leading-relaxed"
+            className="text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto mt-4 mb-8 leading-relaxed font-medium"
             variants={heroVariants}
           >
             Discover and deploy cutting-edge foundation models with git-based versioning and automated reproducibility verification.
@@ -248,8 +246,8 @@ export default function ModelsPage() {
               {[
                 { icon: Brain, label: 'AI Models', value: models.length, color: 'primary' },
                 { icon: Download, label: 'Downloads', value: models.reduce((sum, m) => sum + m.downloads, 0), color: 'accent' },
-                { icon: Trophy, label: 'Citations', value: models.reduce((sum, m) => sum + (m.citations || 0), 0), color: 'purple' },
-                { icon: Verified, label: 'Verified', value: `${models.filter(m => m.verified).length}`, color: 'green' }
+                { icon: Trophy, label: 'Citations', value: models.reduce((sum, m) => sum + (m.citations || 0), 0), color: 'collaboration' },
+                { icon: Verified, label: 'Verified', value: `${models.filter(m => m.verified).length}`, color: 'accent' }
               ].map((stat, i) => (
                 <motion.div
                   key={stat.label}
@@ -260,33 +258,29 @@ export default function ModelsPage() {
                   className="group"
                 >
                   <Card className={`text-center bg-gradient-to-br ${
-                    stat.color === 'primary' ? 'from-primary-100 via-primary-50 to-white border-primary-200/60 hover:border-primary-300' :
-                    stat.color === 'accent' ? 'from-accent-100 via-accent-50 to-white border-accent-200/60 hover:border-accent-300' :
-                    stat.color === 'purple' ? 'from-purple-100 via-purple-50 to-white border-purple-200/60 hover:border-purple-300' :
-                    'from-green-100 via-emerald-50 to-white border-green-200/60 hover:border-green-300'
-                  } transition-all shadow-elevation-1 hover:shadow-elevation-2 rounded-2xl`}>
-                    <CardContent className="p-5">
-                      <div className={`p-2 rounded-xl mx-auto mb-3 w-fit shadow-soft ${
+                    stat.color === 'primary' ? 'from-primary-100 to-primary-50 border-primary-200/60 hover:border-primary-300' :
+                    stat.color === 'accent' ? 'from-accent-100 to-accent-50 border-accent-200/60 hover:border-accent-300' :
+                    'from-collaboration-100 to-collaboration-50 border-collaboration-200/60 hover:border-collaboration-300'
+                  } transition-all shadow-elevation-1 hover:shadow-elevation-2 rounded-2xl border-2`}>
+                    <CardContent className="p-6">
+                      <div className={`p-3 rounded-2xl mx-auto mb-4 w-fit shadow-soft ${
                         stat.color === 'primary' ? 'bg-primary-500' :
                         stat.color === 'accent' ? 'bg-accent-500' :
-                        stat.color === 'purple' ? 'bg-gradient-to-br from-purple-500 to-purple-600' :
-                        'bg-gradient-to-br from-green-500 to-emerald-600'
+                        'bg-collaboration-500'
                       }`}>
-                        <stat.icon className="h-5 w-5 text-white" />
+                        <stat.icon className="h-6 w-6 text-foreground" />
                       </div>
-                      <div className={`text-2xl font-bold mb-1 ${
+                      <div className={`text-3xl font-bold mb-2 ${
                         stat.color === 'primary' ? 'text-primary-700' :
                         stat.color === 'accent' ? 'text-accent-700' :
-                        stat.color === 'purple' ? 'text-purple-700' :
-                        'text-green-700'
+                        'text-collaboration-700'
                       }`}>
                         {typeof stat.value === 'number' ? stat.value.toLocaleString() : stat.value}
                       </div>
-                      <div className={`text-xs font-medium ${
+                      <div className={`text-sm font-semibold ${
                         stat.color === 'primary' ? 'text-primary-600' :
                         stat.color === 'accent' ? 'text-accent-600' :
-                        stat.color === 'purple' ? 'text-purple-600' :
-                        'text-green-600'
+                        'text-collaboration-600'
                       }`}>
                         {stat.label}
                       </div>
@@ -304,7 +298,7 @@ export default function ModelsPage() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.2 }}
         >
-          <Card className="bg-gradient-to-br from-primary-50/30 via-white/80 to-accent-50/20 backdrop-blur-md border-2 border-primary-100/60 mb-10 shadow-elevation-2 rounded-3xl overflow-hidden">
+          <Card className="bg-gradient-to-br from-primary-100/30 via-white/80 to-accent-100/20 backdrop-blur-md border-2 border-primary-200/60 mb-10 shadow-elevation-2 rounded-2xl overflow-hidden">
             <CardContent className="p-6 sm:p-8">
               <div className="space-y-4">
                 <div className="relative max-w-xl mx-auto">
@@ -319,7 +313,7 @@ export default function ModelsPage() {
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
                   <Select value={selectedCategory} onValueChange={setSelectedCategory}>
-                    <SelectTrigger className="border-2 border-primary-200/60 bg-white/80 h-11 rounded-xl shadow-soft hover:shadow-elevation-1 transition-all">
+                    <SelectTrigger className="border-2 border-primary-200/60 bg-white/80 h-11 rounded-2xl shadow-soft hover:shadow-elevation-1 transition-all">
                       <SelectValue placeholder="Category" />
                     </SelectTrigger>
                     <SelectContent>
@@ -353,11 +347,11 @@ export default function ModelsPage() {
 
                   <Tabs value={viewMode} onValueChange={setViewMode}>
                     <TabsList className="grid w-full grid-cols-2 bg-gradient-to-r from-accent-50 to-accent-100/50 border-2 border-accent-200/60 h-11 rounded-xl shadow-soft">
-                      <TabsTrigger value="featured" className="text-sm data-[state=active]:bg-gradient-to-r data-[state=active]:from-accent-500 data-[state=active]:to-accent-600 data-[state=active]:text-white data-[state=active]:shadow-soft rounded-lg transition-all font-medium">
+                      <TabsTrigger value="featured" className="text-sm data-[state=active]:bg-gradient-to-r data-[state=active]:from-accent-500 data-[state=active]:to-accent-600 data-[state=active]:text-foreground data-[state=active]:shadow-soft rounded-lg transition-all font-medium">
                         <Flame className="h-4 w-4 mr-1.5" />
                         Featured
                       </TabsTrigger>
-                      <TabsTrigger value="all" className="text-sm data-[state=active]:bg-gradient-to-r data-[state=active]:from-primary-500 data-[state=active]:to-primary-600 data-[state=active]:text-white data-[state=active]:shadow-soft rounded-lg transition-all font-medium">
+                      <TabsTrigger value="all" className="text-sm data-[state=active]:bg-gradient-to-r data-[state=active]:from-primary-500 data-[state=active]:to-primary-600 data-[state=active]:text-foreground data-[state=active]:shadow-soft rounded-lg transition-all font-medium">
                         <Brain className="h-4 w-4 mr-1.5" />
                         All
                       </TabsTrigger>
@@ -372,11 +366,11 @@ export default function ModelsPage() {
                     {filteredModels.length} model{filteredModels.length !== 1 ? 's' : ''} found
                   </span>
                   <div className="flex items-center gap-3">
-                    <Badge className="flex items-center gap-2 bg-gradient-to-r from-accent-500 to-accent-600 text-white border-0 shadow-soft rounded-xl px-3 py-1.5 text-sm font-medium">
+                    <Badge className="flex items-center gap-2 bg-gradient-to-r from-accent-500 to-accent-600 text-foreground border-0 shadow-soft rounded-xl px-3 py-1.5 text-sm font-medium">
                       <Flame className="h-4 w-4" />
                       {models.filter(m => m.trending).length} Trending
                     </Badge>
-                    <Badge className="flex items-center gap-2 bg-gradient-to-r from-green-500 to-emerald-600 text-white border-0 shadow-soft rounded-xl px-3 py-1.5 text-sm font-medium">
+                    <Badge className="flex items-center gap-2 bg-gradient-to-r from-green-500 to-emerald-600 text-foreground border-0 shadow-soft rounded-xl px-3 py-1.5 text-sm font-medium">
                       <Verified className="h-4 w-4" />
                       {models.filter(m => m.verified).length} Verified
                     </Badge>

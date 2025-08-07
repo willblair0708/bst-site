@@ -378,25 +378,25 @@ export default function ModelPage({ params }: ModelPageProps) {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.1 }}
         >
-          {/* Hero Header - Astra-Soft Pastel Bento Design */}
-          <div className="bg-gradient-to-br from-primary-100 via-primary-50/30 to-accent-100/50 border border-primary-200/60 rounded-3xl p-8 mb-10 backdrop-blur-sm shadow-elevation-2 relative overflow-hidden">
+          {/* Hero Header - Astra-Soft Design */}
+          <div className="bg-gradient-to-br from-primary-100/30 via-white/80 to-accent-100/20 border-2 border-primary-200/60 rounded-2xl p-8 mb-10 backdrop-blur-md shadow-elevation-2 relative overflow-hidden">
             {/* Subtle geometric background pattern */}
-            <div className="absolute inset-0 opacity-5">
+            <div className="absolute inset-0 opacity-[0.04]">
               <div className="absolute top-6 right-6 w-24 h-24 bg-primary-500 rounded-full blur-3xl"></div>
               <div className="absolute bottom-6 left-6 w-20 h-20 bg-accent-500 rounded-full blur-2xl"></div>
             </div>
             <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-8 relative z-10">
               <div className="flex items-start gap-6 flex-1">
                 <div className="relative">
-                  <Avatar className="h-20 w-20 ring-3 ring-white/50 shadow-soft">
+                  <Avatar className="h-20 w-20 ring-3 ring-white/50 shadow-elevation-2">
                     <AvatarImage src={model.authorAvatar} alt={model.author} />
-                    <AvatarFallback className="bg-gradient-to-br from-primary-500 to-primary-600 text-foreground text-2xl font-bold">
+                    <AvatarFallback className="bg-primary-500 text-foreground text-2xl font-bold">
                       {model.author.split(' ').map((n: string) => n[0]).join('')}
                     </AvatarFallback>
                   </Avatar>
                   {model.verified && (
                     <motion.div 
-                      className="absolute -bottom-2 -right-2 w-8 h-8 bg-gradient-to-br from-accent-500 to-accent-600 rounded-full flex items-center justify-center border-3 border-white shadow-lg"
+                      className="absolute -bottom-2 -right-2 w-8 h-8 bg-accent-500 rounded-full flex items-center justify-center border-3 border-white shadow-elevation-2"
                       initial={{ scale: 0 }}
                       animate={{ scale: 1 }}
                       transition={{ delay: 0.5, type: "spring", stiffness: 150 }}
@@ -409,7 +409,7 @@ export default function ModelPage({ params }: ModelPageProps) {
                 <div className="flex-1 min-w-0">
                   <div className="flex flex-col gap-3 mb-4">
                     <div className="flex items-center gap-3 flex-wrap">
-                      <h1 className="text-2xl lg:text-3xl font-semibold tracking-tight bg-gradient-to-r from-neutral-900 via-neutral-800 to-neutral-700 bg-clip-text text-transparent">
+                      <h1 className="text-3xl lg:text-4xl font-bold tracking-tight text-foreground">
                         {model.name}
                       </h1>
                       <div className="flex gap-2">
@@ -419,7 +419,7 @@ export default function ModelPage({ params }: ModelPageProps) {
                             animate={{ opacity: 1, scale: 1 }}
                             transition={{ delay: 0.3 }}
                           >
-                            <Badge className="bg-gradient-to-r from-primary-500 to-primary-600 text-foreground border-0 shadow-soft px-3 py-1.5 rounded-lg text-sm">
+                            <Badge className="bg-primary-500 text-foreground border-0 shadow-soft px-3 py-1.5 rounded-2xl text-sm">
                               <Trophy className="h-3 w-3 mr-1.5" />
                               Featured
                             </Badge>
@@ -431,7 +431,7 @@ export default function ModelPage({ params }: ModelPageProps) {
                             animate={{ opacity: 1, scale: 1 }}
                             transition={{ delay: 0.4 }}
                           >
-                            <Badge className="bg-gradient-to-r from-accent-500 to-accent-600 text-foreground border-0 shadow-soft px-3 py-1.5 rounded-lg text-sm">
+                            <Badge className="bg-accent-500 text-foreground border-0 shadow-soft px-3 py-1.5 rounded-2xl text-sm">
                               <TrendingUp className="h-3 w-3 mr-1.5" />
                               Trending
                             </Badge>
@@ -441,18 +441,18 @@ export default function ModelPage({ params }: ModelPageProps) {
                     </div>
           
                     <div className="flex items-center gap-2 text-sm">
-                      <span className="text-neutral-500">by</span>
-                      <span className="font-medium text-neutral-700">{model.author}</span>
-                      <span className="text-neutral-300">•</span>
+                      <span className="text-muted-foreground">by</span>
+                      <span className="font-medium text-foreground">{model.author}</span>
+                      <span className="text-muted-foreground">•</span>
                       <Badge variant="outline" className="bg-white/80 border-primary-200 text-primary-600 text-xs px-2 py-1 rounded-md">
                         v{model.version}
                       </Badge>
-                      <span className="text-neutral-300">•</span>
-                      <span className="text-neutral-500">Updated {new Date(model.lastModified).toLocaleDateString()}</span>
+                      <span className="text-muted-foreground">•</span>
+                      <span className="text-muted-foreground">Updated {new Date(model.lastModified).toLocaleDateString()}</span>
                     </div>
                   </div>
 
-                  <p className="text-base text-neutral-600 leading-relaxed max-w-3xl">
+                  <p className="text-lg text-muted-foreground leading-relaxed max-w-3xl font-medium">
                     {model.description}
                   </p>
                 </div>
@@ -471,92 +471,108 @@ export default function ModelPage({ params }: ModelPageProps) {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.3 }}
           >
+            {/* Composable Models Pillar - Downloads */}
             <motion.div
-              whileHover={{ y: -4, rotate: 1 }}
-              transition={{ duration: 0.2, type: "spring", stiffness: 300 }}
+              whileHover={{ y: -4, scale: 1.02 }}
+              transition={{ duration: 0.2, ease: "easeOut" }}
             >
-              <Card className="text-center bg-gradient-to-br from-primary-100 via-primary-50 to-white border-primary-200/60 hover:border-primary-300 transition-all shadow-elevation-1 hover:shadow-elevation-2 rounded-2xl">
+              <Card className="text-center bg-gradient-to-br from-accent-100 to-accent-50 border border-accent-200/60 hover:border-accent-300 transition-all shadow-elevation-1 hover:shadow-elevation-2 rounded-2xl">
                 <CardContent className="p-6">
-                  <div className="p-2 bg-primary-500 rounded-xl mx-auto mb-3 w-fit shadow-soft">
-                    <Download className="h-5 w-5 text-foreground" />
+                  <div className="mb-3">
+                    <div className="p-3 bg-accent-500 rounded-2xl mx-auto w-fit shadow-soft">
+                      <Download className="h-6 w-6 text-foreground" />
+                    </div>
                   </div>
-                  <div className="text-2xl font-bold text-primary-700 mb-1">{formatNumber(model.downloads)}</div>
-                  <div className="text-xs text-primary-600 font-medium">Downloads</div>
+                  <div className="text-3xl font-bold text-foreground mb-2">{formatNumber(model.downloads)}</div>
+                  <div className="text-sm text-accent-700 font-semibold">Downloads</div>
+                </CardContent>
+              </Card>
+            </motion.div>
+            
+            {/* Versioned Knowledge Pillar - Stars */}
+            <motion.div
+              whileHover={{ y: -4, scale: 1.02 }}
+              transition={{ duration: 0.2, ease: "easeOut" }}
+            >
+              <Card className="text-center bg-gradient-to-br from-primary-100 to-primary-50 border border-primary-200/60 hover:border-primary-300 transition-all shadow-elevation-1 hover:shadow-elevation-2 rounded-2xl">
+                <CardContent className="p-6">
+                  <div className="mb-3">
+                    <div className="p-3 bg-primary-500 rounded-2xl mx-auto w-fit shadow-soft">
+                      <Star className="h-6 w-6 text-foreground" />
+                    </div>
+                  </div>
+                  <div className="text-3xl font-bold text-foreground mb-2">{formatNumber(model.likes)}</div>
+                  <div className="text-sm text-primary-700 font-semibold">Stars</div>
+                </CardContent>
+              </Card>
+            </motion.div>
+            
+            {/* Human-AI Collaboration Pillar - Citations */}
+            <motion.div
+              whileHover={{ y: -4, scale: 1.02 }}
+              transition={{ duration: 0.2, ease: "easeOut" }}
+            >
+              <Card className="text-center bg-gradient-to-br from-collaboration-100 to-collaboration-50 border border-collaboration-200/60 hover:border-collaboration-300 transition-all shadow-elevation-1 hover:shadow-elevation-2 rounded-2xl">
+                <CardContent className="p-6">
+                  <div className="mb-3">
+                    <div className="p-3 bg-collaboration-500 rounded-2xl mx-auto w-fit shadow-soft">
+                      <Trophy className="h-6 w-6 text-foreground" />
+                    </div>
+                  </div>
+                  <div className="text-3xl font-bold text-foreground mb-2">{formatNumber(model.citations)}</div>
+                  <div className="text-sm text-collaboration-700 font-semibold">Citations</div>
+                </CardContent>
+              </Card>
+            </motion.div>
+            
+            {/* Composable Models Pillar - Accuracy */}
+            <motion.div
+              whileHover={{ y: -4, scale: 1.02 }}
+              transition={{ duration: 0.2, ease: "easeOut" }}
+            >
+              <Card className="text-center bg-gradient-to-br from-accent-100 to-accent-50 border border-accent-200/60 hover:border-accent-300 transition-all shadow-elevation-1 hover:shadow-elevation-2 rounded-2xl">
+                <CardContent className="p-6">
+                  <div className="mb-3">
+                    <div className="p-3 bg-accent-500 rounded-2xl mx-auto w-fit shadow-soft">
+                      <BarChart3 className="h-6 w-6 text-foreground" />
+                    </div>
+                  </div>
+                  <div className="text-3xl font-bold text-foreground mb-2">{model.accuracy}%</div>
+                  <div className="text-sm text-accent-700 font-semibold">Accuracy</div>
                 </CardContent>
               </Card>
             </motion.div>
             
             <motion.div
-              whileHover={{ y: -4, rotate: -1 }}
-              transition={{ duration: 0.2, type: "spring", stiffness: 300 }}
+              whileHover={{ y: -4, scale: 1.02 }}
+              transition={{ duration: 0.2, ease: "easeOut" }}
             >
-              <Card className="text-center bg-gradient-to-br from-accent-100 via-accent-50 to-white border-accent-200/60 hover:border-accent-300 transition-all shadow-elevation-1 hover:shadow-elevation-2 rounded-2xl">
+              <Card className="text-center bg-gradient-to-br from-accent-100 to-accent-50 border border-accent-200/60 hover:border-accent-300 transition-all shadow-elevation-1 hover:shadow-elevation-2 rounded-2xl">
                 <CardContent className="p-6">
-                  <div className="p-2 bg-accent-500 rounded-xl mx-auto mb-3 w-fit shadow-soft">
-                    <Star className="h-5 w-5 text-foreground" />
+                  <div className="mb-3">
+                    <div className="p-3 bg-accent-500 rounded-2xl mx-auto w-fit shadow-soft">
+                      <Shield className="h-6 w-6 text-foreground" />
+                    </div>
                   </div>
-                  <div className="text-2xl font-bold text-accent-700 mb-1">{formatNumber(model.likes)}</div>
-                  <div className="text-xs text-accent-600 font-medium">Stars</div>
+                  <div className="text-3xl font-bold text-foreground mb-2">{model.reproducibilityScore}%</div>
+                  <div className="text-sm text-accent-700 font-semibold">Reproducible</div>
                 </CardContent>
               </Card>
             </motion.div>
             
             <motion.div
-              whileHover={{ y: -4, rotate: 1 }}
-              transition={{ duration: 0.2, type: "spring", stiffness: 300 }}
+              whileHover={{ y: -4, scale: 1.02 }}
+              transition={{ duration: 0.2, ease: "easeOut" }}
             >
-              <Card className="text-center bg-gradient-to-br from-collaboration-100 via-purple-50 to-white border-purple-200/60 hover:border-purple-300 transition-all shadow-elevation-1 hover:shadow-elevation-2 rounded-2xl">
+              <Card className="text-center bg-gradient-to-br from-primary-100 to-primary-50 border border-primary-200/60 hover:border-primary-300 transition-all shadow-elevation-1 hover:shadow-elevation-2 rounded-2xl">
                 <CardContent className="p-6">
-                  <div className="p-2 bg-gradient-to-br from-purple-500 to-purple-600 rounded-xl mx-auto mb-3 w-fit shadow-soft">
-                    <Trophy className="h-5 w-5 text-foreground" />
+                  <div className="mb-3">
+                    <div className="p-3 bg-primary-500 rounded-2xl mx-auto w-fit shadow-soft">
+                      <Target className="h-6 w-6 text-foreground" />
+                    </div>
                   </div>
-                  <div className="text-2xl font-bold text-purple-700 mb-1">{formatNumber(model.citations)}</div>
-                  <div className="text-xs text-purple-600 font-medium">Citations</div>
-                </CardContent>
-              </Card>
-            </motion.div>
-            
-            <motion.div
-              whileHover={{ y: -4, rotate: -1 }}
-              transition={{ duration: 0.2, type: "spring", stiffness: 300 }}
-            >
-              <Card className="text-center bg-gradient-to-br from-accent-100 via-accent-50 to-white border-accent-200/60 hover:border-accent-300 transition-all shadow-elevation-1 hover:shadow-elevation-2 rounded-2xl">
-                <CardContent className="p-6">
-                  <div className="p-2 bg-accent-500 rounded-xl mx-auto mb-3 w-fit shadow-soft">
-                    <BarChart3 className="h-5 w-5 text-foreground" />
-                  </div>
-                  <div className="text-2xl font-bold text-accent-700 mb-1">{model.accuracy}%</div>
-                  <div className="text-xs text-accent-600 font-medium">Accuracy</div>
-                </CardContent>
-              </Card>
-            </motion.div>
-            
-            <motion.div
-              whileHover={{ y: -4, rotate: 1 }}
-              transition={{ duration: 0.2, type: "spring", stiffness: 300 }}
-            >
-              <Card className="text-center bg-gradient-to-br from-green-100 via-emerald-50 to-white border-green-200/60 hover:border-green-300 transition-all shadow-elevation-1 hover:shadow-elevation-2 rounded-2xl">
-                <CardContent className="p-6">
-                  <div className="p-2 bg-gradient-to-br from-green-500 to-emerald-600 rounded-xl mx-auto mb-3 w-fit shadow-soft">
-                    <Shield className="h-5 w-5 text-foreground" />
-                  </div>
-                  <div className="text-2xl font-bold text-green-700 mb-1">{model.reproducibilityScore}%</div>
-                  <div className="text-xs text-green-600 font-medium">Reproducible</div>
-                </CardContent>
-              </Card>
-            </motion.div>
-            
-            <motion.div
-              whileHover={{ y: -4, rotate: -1 }}
-              transition={{ duration: 0.2, type: "spring", stiffness: 300 }}
-            >
-              <Card className="text-center bg-gradient-to-br from-primary-100 via-primary-50 to-white border-primary-200/60 hover:border-primary-300 transition-all shadow-elevation-1 hover:shadow-elevation-2 rounded-2xl">
-                <CardContent className="p-6">
-                  <div className="p-2 bg-primary-500 rounded-xl mx-auto mb-3 w-fit shadow-soft">
-                    <Target className="h-5 w-5 text-foreground" />
-                  </div>
-                  <div className="text-2xl font-bold text-primary-700 mb-1">#{model.benchmarkRank}</div>
-                  <div className="text-xs text-primary-600 font-medium">Global Rank</div>
+                  <div className="text-3xl font-bold text-primary-700 mb-2">#{model.benchmarkRank}</div>
+                  <div className="text-sm text-primary-600 font-semibold">Global Rank</div>
                 </CardContent>
               </Card>
             </motion.div>
@@ -572,7 +588,7 @@ export default function ModelPage({ params }: ModelPageProps) {
             <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
               <Button 
                 size="default" 
-                className="bg-gradient-to-r from-primary-500 to-primary-600 hover:from-primary-600 hover:to-primary-700 shadow-soft hover:shadow-elevation-2 transition-all duration-200 whitespace-nowrap text-foreground px-6 py-2.5 rounded-xl font-medium"
+                className="bg-primary-500 hover:bg-primary-600 shadow-soft hover:shadow-elevation-2 transition-all duration-200 whitespace-nowrap text-foreground px-6 py-2.5 rounded-2xl font-medium"
               >
                 <Play className="h-4 w-4 mr-2 flex-shrink-0" />
                 <span>Run Model</span>
@@ -583,7 +599,7 @@ export default function ModelPage({ params }: ModelPageProps) {
               <Button 
                 variant="outline" 
                 size="default" 
-                className="border border-primary-200 bg-white/80 hover:bg-primary-50 transition-all duration-200 whitespace-nowrap shadow-soft hover:shadow-elevation-1 px-6 py-2.5 rounded-xl font-medium text-primary-700 hover:text-primary-800"
+                className="border-2 border-primary-200 bg-white/80 hover:bg-primary-100 transition-all duration-200 whitespace-nowrap shadow-soft hover:shadow-elevation-1 px-6 py-2.5 rounded-2xl font-medium text-primary-700 hover:text-primary-800"
               >
                 <Download className="h-4 w-4 mr-2 flex-shrink-0" />
                 <span>Download</span>
@@ -594,7 +610,7 @@ export default function ModelPage({ params }: ModelPageProps) {
               <Button 
                 variant="outline" 
                 size="default" 
-                className="border border-accent-200 bg-white/80 hover:bg-accent-50 transition-all duration-200 whitespace-nowrap shadow-soft hover:shadow-elevation-1 px-6 py-2.5 rounded-xl font-medium text-accent-700 hover:text-accent-800"
+                className="border-2 border-accent-200 bg-white/80 hover:bg-accent-100 transition-all duration-200 whitespace-nowrap shadow-soft hover:shadow-elevation-1 px-6 py-2.5 rounded-2xl font-medium text-accent-700 hover:text-accent-800"
               >
                 <GitFork className="h-4 w-4 mr-2 flex-shrink-0" />
                 <span>Fork</span>
@@ -606,7 +622,7 @@ export default function ModelPage({ params }: ModelPageProps) {
                 variant="outline" 
                 size="default" 
                 asChild 
-                className="border border-neutral-200 bg-white/80 hover:bg-neutral-50 transition-all duration-200 whitespace-nowrap shadow-soft hover:shadow-elevation-1 px-6 py-2.5 rounded-xl font-medium text-neutral-700 hover:text-neutral-800"
+                className="border-2 border-muted bg-white/80 hover:bg-muted/50 transition-all duration-200 whitespace-nowrap shadow-soft hover:shadow-elevation-1 px-6 py-2.5 rounded-2xl font-medium text-muted-foreground hover:text-foreground"
               >
                 <Link href={model.codeUrl} target="_blank" className="flex items-center">
                   <Code className="h-4 w-4 mr-2 flex-shrink-0" />
@@ -621,7 +637,7 @@ export default function ModelPage({ params }: ModelPageProps) {
                 variant="outline" 
                 size="default" 
                 asChild 
-                className="border border-neutral-200 bg-white/80 hover:bg-neutral-50 transition-all duration-200 whitespace-nowrap shadow-soft hover:shadow-elevation-1 px-6 py-2.5 rounded-xl font-medium text-neutral-700 hover:text-neutral-800"
+                className="border-2 border-muted bg-white/80 hover:bg-muted/50 transition-all duration-200 whitespace-nowrap shadow-soft hover:shadow-elevation-1 px-6 py-2.5 rounded-2xl font-medium text-muted-foreground hover:text-foreground"
               >
                 <Link href={model.paperUrl} target="_blank" className="flex items-center">
                   <FileText className="h-4 w-4 mr-2 flex-shrink-0" />
@@ -643,28 +659,28 @@ export default function ModelPage({ params }: ModelPageProps) {
           >
             <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
               <div className="mb-12">
-                <TabsList className="grid w-full grid-cols-3 lg:grid-cols-6 bg-gradient-to-r from-primary-50/50 via-white/80 to-accent-50/50 border-2 border-primary-100/60 p-2 rounded-3xl backdrop-blur-sm shadow-soft">
-                  <TabsTrigger value="overview" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-primary-500 data-[state=active]:to-primary-600 data-[state=active]:text-foreground data-[state=active]:shadow-soft rounded-2xl transition-all duration-200 font-semibold">
+                <TabsList className="grid w-full grid-cols-3 lg:grid-cols-6 bg-gradient-to-r from-primary-100/50 via-white/80 to-accent-100/50 border-2 border-primary-200/60 p-2 rounded-2xl backdrop-blur-sm shadow-soft">
+                  <TabsTrigger value="overview" className="data-[state=active]:bg-primary-500 data-[state=active]:text-foreground data-[state=active]:shadow-soft rounded-2xl transition-all duration-200 font-semibold">
                     <Brain className="h-5 w-5 mr-2" />
                     <span className="hidden sm:inline">Overview</span>
                   </TabsTrigger>
-                  <TabsTrigger value="quickstart" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-accent-500 data-[state=active]:to-accent-600 data-[state=active]:text-foreground data-[state=active]:shadow-soft rounded-2xl transition-all duration-200 font-semibold">
+                  <TabsTrigger value="quickstart" className="data-[state=active]:bg-accent-500 data-[state=active]:text-foreground data-[state=active]:shadow-soft rounded-2xl transition-all duration-200 font-semibold">
                     <Zap className="h-5 w-5 mr-2" />
                     <span className="hidden sm:inline">Quick Start</span>
                   </TabsTrigger>
-                  <TabsTrigger value="benchmarks" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-500 data-[state=active]:to-purple-600 data-[state=active]:text-foreground data-[state=active]:shadow-soft rounded-2xl transition-all duration-200 font-semibold">
+                  <TabsTrigger value="benchmarks" className="data-[state=active]:bg-collaboration-500 data-[state=active]:text-foreground data-[state=active]:shadow-soft rounded-2xl transition-all duration-200 font-semibold">
                     <Trophy className="h-5 w-5 mr-2" />
                     <span className="hidden sm:inline">Benchmarks</span>
                   </TabsTrigger>
-                  <TabsTrigger value="api" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-neutral-500 data-[state=active]:to-neutral-600 data-[state=active]:text-foreground data-[state=active]:shadow-soft rounded-2xl transition-all duration-200 font-semibold">
+                  <TabsTrigger value="api" className="data-[state=active]:bg-muted-foreground data-[state=active]:text-foreground data-[state=active]:shadow-soft rounded-2xl transition-all duration-200 font-semibold">
                     <Terminal className="h-5 w-5 mr-2" />
                     <span className="hidden sm:inline">API Docs</span>
                   </TabsTrigger>
-                  <TabsTrigger value="validation" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-green-500 data-[state=active]:to-emerald-600 data-[state=active]:text-foreground data-[state=active]:shadow-soft rounded-2xl transition-all duration-200 font-semibold">
+                  <TabsTrigger value="validation" className="data-[state=active]:bg-accent-500 data-[state=active]:text-foreground data-[state=active]:shadow-soft rounded-2xl transition-all duration-200 font-semibold">
                     <Shield className="h-5 w-5 mr-2" />
                     <span className="hidden sm:inline">Validation</span>
                   </TabsTrigger>
-                  <TabsTrigger value="changelog" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-neutral-500 data-[state=active]:to-neutral-600 data-[state=active]:text-foreground data-[state=active]:shadow-soft rounded-2xl transition-all duration-200 font-semibold">
+                  <TabsTrigger value="changelog" className="data-[state=active]:bg-muted-foreground data-[state=active]:text-foreground data-[state=active]:shadow-soft rounded-2xl transition-all duration-200 font-semibold">
                     <Clock className="h-5 w-5 mr-2" />
                     <span className="hidden sm:inline">Changelog</span>
                   </TabsTrigger>
@@ -680,10 +696,10 @@ export default function ModelPage({ params }: ModelPageProps) {
                   transition={{ duration: 0.3 }}
                 >
                   <TabsContent value="overview" className="space-y-10">
-                    <Card className="bg-gradient-to-br from-primary-50/30 via-white/60 to-primary-100/20 border-2 border-primary-200/50 shadow-elevation-2 rounded-3xl overflow-hidden">
-                      <CardHeader className="pb-8 bg-gradient-to-r from-primary-500/5 to-accent-500/5">
+                    <Card className="bg-gradient-to-br from-primary-100/30 via-white/60 to-primary-100/20 border-2 border-primary-200/50 shadow-elevation-2 rounded-2xl overflow-hidden">
+                      <CardHeader className="pb-8 bg-gradient-to-r from-primary-100/20 to-accent-100/20">
                         <CardTitle className="flex items-center gap-4 text-2xl font-semibold">
-                          <div className="p-4 bg-gradient-to-br from-primary-500 to-primary-600 rounded-2xl shadow-soft">
+                          <div className="p-4 bg-primary-500 rounded-2xl shadow-soft">
                             <BookOpen className="h-6 w-6 text-foreground" />
                           </div>
                           About This Model
@@ -701,11 +717,11 @@ export default function ModelPage({ params }: ModelPageProps) {
               </Card>
 
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                      <Card className="bg-gradient-to-br from-accent/5 to-accent/10 border-accent/20 shadow-sm">
+                      <Card className="bg-gradient-to-br from-accent-100/30 to-accent-100/10 border-2 border-accent-200/20 shadow-elevation-1 rounded-2xl">
                         <CardHeader className="pb-6">
                           <CardTitle className="flex items-center gap-3 text-xl">
-                            <div className="p-2 bg-accent/10 rounded-lg">
-                              <Target className="h-5 w-5 text-accent" />
+                            <div className="p-2 bg-accent-100 rounded-2xl">
+                              <Target className="h-5 w-5 text-accent-500" />
                             </div>
                             Use Cases
                           </CardTitle>
@@ -728,11 +744,11 @@ export default function ModelPage({ params }: ModelPageProps) {
                 </CardContent>
               </Card>
 
-                      <Card className="bg-gradient-to-br from-primary/5 to-primary/10 border-primary/20 shadow-sm">
+                      <Card className="bg-gradient-to-br from-primary-100/30 to-primary-100/10 border-2 border-primary-200/20 shadow-elevation-1 rounded-2xl">
                         <CardHeader className="pb-6">
                           <CardTitle className="flex items-center gap-3 text-xl">
-                            <div className="p-2 bg-primary/10 rounded-lg">
-                              <BarChart3 className="h-5 w-5 text-primary" />
+                            <div className="p-2 bg-primary-100 rounded-2xl">
+                              <BarChart3 className="h-5 w-5 text-primary-500" />
                             </div>
                             Performance Metrics
                           </CardTitle>

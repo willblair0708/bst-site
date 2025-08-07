@@ -1,4 +1,5 @@
 import os
+import json
 from typing import Any, Dict
 
 import httpx
@@ -37,7 +38,7 @@ TOOL_TRACE_CVAR: ContextVar[list[dict] | None] = ContextVar("tool_trace", defaul
     wait=wait_exponential(multiplier=0.2, min=0.2, max=2),
     retry=retry_if_exception_type(httpx.HTTPError),
 )
-async def rag_search(q: str, k: int = 3) -> Dict[str, Any]:
+async def rag_search(q: str, k: int = 3) -> str:
     start = time.perf_counter()
     async with httpx.AsyncClient(base_url=BASE_URL, timeout=20) as client:
         resp = await client.get("/services/rag/search", params={"q": q, "k": k}, headers=await _get_headers())
@@ -47,7 +48,7 @@ async def rag_search(q: str, k: int = 3) -> Dict[str, Any]:
     trace = TOOL_TRACE_CVAR.get()
     if trace is not None:
         trace.append({"tool": "rag.search", "args": {"q": q, "k": k}, "t_ms": elapsed})
-    return out
+    return json.dumps(out)
 
 
 @function_tool
@@ -57,7 +58,7 @@ async def rag_search(q: str, k: int = 3) -> Dict[str, Any]:
     wait=wait_exponential(multiplier=0.2, min=0.2, max=2),
     retry=retry_if_exception_type(httpx.HTTPError),
 )
-async def rag_expand(q: str, n: int = 3) -> Dict[str, Any]:
+async def rag_expand(q: str, n: int = 3) -> str:
     start = time.perf_counter()
     async with httpx.AsyncClient(base_url=BASE_URL, timeout=20) as client:
         resp = await client.post("/services/rag/expand", json={"q": q, "n": n}, headers=await _get_headers())
@@ -67,19 +68,23 @@ async def rag_expand(q: str, n: int = 3) -> Dict[str, Any]:
     trace = TOOL_TRACE_CVAR.get()
     if trace is not None:
         trace.append({"tool": "rag.expand", "args": {"q": q, "n": n}, "t_ms": elapsed})
-    return out
+    return json.dumps(out)
 
 
 @function_tool
-def format_markdown_with_refs(blocks: list[dict]) -> str:
+def format_markdown_with_refs(blocks_json: str) -> str:
     from app.tools.local import format_markdown_with_refs as _fmt
+    try:
+        blocks = json.loads(blocks_json)
+    except Exception:
+        blocks = []
     return _fmt(blocks)
 
 
 @function_tool
-def chem_calc(smiles: str) -> Dict[str, Any]:
+def chem_calc(smiles: str) -> str:
     from app.tools.local import chem_calc as _chem
-    return _chem(smiles)
+    return json.dumps(_chem(smiles))
 
 
 @function_tool
@@ -89,17 +94,23 @@ def chem_calc(smiles: str) -> Dict[str, Any]:
     wait=wait_exponential(multiplier=0.2, min=0.2, max=2),
     retry=retry_if_exception_type(httpx.HTTPError),
 )
-async def chem_design(constraints: dict | None = None, n: int = 3) -> Dict[str, Any]:
+async def chem_design(constraints_json: str | None = None, n: int = 3) -> str:
     start = time.perf_counter()
     async with httpx.AsyncClient(base_url=BASE_URL, timeout=20) as client:
-        resp = await client.post("/services/chem/design", json={"constraints": constraints or {}, "n": n}, headers=await _get_headers())
+        constraints: Dict[str, Any] = {}
+        if constraints_json:
+            try:
+                constraints = json.loads(constraints_json)
+            except Exception:
+                constraints = {}
+        resp = await client.post("/services/chem/design", json={"constraints": constraints, "n": n}, headers=await _get_headers())
         resp.raise_for_status()
         out = resp.json()
     elapsed = int((time.perf_counter() - start) * 1000)
     trace = TOOL_TRACE_CVAR.get()
     if trace is not None:
         trace.append({"tool": "chem.design", "args": {"n": n}, "t_ms": elapsed})
-    return out
+    return json.dumps(out)
 
 
 def _scout_instructions() -> str:
@@ -219,8 +230,8 @@ def build_agents() -> dict[str, Any]:
     alchemist_tool = _make_agent_tool(alchemist, "alchemist", "Chem design and planning")
     analyst_tool = _make_agent_tool(analyst, "analyst", "Analysis template/synthesis")
 
-    @function_tool(name_override="run_all_specialists_parallel", description_override="Run SCOUT, SCHOLAR, ARCHIVIST in parallel and return a dict of results")
-    async def run_all_specialists_parallel(input: str) -> Dict[str, str]:
+    @function_tool(name_override="run_all_specialists_parallel", description_override="Run SCOUT, SCHOLAR, ARCHIVIST in parallel and return a dict of results (as JSON string)")
+    async def run_all_specialists_parallel(input: str) -> str:
         # Parallel fan-out using asyncio.gather via Runner
         import asyncio
         results = await asyncio.gather(
@@ -232,7 +243,7 @@ def build_agents() -> dict[str, Any]:
         out: Dict[str, str] = {}
         for name, res in zip(names, results):
             out[name] = getattr(res, "final_output", "")
-        return out
+        return json.dumps(out)
 
     # Load director prompt if available
     director_prompt_path = os.path.join(os.path.dirname(__file__), "prompts", "director.md")

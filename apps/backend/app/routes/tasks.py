@@ -6,6 +6,7 @@ import time
 from datetime import datetime
 from typing import Optional
 
+import asyncio
 from fastapi import APIRouter, Request
 from fastapi.responses import JSONResponse, StreamingResponse
 from pydantic import BaseModel
@@ -121,6 +122,85 @@ async def create_task(req: Request):
 
     client = OpenAI(api_key=api_key) if api_key else OpenAI()
 
+    if payload.stream and not fake and (payload.agent or "").strip().upper() in {"DIRECTOR", "AUTO"}:
+        # Multi-step streaming using Agents SDK orchestration for DIRECTOR
+        async def agen():
+            yield "event: open\n\n"
+            TOOL_TRACE_CVAR.set([])
+            from app.agents.roles import build_agents  # type: ignore
+            try:
+                from agents import Runner  # type: ignore
+            except Exception:
+                yield "data: " + json.dumps({"error": "Agents SDK not installed. pip install openai-agents"}) + "\n\n"
+                return
+
+            try:
+                agents_map = build_agents()
+                scout = agents_map["SCOUT"]
+                scholar = agents_map["SCHOLAR"]
+                archivist = agents_map["ARCHIVIST"]
+                alchemist = agents_map["ALCHEMIST"]
+                analyst = agents_map["ANALYST"]
+
+                input_text = payload.query
+
+                # Announce tool calls and run in parallel
+                for name in ("scout", "scholar", "archivist"):
+                    yield "data: " + json.dumps({"event": "tool_call", "tool": f"agent.{name}"}) + "\n\n"
+                scout_res, scholar_res, archivist_res = await asyncio.gather(
+                    Runner.run(scout, input_text, max_turns=8),
+                    Runner.run(scholar, input_text, max_turns=16),
+                    Runner.run(archivist, input_text, max_turns=8),
+                )
+                for name in ("scout", "scholar", "archivist"):
+                    yield "data: " + json.dumps({"event": "tool_result", "tool": f"agent.{name}"}) + "\n\n"
+
+                results = {
+                    "scout": getattr(scout_res, "final_output", ""),
+                    "scholar": getattr(scholar_res, "final_output", ""),
+                    "archivist": getattr(archivist_res, "final_output", ""),
+                }
+
+                # Optional chemistry step
+                if any(k in input_text.lower() for k in ["smiles", "molecule", "kinase", "chem"]):
+                    yield "data: " + json.dumps({"event": "tool_call", "tool": "agent.alchemist"}) + "\n\n"
+                    chem_res = await Runner.run(alchemist, input_text, max_turns=8)
+                    yield "data: " + json.dumps({"event": "tool_result", "tool": "agent.alchemist"}) + "\n\n"
+                    results["alchemist"] = getattr(chem_res, "final_output", "")
+
+                # Synthesis via analyst
+                yield "data: " + json.dumps({"event": "tool_call", "tool": "agent.analyst"}) + "\n\n"
+                synth_input = f"Synthesize these findings with citations: {json.dumps(results)[:4000]}"
+                synth = await Runner.run(analyst, synth_input, max_turns=8)
+                final_text = getattr(synth, "final_output", "")
+                yield "data: " + json.dumps({"event": "tool_result", "tool": "agent.analyst"}) + "\n\n"
+
+                # Persist and emit final
+                conn2 = _connect()
+                cur2 = conn2.cursor()
+                cur2.execute(
+                    "UPDATE tasks SET status=?, answer_markdown=?, updated_at=? WHERE id=?",
+                    ("succeeded", final_text, _now_iso(), task_id),
+                )
+                cur2.execute(
+                    "INSERT INTO messages (task_id, author, content, created_at) VALUES (?, ?, ?, ?)",
+                    (task_id, "AI", final_text, _now_iso()),
+                )
+                conn2.commit()
+                conn2.close()
+
+                yield "data: " + json.dumps({
+                    "done": True,
+                    "task_id": task_id,
+                    "message": {"id": 0, "author": "AI", "content": final_text},
+                }) + "\n\n"
+            except Exception as e:
+                yield "data: " + json.dumps({"error": str(e)}) + "\n\n"
+                return
+
+        headers = {"Cache-Control": "no-cache", "X-Accel-Buffering": "no"}
+        return StreamingResponse(agen(), media_type="text/event-stream", headers=headers)
+
     if payload.stream and not fake:
         def gen():
             from app.main import build_system_prompt  # lazy import
@@ -182,7 +262,13 @@ async def create_task(req: Request):
             TOOL_TRACE_CVAR.set([])
             # If asked to use multi-agent director, delegate
             if payload.agent.strip().upper() in {"DIRECTOR", "AUTO"}:
-                result = Runner.run_sync(agent, payload.query, max_turns=32)
+                # Seed a multi-step plan prompt to encourage explicit tool orchestration
+                planned = (
+                    "Plan then act: 1) run_all_specialists_parallel on the user input; "
+                    "2) review results; 3) call alchemist or analyst if necessary; 4) synthesize final answer.\n\n"
+                    f"User: {payload.query}"
+                )
+                result = Runner.run_sync(agent, planned, max_turns=40)
             else:
                 result = Runner.run_sync(agent, payload.query, max_turns=12)
             text = getattr(result, "final_output", None) or ""

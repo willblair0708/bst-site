@@ -234,13 +234,19 @@ def build_agents() -> dict[str, Any]:
             out[name] = getattr(res, "final_output", "")
         return out
 
+    # Load director prompt if available
+    director_prompt_path = os.path.join(os.path.dirname(__file__), "prompts", "director.md")
+    director_prompt = _alchemist_instructions()
+    try:
+        if os.path.exists(director_prompt_path):
+            with open(director_prompt_path, "r", encoding="utf-8") as f:
+                director_prompt = f.read()
+    except Exception:
+        pass
+
     director = Agent(
         name="DIRECTOR",
-        instructions=(
-            "You are DIRECTOR. Orchestrate multiple specialists to answer the question rigorously. "
-            "When appropriate, fan-out work in parallel, then synthesize a final answer with [1]-style citations. "
-            "Use tools: scout (fast QA), scholar (deep review), archivist (prior art), alchemist (chem planning), analyst (synthesis)."
-        ),
+        instructions=director_prompt,
         tools=[
             scout_tool,
             scholar_tool,
@@ -250,7 +256,7 @@ def build_agents() -> dict[str, Any]:
             run_all_specialists_parallel,
         ],
         model=os.getenv("MODEL_DIRECTOR", "gpt-4o"),
-        model_settings=ModelSettings(parallel_tool_calls=True) if ModelSettings else None,
+        model_settings=ModelSettings(parallel_tool_calls=True, tool_choice="required") if ModelSettings else None,
     )
 
     return {

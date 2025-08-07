@@ -143,6 +143,7 @@ ALIASES = {
     "OWL": "ARCHIVIST",
     "PHOENIX": "ALCHEMIST",
     "FINCH": "ANALYST",
+    "AUTO": "DIRECTOR",
 }
 
 
@@ -197,12 +198,68 @@ def build_agents() -> dict[str, Any]:
         model_settings=common_settings,
     )
 
+    # Wrap specialists as tools for a Director orchestrator
+    def _make_agent_tool(agent_obj: Any, tool_name: str, description: str):
+        @function_tool(name_override=tool_name, description_override=description)
+        async def _tool(input: str) -> str:
+            # record start
+            trace = TOOL_TRACE_CVAR.get()
+            if trace is not None:
+                trace.append({"tool": f"agent.{tool_name}", "args": {"input": input[:120]}, "phase": "start"})
+            result = await Runner.run(agent_obj, input, max_turns=16)
+            # record end
+            if trace is not None:
+                trace.append({"tool": f"agent.{tool_name}", "phase": "end"})
+            return getattr(result, "final_output", "")
+        return _tool
+
+    scout_tool = _make_agent_tool(scout, "scout", "Fast literature QA with citations")
+    scholar_tool = _make_agent_tool(scholar, "scholar", "Deep review with plan→gather→synthesize→critique→finalize")
+    archivist_tool = _make_agent_tool(archivist, "archivist", "Precedent/novelty search")
+    alchemist_tool = _make_agent_tool(alchemist, "alchemist", "Chem design and planning")
+    analyst_tool = _make_agent_tool(analyst, "analyst", "Analysis template/synthesis")
+
+    @function_tool(name_override="run_all_specialists_parallel", description_override="Run SCOUT, SCHOLAR, ARCHIVIST in parallel and return a dict of results")
+    async def run_all_specialists_parallel(input: str) -> Dict[str, str]:
+        # Parallel fan-out using asyncio.gather via Runner
+        import asyncio
+        results = await asyncio.gather(
+            Runner.run(scout, input, max_turns=8),
+            Runner.run(scholar, input, max_turns=16),
+            Runner.run(archivist, input, max_turns=8),
+        )
+        names = ["scout", "scholar", "archivist"]
+        out: Dict[str, str] = {}
+        for name, res in zip(names, results):
+            out[name] = getattr(res, "final_output", "")
+        return out
+
+    director = Agent(
+        name="DIRECTOR",
+        instructions=(
+            "You are DIRECTOR. Orchestrate multiple specialists to answer the question rigorously. "
+            "When appropriate, fan-out work in parallel, then synthesize a final answer with [1]-style citations. "
+            "Use tools: scout (fast QA), scholar (deep review), archivist (prior art), alchemist (chem planning), analyst (synthesis)."
+        ),
+        tools=[
+            scout_tool,
+            scholar_tool,
+            archivist_tool,
+            alchemist_tool,
+            analyst_tool,
+            run_all_specialists_parallel,
+        ],
+        model=os.getenv("MODEL_DIRECTOR", "gpt-4o"),
+        model_settings=ModelSettings(parallel_tool_calls=True) if ModelSettings else None,
+    )
+
     return {
         "SCOUT": scout,
         "SCHOLAR": scholar,
         "ARCHIVIST": archivist,
         "ALCHEMIST": alchemist,
         "ANALYST": analyst,
+        "DIRECTOR": director,
     }
 
 

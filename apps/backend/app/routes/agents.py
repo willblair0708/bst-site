@@ -11,7 +11,7 @@ def list_agents():
         return {"agents": sorted(list(agents.keys()))}
     except Exception:
         # Fallback to canonical names if Agents SDK isn't installed
-        return {"agents": ["SCOUT", "SCHOLAR", "ARCHIVIST", "ALCHEMIST", "ANALYST"]}
+        return {"agents": ["SCOUT", "SCHOLAR", "ARCHIVIST", "ALCHEMIST", "ANALYST", "DIRECTOR"]}
 
 
 @router.get("/v1/agents/aliases")

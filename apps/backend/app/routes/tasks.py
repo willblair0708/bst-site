@@ -180,7 +180,11 @@ async def create_task(req: Request):
         agent = get_agent(payload.agent)
         if agent is not None and not fake:
             TOOL_TRACE_CVAR.set([])
-            result = Runner.run_sync(agent, payload.query, max_turns=12)
+            # If asked to use multi-agent director, delegate
+            if payload.agent.strip().upper() in {"DIRECTOR", "AUTO"}:
+                result = Runner.run_sync(agent, payload.query, max_turns=32)
+            else:
+                result = Runner.run_sync(agent, payload.query, max_turns=12)
             text = getattr(result, "final_output", None) or ""
             used_agents_sdk = True
     except Exception:

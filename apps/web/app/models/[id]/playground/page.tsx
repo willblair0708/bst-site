@@ -1,26 +1,37 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Terminal, Settings2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 interface PlaygroundProps {
-  params: {
+  params: Promise<{
     id: string;
-  };
+  }>;
 }
 
 export default function ModelPlayground({ params }: PlaygroundProps) {
-  const modelId = decodeURIComponent(params.id);
-  const [code, setCode] = useState(`# Example usage for ${modelId}\n\n# TODO: call the model API here\n`);
+  const [modelId, setModelId] = useState<string | null>(null);
+  const [code, setCode] = useState(`# Example usage\n\n# TODO: call the model API here\n`);
+
+  useEffect(() => {
+    const resolveParams = async () => {
+      const resolvedParams = await params;
+      const decodedId = decodeURIComponent(resolvedParams.id);
+      setModelId(decodedId);
+      setCode(`# Example usage for ${decodedId}\n\n# TODO: call the model API here\n`);
+    };
+    
+    resolveParams();
+  }, [params]);
 
   return (
     <div className="min-h-screen bg-background py-10 px-5">
       <div className="max-w-5xl mx-auto space-y-10">
         <h1 className="text-3xl font-semibold tracking-tight capitalize">
-          {modelId.replace(/-/g, " ")} Playground
+          {modelId ? `${modelId.replace(/-/g, " ")} Playground` : "Model Playground"}
         </h1>
 
         <Tabs defaultValue="code" className="w-full">

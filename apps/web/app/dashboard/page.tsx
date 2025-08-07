@@ -11,22 +11,19 @@ import {
   GitCommit,
   Github,
   GitPullRequest,
-  Heart,
+  
   LifeBuoy,
   MessageSquare,
   Plus,
   Scale,
   Search,
-  Settings,
   Star,
   Users,
-  LucideProps,
 } from "lucide-react"
 import { motion, Variants } from "framer-motion"
 import Link from "next/link"
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { Card } from '@/components/ui/card'
 import { AnimatedStatCard } from '@/components/ui/animated-stat-card'
 import { ModelCard } from "@/components/ui/model-card"
 
@@ -210,13 +207,16 @@ export default function DashboardPage() {
       initial="hidden"
       animate="visible"
     >
-      <div className="max-w-8xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+      <div className="mx-auto max-w-7xl px-6 lg:px-8 py-10">
         {/* Header */}
         <motion.div
           className="flex flex-col md:flex-row justify-between items-start mb-10"
           variants={itemVariants}
         >
           <div>
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border bg-muted text-xs font-semibold text-muted-foreground mb-3">
+              Dashboard
+            </div>
             <h1 className="text-4xl font-display font-light text-foreground">
               Welcome back, Will
             </h1>
@@ -272,7 +272,7 @@ export default function DashboardPage() {
               icon={GitBranch}
               action={{ label: "View Full History", href: "/history" }}
             >
-              <ul className="space-y-4">
+              <ul className="space-y-4 relative pl-4 border-l border-border">
                 {activity.map((item, index) => (
                   <ActivityItem key={index} item={item} />
                 ))}
@@ -338,19 +338,21 @@ export default function DashboardPage() {
 // Sub-components
 const DashboardCard = ({ title, icon: Icon, action, children }: { title: string, icon: React.ElementType, action: {label: string, href: string} | null, children: React.ReactNode }) => (
     <motion.div
-      className="bg-card border border-border rounded-xl shadow-sm"
+      className="bg-card border border-border rounded-3xl shadow-elevation-1"
       variants={itemVariants}
-      whileHover={{ y: -5, boxShadow: "0px 10px 20px rgba(0,0,0, 0.05)" }}
-      transition={{ duration: 0.3 }}
+      whileHover={{ y: -2 }}
+      transition={{ duration: 0.2 }}
     >
-      <div className="p-5 border-b border-border flex items-center justify-between">
-        <div className="flex items-center space-x-3">
-          <Icon className="w-5 h-5 text-muted-foreground" />
-          <h2 className="text-lg font-semibold text-foreground">{title}</h2>
+      <div className="p-5 border-b border-border flex items-center justify-between rounded-t-3xl">
+        <div className="flex items-center gap-3">
+          <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-muted">
+            <Icon className="w-4 h-4 text-muted-foreground" />
+          </div>
+          <h2 className="text-base font-semibold text-foreground">{title}</h2>
         </div>
         {action && (
-          <Button variant="ghost" size="sm" asChild>
-            <Link href={action.href}>{action.label}</Link>
+          <Button variant="outline" size="sm" asChild className="rounded-xl">
+            <Link href={action.href} className="focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 rounded-xl">{action.label}</Link>
           </Button>
         )}
       </div>
@@ -358,18 +360,18 @@ const DashboardCard = ({ title, icon: Icon, action, children }: { title: string,
     </motion.div>
 );
 
-const RepositoryCard = ({ repository }: { repository: Trial }) => (
-    <div className="bg-background/50 p-4 rounded-lg border border-border/70 hover:bg-muted/30 transition-colors">
+const RepositoryCard = ({ repository }: { repository: Trial }) => {
+  const progress = Math.min(100, Math.round((repository.patientEnrollment / repository.totalPatients) * 100))
+  const statusVariant = repository.status === "Active" ? "success" : repository.status === "Enrolling" ? "outline" : "secondary"
+  return (
+    <div className="p-4 rounded-2xl border bg-background/50">
       <div className="flex justify-between items-start">
         <div>
-          <div className="flex items-center space-x-3 mb-2">
-            <Link href={`/repositories/${repository.name}`}>
-              <span className="font-semibold text-primary hover:underline">{repository.name}</span>
+          <div className="flex items-center gap-3 mb-2">
+            <Link href={`/repositories/${repository.name}`} className="focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 rounded">
+              <span className="font-medium text-foreground hover:text-primary transition-colors">{repository.name}</span>
             </Link>
-            <Badge
-              variant={repository.status === "Active" ? "default" : "secondary"}
-              className="capitalize"
-            >
+            <Badge variant={statusVariant as any} className="capitalize px-2 py-0.5 rounded-full text-xs">
               {repository.status}
             </Badge>
           </div>
@@ -380,42 +382,47 @@ const RepositoryCard = ({ repository }: { repository: Trial }) => (
           <p className="text-xs text-muted-foreground">Patients</p>
         </div>
       </div>
-      <div className="mt-4 flex items-center justify-between text-xs text-muted-foreground">
-        <div className="flex items-center space-x-2">
+      <div className="mt-3 h-2 w-full rounded-full bg-muted">
+        <div className="h-2 rounded-full bg-primary-500" style={{ width: `${progress}%` }} />
+      </div>
+      <div className="mt-3 flex items-center justify-between text-xs text-muted-foreground">
+        <div className="flex items-center gap-2">
           <Users className="w-3 h-3" />
           <span>{repository.owner}</span>
         </div>
         <p>Last update: {repository.lastUpdate}</p>
       </div>
     </div>
-  );
+  )
+};
 
 const ActivityItem = ({ item }: { item: Activity }) => (
-    <li className="flex items-start space-x-4">
-      <item.Icon className="w-4 h-4 mt-1 text-muted-foreground" />
-      <div className="flex-1 text-sm">
-        <p className="text-foreground">
-          <span className="font-semibold">{item.user}</span> {item.details}
-        </p>
-        <p className="text-xs text-muted-foreground mt-1">{item.time}</p>
-      </div>
-    </li>
+  <li className="relative flex items-start gap-4">
+    <span className="absolute -left-[9px] mt-1 inline-block h-2 w-2 rounded-full bg-primary-500" />
+    <item.Icon className="w-4 h-4 mt-0.5 text-muted-foreground" />
+    <div className="flex-1 text-sm">
+      <p className="text-foreground">
+        <span className="font-medium">{item.user}</span> {item.details}
+      </p>
+      <p className="text-xs text-muted-foreground mt-1">{item.time}</p>
+    </div>
+  </li>
 );
 
 const DiscussionItem = ({ discussion }: { discussion: Discussion }) => (
-    <li className="text-sm">
-      <Link href="#">
-        <p className="text-foreground hover:text-primary transition-colors truncate">{discussion.title}</p>
-      </Link>
-      <p className="text-xs text-muted-foreground">
-        in {discussion.repo} by {discussion.user}
-      </p>
-    </li>
+  <li className="text-sm">
+    <Link href="#" className="focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 rounded">
+      <p className="text-foreground hover:text-primary transition-colors truncate">{discussion.title}</p>
+    </Link>
+    <p className="text-xs text-muted-foreground">
+      in {discussion.repo} by {discussion.user}
+    </p>
+  </li>
 );
 
 const ResourceLink = ({ icon: Icon, title, href }: { icon: React.ElementType, title: string, href: string }) => (
-    <Link href={href} className="flex items-center space-x-3 p-2 rounded-md hover:bg-muted/30 transition-colors">
-        <Icon className="w-4 h-4 text-muted-foreground" />
-        <span className="text-sm text-foreground">{title}</span>
-    </Link>
+  <Link href={href} className="flex items-center gap-3 p-2 rounded-md hover:bg-muted/30 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500">
+    <Icon className="w-4 h-4 text-muted-foreground" />
+    <span className="text-sm text-foreground">{title}</span>
+  </Link>
 );

@@ -314,14 +314,19 @@ export default function LandingPage() {
                       whileHover={MOTION.bento_hover}
                       className={`group relative flex h-full flex-col overflow-hidden rounded-3xl border bg-card shadow-elevation-1 transition-shadow hover:shadow-elevation-2`}
                     >
-                {/* Verification badge */}
-                {repo.verified && (
-                  <div className="absolute right-4 top-4 z-10">
-                    <div className="bg-accent-100 rounded-xl p-1.5 border border-black/5">
-                      <CheckCircle2 className="h-4 w-4 text-accent-500" strokeWidth={2.5} />
-                    </div>
+                {/* Top-right micro status pill: verified + visibility */}
+                <div className="absolute right-3 top-3 z-10">
+                  <div className="flex items-center gap-1 rounded-full border bg-card/90 backdrop-blur px-2 py-1 shadow-elevation-1">
+                    {repo.verified && (
+                      <CheckCircle2 className="h-3.5 w-3.5 text-accent-500" strokeWidth={2.5} aria-label="Verified" />
+                    )}
+                    {repo.isPrivate ? (
+                      <Lock className="h-3.5 w-3.5 text-muted-foreground" strokeWidth={2} aria-label="Private" />
+                    ) : (
+                      <Globe className="h-3.5 w-3.5 text-muted-foreground" strokeWidth={2} aria-label="Public" />
+                    )}
                   </div>
-                )}
+                </div>
 
                 <div className="flex-1 p-6">
                   {/* Pillar Declaration - Transparent Bento (strict color separation) */}
@@ -334,13 +339,8 @@ export default function LandingPage() {
                         })}
                       </div>
                     </div>
-                    <div className="rounded-lg bg-muted/50 p-1">
-                      {repo.isPrivate ? (
-                        <Lock className="h-3 w-3 text-muted-foreground" strokeWidth={2} />
-                      ) : (
-                        <Globe className="h-3 w-3 text-muted-foreground" strokeWidth={2} />
-                      )}
-                    </div>
+                    {/* right-side spacer removed; status moved to top-right micro pill */}
+                    <div className="w-5" />
                   </div>
                   
                   <Link

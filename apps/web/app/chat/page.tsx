@@ -11,7 +11,10 @@ import {
   MessageSquare,
   Users,
   Brain,
-  Sparkles
+  Sparkles,
+  Copy as CopyIcon,
+  RotateCcw,
+  Square
 } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
@@ -51,10 +54,11 @@ const fadeInUp = {
 };
 
 const ChatPage = () => {
-  const [messages, setMessages] = useState<Array<{id: number, author: string, content: string}>>([]);
+  const [messages, setMessages] = useState<Array<{id: number, author: string, content: string, createdAt?: number}>>([]);
   const [inputValue, setInputValue] = useState("");
   const [isAiTyping, setIsAiTyping] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const abortControllerRef = useRef<AbortController | null>(null);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -64,20 +68,26 @@ const ChatPage = () => {
     scrollToBottom();
   }, [messages, isAiTyping]);
 
-  const handleSendMessage = async () => {
-    if (inputValue.trim()) {
+  const handleSendMessage = async (forcedContent?: string) => {
+    const contentToSend = (forcedContent ?? inputValue).trim();
+    if (contentToSend) {
       const newUserMessage = {
         id: Date.now(),
         author: "User",
-        content: inputValue,
+        content: contentToSend,
+        createdAt: Date.now(),
       };
       
       const updatedMessages = [...messages, newUserMessage];
       setMessages(updatedMessages);
-      setInputValue("");
+      if (forcedContent === undefined) setInputValue("");
       setIsAiTyping(true);
       
       try {
+        // allow stop
+        abortControllerRef.current?.abort();
+        const controller = new AbortController();
+        abortControllerRef.current = controller;
         const response = await fetch('/api/chat', {
           method: 'POST',
           headers: {
@@ -86,6 +96,7 @@ const ChatPage = () => {
           body: JSON.stringify({
             messages: updatedMessages,
           }),
+          signal: controller.signal,
         });
 
         if (!response.ok) {
@@ -95,7 +106,8 @@ const ChatPage = () => {
         const data = await response.json();
         
         if (data.message) {
-          setMessages(prev => [...prev, data.message]);
+          const aiMessage = { ...data.message, createdAt: Date.now() };
+          setMessages(prev => [...prev, aiMessage]);
         } else {
           throw new Error('Invalid response format');
         }
@@ -105,12 +117,34 @@ const ChatPage = () => {
           id: Date.now() + 1,
           author: "AI",
           content: "I apologize, but I'm having trouble responding right now. Please try again in a moment.",
+          createdAt: Date.now(),
         };
         setMessages(prev => [...prev, errorMessage]);
       } finally {
         setIsAiTyping(false);
       }
     }
+  };
+
+  const handleRegenerate = async () => {
+    // find last user message
+    const lastUserIndex = [...messages].map((m, i) => ({ m, i })).reverse().find(pair => pair.m.author === "User")?.i;
+    if (lastUserIndex === undefined) return;
+    const userContent = messages[lastUserIndex].content;
+    // trim any messages after last user (e.g., AI response)
+    setMessages(prev => prev.slice(0, lastUserIndex + 1));
+    await handleSendMessage(userContent);
+  };
+
+  const handleStop = () => {
+    abortControllerRef.current?.abort();
+    setIsAiTyping(false);
+  };
+
+  const copyToClipboard = async (text: string) => {
+    try {
+      await navigator.clipboard.writeText(text);
+    } catch {}
   };
 
   const Sidebar = () => (
@@ -128,7 +162,7 @@ const ChatPage = () => {
 
       {/* New Chat Button */}
       <div className="mb-6">
-        <Button className="w-full h-11 rounded-full bg-background text-foreground hover:bg-muted transition-colors font-medium shadow-sm border">
+        <Button className="w-full h-11 rounded-xl bg-background text-foreground hover:bg-muted transition-colors font-medium shadow-sm border" onClick={() => { setMessages([]); setInputValue(""); }}>
           <Plus className="w-4 h-4 mr-2" />
           New Chat
         </Button>
@@ -203,7 +237,7 @@ const ChatPage = () => {
                     <button
                       key={index}
                       onClick={() => setInputValue(prompt)}
-                      className="p-4 text-left border rounded-lg hover:bg-muted transition-all duration-200 text-sm text-foreground h-full"
+                      className="p-4 text-left border rounded-lg hover:bg-muted transition-colors text-sm text-foreground h-full"
                     >
                       <Sparkles className="w-4 h-4 mb-3 text-muted-foreground" />
                       <p className="font-medium leading-relaxed">{prompt}</p>
@@ -232,12 +266,20 @@ const ChatPage = () => {
                     )}>
                       {message.author === "User" ? "U" : "R"}
                     </div>
-                    <div className="flex-1 min-w-0 pt-1">
-                      <div className="text-sm font-medium mb-2 text-foreground">
-                        {message.author === "User" ? "You" : "Runix"}
+                    <div className="flex-1 min-w-0 pt-1 group">
+                      <div className="flex items-center gap-2">
+                        <div className="text-sm font-medium text-foreground">
+                          {message.author === "User" ? "You" : "Runix"}
+                        </div>
+                        <span className="text-xs text-muted-foreground">{new Date(message.createdAt || Date.now()).toLocaleTimeString()}</span>
+                        <div className="ml-auto hidden group-hover:flex items-center gap-1">
+                          <button className="p-1 rounded hover:bg-muted" onClick={() => copyToClipboard(message.content)}>
+                            <CopyIcon className="w-3.5 h-3.5" />
+                          </button>
+                        </div>
                       </div>
                       <div className={cn(
-                        "prose prose-sm dark:prose-invert max-w-none",
+                        "prose prose-sm dark:prose-invert max-w-none mt-1",
                         message.author === "User" 
                           ? "bg-muted rounded-lg px-4 py-3" 
                           : "bg-background"
@@ -281,10 +323,10 @@ const ChatPage = () => {
           )}
           
           {/* Input Area */}
-          <div className="p-6 bg-background border-t">
+          <div className="p-4 sm:p-6 bg-background border-t">
             <div className="max-w-3xl mx-auto">
               <motion.div 
-                className="relative bg-background rounded-lg border focus-within:border-ring transition-all duration-200"
+                className="relative bg-background rounded-xl border focus-within:border-ring transition-colors"
                 variants={fadeInUp}
                 initial="initial"
                 animate="animate"
@@ -304,18 +346,34 @@ const ChatPage = () => {
                     }}
                     rows={1}
                   />
-                  <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-                    <Button
-                      size="icon"
-                      onClick={handleSendMessage}
-                      disabled={!inputValue.trim()}
-                      className="rounded-lg h-8 w-8 bg-foreground text-background hover:bg-foreground/80 disabled:opacity-30 disabled:pointer-events-none transition-all duration-200"
-                    >
-                      <ArrowUp className="w-4 h-4" />
-                    </Button>
-                  </motion.div>
+                  <div className="flex items-center gap-2">
+                    {isAiTyping ? (
+                      <Button size="icon" onClick={handleStop} className="rounded-lg h-8 w-8" title="Stop">
+                        <Square className="w-4 h-4" />
+                      </Button>
+                    ) : (
+                      <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                        <Button
+                          size="icon"
+                          onClick={() => handleSendMessage()}
+                          disabled={!inputValue.trim()}
+                          className="rounded-lg h-8 w-8 bg-foreground text-background hover:bg-foreground/80 disabled:opacity-30 disabled:pointer-events-none"
+                        >
+                          <ArrowUp className="w-4 h-4" />
+                        </Button>
+                      </motion.div>
+                    )}
+                  </div>
                 </div>
               </motion.div>
+              <div className="mt-2 flex items-center justify-between text-xs text-muted-foreground">
+                <div>Enter to send • Shift+Enter for newline</div>
+                {messages.length > 0 && messages[messages.length - 1]?.author === 'AI' && (
+                  <button className="inline-flex items-center gap-1 hover:text-foreground" onClick={handleRegenerate}>
+                    <RotateCcw className="w-3.5 h-3.5" /> Regenerate
+                  </button>
+                )}
+              </div>
             </div>
           </div>
         </div>

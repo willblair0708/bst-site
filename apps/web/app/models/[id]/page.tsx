@@ -365,7 +365,7 @@ export default function ModelPage({ params }: ModelPageProps) {
 
   return (
     <motion.div 
-      className="min-h-screen bg-gradient-to-br from-background via-background to-primary-100/20"
+      className="min-h-screen bg-background"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.6 }}
@@ -379,16 +379,11 @@ export default function ModelPage({ params }: ModelPageProps) {
           transition={{ duration: 0.8, delay: 0.1 }}
         >
           {/* Hero Header - Astra-Soft Design */}
-          <div className="bg-gradient-to-br from-primary-100/30 via-white/80 to-accent-100/20 border-2 border-primary-200/60 rounded-2xl p-8 mb-10 backdrop-blur-md shadow-elevation-2 relative overflow-hidden">
-            {/* Subtle geometric background pattern */}
-            <div className="absolute inset-0 opacity-[0.04]">
-              <div className="absolute top-6 right-6 w-24 h-24 bg-primary-500 rounded-full blur-3xl"></div>
-              <div className="absolute bottom-6 left-6 w-20 h-20 bg-accent-500 rounded-full blur-2xl"></div>
-            </div>
-            <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-8 relative z-10">
+          <div className="rounded-3xl border bg-card p-6 lg:p-8 mb-10 shadow-elevation-1">
+            <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-8">
               <div className="flex items-start gap-6 flex-1">
                 <div className="relative">
-                  <Avatar className="h-20 w-20 ring-3 ring-white/50 shadow-elevation-2">
+                  <Avatar className="h-16 w-16 shadow-elevation-1">
                     <AvatarImage src={model.authorAvatar} alt={model.author} />
                     <AvatarFallback className="bg-primary-500 text-foreground text-2xl font-bold">
                       {model.author.split(' ').map((n: string) => n[0]).join('')}
@@ -396,12 +391,12 @@ export default function ModelPage({ params }: ModelPageProps) {
                   </Avatar>
                   {model.verified && (
                     <motion.div 
-                      className="absolute -bottom-2 -right-2 w-8 h-8 bg-accent-500 rounded-full flex items-center justify-center border-3 border-white shadow-elevation-2"
+                      className="absolute -bottom-2 -right-2 w-7 h-7 bg-accent-500 rounded-full flex items-center justify-center border-2 border-card shadow-elevation-1"
                       initial={{ scale: 0 }}
                       animate={{ scale: 1 }}
                       transition={{ delay: 0.5, type: "spring", stiffness: 150 }}
                     >
-                      <Verified className="h-4 w-4 text-foreground" />
+                      <Verified className="h-3.5 w-3.5 text-foreground" />
                     </motion.div>
                   )}
                 </div>
@@ -409,17 +404,17 @@ export default function ModelPage({ params }: ModelPageProps) {
                 <div className="flex-1 min-w-0">
                   <div className="flex flex-col gap-3 mb-4">
                     <div className="flex items-center gap-3 flex-wrap">
-                      <h1 className="text-3xl lg:text-4xl font-bold tracking-tight text-foreground">
+                      <h1 className="text-3xl lg:text-4xl font-semibold tracking-tight text-foreground">
                         {model.name}
                       </h1>
-                      <div className="flex gap-2">
+                      <div className="flex gap-1.5">
                         {model.featured && (
                           <motion.div
                             initial={{ opacity: 0, scale: 0.8 }}
                             animate={{ opacity: 1, scale: 1 }}
                             transition={{ delay: 0.3 }}
                           >
-                            <Badge className="bg-primary-500 text-foreground border-0 shadow-soft px-3 py-1.5 rounded-2xl text-sm">
+                            <Badge className="bg-primary-500 text-foreground border-0 px-2 py-0.5 rounded-xl text-xs">
                               <Trophy className="h-3 w-3 mr-1.5" />
                               Featured
                             </Badge>
@@ -431,7 +426,7 @@ export default function ModelPage({ params }: ModelPageProps) {
                             animate={{ opacity: 1, scale: 1 }}
                             transition={{ delay: 0.4 }}
                           >
-                            <Badge className="bg-accent-500 text-foreground border-0 shadow-soft px-3 py-1.5 rounded-2xl text-sm">
+                            <Badge className="bg-accent-500 text-foreground border-0 px-2 py-0.5 rounded-xl text-xs">
                               <TrendingUp className="h-3 w-3 mr-1.5" />
                               Trending
                             </Badge>
@@ -444,7 +439,7 @@ export default function ModelPage({ params }: ModelPageProps) {
                       <span className="text-muted-foreground">by</span>
                       <span className="font-medium text-foreground">{model.author}</span>
                       <span className="text-muted-foreground">•</span>
-                      <Badge variant="outline" className="bg-white/80 border-primary-200 text-primary-600 text-xs px-2 py-1 rounded-md">
+                      <Badge variant="outline" className="text-xs px-2 py-0.5 rounded-md">
                         v{model.version}
                       </Badge>
                       <span className="text-muted-foreground">•</span>
@@ -452,7 +447,7 @@ export default function ModelPage({ params }: ModelPageProps) {
                     </div>
                   </div>
 
-                  <p className="text-lg text-muted-foreground leading-relaxed max-w-3xl font-medium">
+                  <p className="text-base text-muted-foreground leading-relaxed max-w-3xl">
                     {model.description}
                   </p>
                 </div>
@@ -476,15 +471,15 @@ export default function ModelPage({ params }: ModelPageProps) {
               whileHover={{ y: -4, scale: 1.02 }}
               transition={{ duration: 0.2, ease: "easeOut" }}
             >
-              <Card className="text-center bg-gradient-to-br from-accent-100 to-accent-50 border border-accent-200/60 hover:border-accent-300 transition-all shadow-elevation-1 hover:shadow-elevation-2 rounded-2xl">
-                <CardContent className="p-6">
-                  <div className="mb-3">
-                    <div className="p-3 bg-accent-500 rounded-2xl mx-auto w-fit shadow-soft">
-                      <Download className="h-6 w-6 text-foreground" />
+              <Card className="text-center bg-card border border-border transition-shadow shadow-elevation-1 hover:shadow-elevation-2 rounded-2xl">
+                <CardContent className="p-4">
+                  <div className="mb-2 flex justify-center">
+                    <div className="h-8 w-8 rounded-xl bg-muted flex items-center justify-center">
+                      <Download className="h-4 w-4 text-muted-foreground" />
                     </div>
                   </div>
-                  <div className="text-3xl font-bold text-foreground mb-2">{formatNumber(model.downloads)}</div>
-                  <div className="text-sm text-accent-700 font-semibold">Downloads</div>
+                  <div className="text-2xl font-semibold text-foreground">{formatNumber(model.downloads)}</div>
+                  <div className="text-xs text-muted-foreground mt-1">Downloads</div>
                 </CardContent>
               </Card>
             </motion.div>
@@ -494,15 +489,15 @@ export default function ModelPage({ params }: ModelPageProps) {
               whileHover={{ y: -4, scale: 1.02 }}
               transition={{ duration: 0.2, ease: "easeOut" }}
             >
-              <Card className="text-center bg-gradient-to-br from-primary-100 to-primary-50 border border-primary-200/60 hover:border-primary-300 transition-all shadow-elevation-1 hover:shadow-elevation-2 rounded-2xl">
-                <CardContent className="p-6">
-                  <div className="mb-3">
-                    <div className="p-3 bg-primary-500 rounded-2xl mx-auto w-fit shadow-soft">
-                      <Star className="h-6 w-6 text-foreground" />
+              <Card className="text-center bg-card border border-border transition-shadow shadow-elevation-1 hover:shadow-elevation-2 rounded-2xl">
+                <CardContent className="p-4">
+                  <div className="mb-2 flex justify-center">
+                    <div className="h-8 w-8 rounded-xl bg-muted flex items-center justify-center">
+                      <Star className="h-4 w-4 text-muted-foreground" />
                     </div>
                   </div>
-                  <div className="text-3xl font-bold text-foreground mb-2">{formatNumber(model.likes)}</div>
-                  <div className="text-sm text-primary-700 font-semibold">Stars</div>
+                  <div className="text-2xl font-semibold text-foreground">{formatNumber(model.likes)}</div>
+                  <div className="text-xs text-muted-foreground mt-1">Stars</div>
                 </CardContent>
               </Card>
             </motion.div>
@@ -512,15 +507,15 @@ export default function ModelPage({ params }: ModelPageProps) {
               whileHover={{ y: -4, scale: 1.02 }}
               transition={{ duration: 0.2, ease: "easeOut" }}
             >
-              <Card className="text-center bg-gradient-to-br from-collaboration-100 to-collaboration-50 border border-collaboration-200/60 hover:border-collaboration-300 transition-all shadow-elevation-1 hover:shadow-elevation-2 rounded-2xl">
-                <CardContent className="p-6">
-                  <div className="mb-3">
-                    <div className="p-3 bg-collaboration-500 rounded-2xl mx-auto w-fit shadow-soft">
-                      <Trophy className="h-6 w-6 text-foreground" />
+              <Card className="text-center bg-card border border-border transition-shadow shadow-elevation-1 hover:shadow-elevation-2 rounded-2xl">
+                <CardContent className="p-4">
+                  <div className="mb-2 flex justify-center">
+                    <div className="h-8 w-8 rounded-xl bg-muted flex items-center justify-center">
+                      <Trophy className="h-4 w-4 text-muted-foreground" />
                     </div>
                   </div>
-                  <div className="text-3xl font-bold text-foreground mb-2">{formatNumber(model.citations)}</div>
-                  <div className="text-sm text-collaboration-700 font-semibold">Citations</div>
+                  <div className="text-2xl font-semibold text-foreground">{formatNumber(model.citations)}</div>
+                  <div className="text-xs text-muted-foreground mt-1">Citations</div>
                 </CardContent>
               </Card>
             </motion.div>
@@ -530,15 +525,15 @@ export default function ModelPage({ params }: ModelPageProps) {
               whileHover={{ y: -4, scale: 1.02 }}
               transition={{ duration: 0.2, ease: "easeOut" }}
             >
-              <Card className="text-center bg-gradient-to-br from-accent-100 to-accent-50 border border-accent-200/60 hover:border-accent-300 transition-all shadow-elevation-1 hover:shadow-elevation-2 rounded-2xl">
-                <CardContent className="p-6">
-                  <div className="mb-3">
-                    <div className="p-3 bg-accent-500 rounded-2xl mx-auto w-fit shadow-soft">
-                      <BarChart3 className="h-6 w-6 text-foreground" />
+              <Card className="text-center bg-card border border-border transition-shadow shadow-elevation-1 hover:shadow-elevation-2 rounded-2xl">
+                <CardContent className="p-4">
+                  <div className="mb-2 flex justify-center">
+                    <div className="h-8 w-8 rounded-xl bg-muted flex items-center justify-center">
+                      <BarChart3 className="h-4 w-4 text-muted-foreground" />
                     </div>
                   </div>
-                  <div className="text-3xl font-bold text-foreground mb-2">{model.accuracy}%</div>
-                  <div className="text-sm text-accent-700 font-semibold">Accuracy</div>
+                  <div className="text-2xl font-semibold text-foreground">{model.accuracy}%</div>
+                  <div className="text-xs text-muted-foreground mt-1">Accuracy</div>
                 </CardContent>
               </Card>
             </motion.div>
@@ -547,15 +542,15 @@ export default function ModelPage({ params }: ModelPageProps) {
               whileHover={{ y: -4, scale: 1.02 }}
               transition={{ duration: 0.2, ease: "easeOut" }}
             >
-              <Card className="text-center bg-gradient-to-br from-accent-100 to-accent-50 border border-accent-200/60 hover:border-accent-300 transition-all shadow-elevation-1 hover:shadow-elevation-2 rounded-2xl">
-                <CardContent className="p-6">
-                  <div className="mb-3">
-                    <div className="p-3 bg-accent-500 rounded-2xl mx-auto w-fit shadow-soft">
-                      <Shield className="h-6 w-6 text-foreground" />
+              <Card className="text-center bg-card border border-border transition-shadow shadow-elevation-1 hover:shadow-elevation-2 rounded-2xl">
+                <CardContent className="p-4">
+                  <div className="mb-2 flex justify-center">
+                    <div className="h-8 w-8 rounded-xl bg-muted flex items-center justify-center">
+                      <Shield className="h-4 w-4 text-muted-foreground" />
                     </div>
                   </div>
-                  <div className="text-3xl font-bold text-foreground mb-2">{model.reproducibilityScore}%</div>
-                  <div className="text-sm text-accent-700 font-semibold">Reproducible</div>
+                  <div className="text-2xl font-semibold text-foreground">{model.reproducibilityScore}%</div>
+                  <div className="text-xs text-muted-foreground mt-1">Reproducible</div>
                 </CardContent>
               </Card>
             </motion.div>
@@ -564,15 +559,15 @@ export default function ModelPage({ params }: ModelPageProps) {
               whileHover={{ y: -4, scale: 1.02 }}
               transition={{ duration: 0.2, ease: "easeOut" }}
             >
-              <Card className="text-center bg-gradient-to-br from-primary-100 to-primary-50 border border-primary-200/60 hover:border-primary-300 transition-all shadow-elevation-1 hover:shadow-elevation-2 rounded-2xl">
-                <CardContent className="p-6">
-                  <div className="mb-3">
-                    <div className="p-3 bg-primary-500 rounded-2xl mx-auto w-fit shadow-soft">
-                      <Target className="h-6 w-6 text-foreground" />
+              <Card className="text-center bg-card border border-border transition-shadow shadow-elevation-1 hover:shadow-elevation-2 rounded-2xl">
+                <CardContent className="p-4">
+                  <div className="mb-2 flex justify-center">
+                    <div className="h-8 w-8 rounded-xl bg-muted flex items-center justify-center">
+                      <Target className="h-4 w-4 text-muted-foreground" />
                     </div>
                   </div>
-                  <div className="text-3xl font-bold text-primary-700 mb-2">#{model.benchmarkRank}</div>
-                  <div className="text-sm text-primary-600 font-semibold">Global Rank</div>
+                  <div className="text-2xl font-semibold text-foreground">#{model.benchmarkRank}</div>
+                  <div className="text-xs text-muted-foreground mt-1">Global Rank</div>
                 </CardContent>
               </Card>
             </motion.div>
@@ -580,15 +575,15 @@ export default function ModelPage({ params }: ModelPageProps) {
 
           {/* Enhanced Action Buttons - Soft-UI Design */}
           <motion.div 
-            className="flex flex-wrap gap-4 justify-center lg:justify-start"
+            className="flex flex-wrap gap-3 justify-center lg:justify-start"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.5 }}
           >
             <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
               <Button 
-                size="default" 
-                className="bg-primary-500 hover:bg-primary-600 shadow-soft hover:shadow-elevation-2 transition-all duration-200 whitespace-nowrap text-foreground px-6 py-2.5 rounded-2xl font-medium"
+                size="sm" 
+                className="bg-primary-500 hover:bg-primary-600 transition-colors whitespace-nowrap text-foreground px-4 py-2 rounded-xl"
               >
                 <Play className="h-4 w-4 mr-2 flex-shrink-0" />
                 <span>Run Model</span>
@@ -598,8 +593,8 @@ export default function ModelPage({ params }: ModelPageProps) {
             <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
               <Button 
                 variant="outline" 
-                size="default" 
-                className="border-2 border-primary-200 bg-white/80 hover:bg-primary-100 transition-all duration-200 whitespace-nowrap shadow-soft hover:shadow-elevation-1 px-6 py-2.5 rounded-2xl font-medium text-primary-700 hover:text-primary-800"
+                size="sm" 
+                className="px-4 py-2 rounded-xl"
               >
                 <Download className="h-4 w-4 mr-2 flex-shrink-0" />
                 <span>Download</span>
@@ -609,8 +604,8 @@ export default function ModelPage({ params }: ModelPageProps) {
             <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
               <Button 
                 variant="outline" 
-                size="default" 
-                className="border-2 border-accent-200 bg-white/80 hover:bg-accent-100 transition-all duration-200 whitespace-nowrap shadow-soft hover:shadow-elevation-1 px-6 py-2.5 rounded-2xl font-medium text-accent-700 hover:text-accent-800"
+                size="sm" 
+                className="px-4 py-2 rounded-xl"
               >
                 <GitFork className="h-4 w-4 mr-2 flex-shrink-0" />
                 <span>Fork</span>
@@ -620,9 +615,9 @@ export default function ModelPage({ params }: ModelPageProps) {
             <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
               <Button 
                 variant="outline" 
-                size="default" 
+                size="sm" 
                 asChild 
-                className="border-2 border-muted bg-white/80 hover:bg-muted/50 transition-all duration-200 whitespace-nowrap shadow-soft hover:shadow-elevation-1 px-6 py-2.5 rounded-2xl font-medium text-muted-foreground hover:text-foreground"
+                className="px-4 py-2 rounded-xl"
               >
                 <Link href={model.codeUrl} target="_blank" className="flex items-center">
                   <Code className="h-4 w-4 mr-2 flex-shrink-0" />
@@ -635,9 +630,9 @@ export default function ModelPage({ params }: ModelPageProps) {
             <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
               <Button 
                 variant="outline" 
-                size="default" 
+                size="sm" 
                 asChild 
-                className="border-2 border-muted bg-white/80 hover:bg-muted/50 transition-all duration-200 whitespace-nowrap shadow-soft hover:shadow-elevation-1 px-6 py-2.5 rounded-2xl font-medium text-muted-foreground hover:text-foreground"
+                className="px-4 py-2 rounded-xl"
               >
                 <Link href={model.paperUrl} target="_blank" className="flex items-center">
                   <FileText className="h-4 w-4 mr-2 flex-shrink-0" />
@@ -659,28 +654,28 @@ export default function ModelPage({ params }: ModelPageProps) {
           >
             <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
               <div className="mb-12">
-                <TabsList className="grid w-full grid-cols-3 lg:grid-cols-6 bg-gradient-to-r from-primary-100/50 via-white/80 to-accent-100/50 border-2 border-primary-200/60 p-2 rounded-2xl backdrop-blur-sm shadow-soft">
-                  <TabsTrigger value="overview" className="data-[state=active]:bg-primary-500 data-[state=active]:text-foreground data-[state=active]:shadow-soft rounded-2xl transition-all duration-200 font-semibold">
+                <TabsList className="grid w-full grid-cols-3 lg:grid-cols-6 bg-muted border p-1 rounded-xl">
+                  <TabsTrigger value="overview" className="rounded-lg px-3 py-1.5 text-sm data-[state=active]:bg-background">
                     <Brain className="h-5 w-5 mr-2" />
                     <span className="hidden sm:inline">Overview</span>
                   </TabsTrigger>
-                  <TabsTrigger value="quickstart" className="data-[state=active]:bg-accent-500 data-[state=active]:text-foreground data-[state=active]:shadow-soft rounded-2xl transition-all duration-200 font-semibold">
+                  <TabsTrigger value="quickstart" className="rounded-lg px-3 py-1.5 text-sm data-[state=active]:bg-background">
                     <Zap className="h-5 w-5 mr-2" />
                     <span className="hidden sm:inline">Quick Start</span>
                   </TabsTrigger>
-                  <TabsTrigger value="benchmarks" className="data-[state=active]:bg-collaboration-500 data-[state=active]:text-foreground data-[state=active]:shadow-soft rounded-2xl transition-all duration-200 font-semibold">
+                  <TabsTrigger value="benchmarks" className="rounded-lg px-3 py-1.5 text-sm data-[state=active]:bg-background">
                     <Trophy className="h-5 w-5 mr-2" />
                     <span className="hidden sm:inline">Benchmarks</span>
                   </TabsTrigger>
-                  <TabsTrigger value="api" className="data-[state=active]:bg-muted-foreground data-[state=active]:text-foreground data-[state=active]:shadow-soft rounded-2xl transition-all duration-200 font-semibold">
+                  <TabsTrigger value="api" className="rounded-lg px-3 py-1.5 text-sm data-[state=active]:bg-background">
                     <Terminal className="h-5 w-5 mr-2" />
                     <span className="hidden sm:inline">API Docs</span>
                   </TabsTrigger>
-                  <TabsTrigger value="validation" className="data-[state=active]:bg-accent-500 data-[state=active]:text-foreground data-[state=active]:shadow-soft rounded-2xl transition-all duration-200 font-semibold">
+                  <TabsTrigger value="validation" className="rounded-lg px-3 py-1.5 text-sm data-[state=active]:bg-background">
                     <Shield className="h-5 w-5 mr-2" />
                     <span className="hidden sm:inline">Validation</span>
                   </TabsTrigger>
-                  <TabsTrigger value="changelog" className="data-[state=active]:bg-muted-foreground data-[state=active]:text-foreground data-[state=active]:shadow-soft rounded-2xl transition-all duration-200 font-semibold">
+                  <TabsTrigger value="changelog" className="rounded-lg px-3 py-1.5 text-sm data-[state=active]:bg-background">
                     <Clock className="h-5 w-5 mr-2" />
                     <span className="hidden sm:inline">Changelog</span>
                   </TabsTrigger>
@@ -696,16 +691,16 @@ export default function ModelPage({ params }: ModelPageProps) {
                   transition={{ duration: 0.3 }}
                 >
                   <TabsContent value="overview" className="space-y-10">
-                    <Card className="bg-gradient-to-br from-primary-100/30 via-white/60 to-primary-100/20 border-2 border-primary-200/50 shadow-elevation-2 rounded-2xl overflow-hidden">
-                      <CardHeader className="pb-8 bg-gradient-to-r from-primary-100/20 to-accent-100/20">
-                        <CardTitle className="flex items-center gap-4 text-2xl font-semibold">
-                          <div className="p-4 bg-primary-500 rounded-2xl shadow-soft">
-                            <BookOpen className="h-6 w-6 text-foreground" />
+                    <Card className="bg-card border rounded-2xl overflow-hidden shadow-elevation-1">
+                      <CardHeader className="pb-6">
+                        <CardTitle className="flex items-center gap-3 text-xl font-semibold">
+                          <div className="h-10 w-10 rounded-xl bg-muted flex items-center justify-center">
+                            <BookOpen className="h-5 w-5 text-muted-foreground" />
                           </div>
                           About This Model
                         </CardTitle>
                       </CardHeader>
-                      <CardContent className="p-8">
+                      <CardContent className="p-6">
                   <div className="prose max-w-none">
                           {model.longDescription.split('\n\n').map((paragraph: string, index: number) => (
                             <p key={index} className="mb-6 text-muted-foreground leading-relaxed text-base">
@@ -717,11 +712,11 @@ export default function ModelPage({ params }: ModelPageProps) {
               </Card>
 
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                      <Card className="bg-gradient-to-br from-accent-100/30 to-accent-100/10 border-2 border-accent-200/20 shadow-elevation-1 rounded-2xl">
+                      <Card className="bg-card border shadow-elevation-1 rounded-2xl">
                         <CardHeader className="pb-6">
                           <CardTitle className="flex items-center gap-3 text-xl">
-                            <div className="p-2 bg-accent-100 rounded-2xl">
-                              <Target className="h-5 w-5 text-accent-500" />
+                            <div className="h-9 w-9 rounded-xl bg-muted flex items-center justify-center">
+                              <Target className="h-5 w-5 text-muted-foreground" />
                             </div>
                             Use Cases
                           </CardTitle>
@@ -731,7 +726,7 @@ export default function ModelPage({ params }: ModelPageProps) {
                             {model.useCases.map((useCase: string, index: number) => (
                               <motion.div 
                                 key={index} 
-                                className="flex items-start gap-3 p-3 bg-background/50 rounded-lg border border-border/30"
+                                className="flex items-start gap-3 p-3 bg-background/50 rounded-lg border"
                                 initial={{ opacity: 0, x: -10 }}
                                 animate={{ opacity: 1, x: 0 }}
                                 transition={{ delay: index * 0.1 }}
@@ -744,11 +739,11 @@ export default function ModelPage({ params }: ModelPageProps) {
                 </CardContent>
               </Card>
 
-                      <Card className="bg-gradient-to-br from-primary-100/30 to-primary-100/10 border-2 border-primary-200/20 shadow-elevation-1 rounded-2xl">
+                      <Card className="bg-card border shadow-elevation-1 rounded-2xl">
                         <CardHeader className="pb-6">
                           <CardTitle className="flex items-center gap-3 text-xl">
-                            <div className="p-2 bg-primary-100 rounded-2xl">
-                              <BarChart3 className="h-5 w-5 text-primary-500" />
+                            <div className="h-9 w-9 rounded-xl bg-muted flex items-center justify-center">
+                              <BarChart3 className="h-5 w-5 text-muted-foreground" />
                             </div>
                             Performance Metrics
                           </CardTitle>
@@ -758,7 +753,7 @@ export default function ModelPage({ params }: ModelPageProps) {
                             {Object.entries(model.metrics).map(([key, value]: [string, string], index: number) => (
                               <motion.div 
                                 key={key} 
-                                className="flex justify-between items-center p-3 bg-background/50 rounded-lg border border-border/30"
+                                className="flex justify-between items-center p-3 bg-background/50 rounded-lg border"
                                 initial={{ opacity: 0, x: 10 }}
                                 animate={{ opacity: 1, x: 0 }}
                                 transition={{ delay: index * 0.1 }}
@@ -776,9 +771,9 @@ export default function ModelPage({ params }: ModelPageProps) {
             </TabsContent>
 
             <TabsContent value="quickstart" className="space-y-6">
-                    <Card className="bg-card/50 border-border/50">
+                    <Card className="bg-card border rounded-2xl shadow-elevation-1">
                 <CardHeader>
-                        <CardTitle className="flex items-center gap-2">
+                        <CardTitle className="flex items-center gap-2 text-lg">
                           <Zap className="h-5 w-5" />
                           Quick Start Guide
                         </CardTitle>
@@ -787,7 +782,7 @@ export default function ModelPage({ params }: ModelPageProps) {
                 <CardContent>
                   <div className="space-y-4">
                           <div className="relative">
-                            <pre className="bg-muted/50 p-4 rounded-lg overflow-x-auto border border-border/50">
+                            <pre className="bg-muted/50 p-4 rounded-lg overflow-x-auto border">
                         <code className="text-sm">{model.quickStart}</code>
                       </pre>
                             <Button
@@ -805,9 +800,9 @@ export default function ModelPage({ params }: ModelPageProps) {
             </TabsContent>
 
                   <TabsContent value="benchmarks" className="space-y-6">
-                    <Card className="bg-card/50 border-border/50">
+                    <Card className="bg-card border rounded-2xl shadow-elevation-1">
                   <CardHeader>
-                        <CardTitle className="flex items-center gap-2">
+                        <CardTitle className="flex items-center gap-2 text-lg">
                           <Trophy className="h-5 w-5" />
                           Benchmark Results
                         </CardTitle>
@@ -816,13 +811,13 @@ export default function ModelPage({ params }: ModelPageProps) {
                   <CardContent>
                     <div className="space-y-4">
                           {model.benchmarks.map((benchmark: any, index: number) => (
-                            <div key={index} className="flex items-center justify-between p-4 bg-muted/30 rounded-lg border border-border/50">
+                            <div key={index} className="flex items-center justify-between p-4 bg-muted/30 rounded-lg border">
                               <div>
                                 <div className="font-medium">{benchmark.dataset}</div>
                                 <div className="text-sm text-muted-foreground">{benchmark.metric}</div>
                               </div>
                               <div className="text-right">
-                                <div className="text-lg font-bold text-primary">{benchmark.score}</div>
+                                <div className="text-lg font-semibold text-foreground">{benchmark.score}</div>
                                 <div className="text-sm text-muted-foreground">
                                   Rank #{benchmark.rank} of {benchmark.participants}
                                 </div>
@@ -833,9 +828,9 @@ export default function ModelPage({ params }: ModelPageProps) {
                   </CardContent>
                 </Card>
 
-                    <Card className="bg-card/50 border-border/50">
+                    <Card className="bg-card border rounded-2xl shadow-elevation-1">
                   <CardHeader>
-                        <CardTitle className="flex items-center gap-2">
+                        <CardTitle className="flex items-center gap-2 text-lg">
                           <PieChart className="h-5 w-5" />
                           Scientific Metrics
                         </CardTitle>
@@ -843,8 +838,8 @@ export default function ModelPage({ params }: ModelPageProps) {
                   <CardContent>
                         <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
                           {Object.entries(model.scientificMetrics).map(([key, value]: [string, number]) => (
-                            <div key={key} className="text-center p-3 bg-muted/30 rounded-lg border border-border/50">
-                              <div className="text-lg font-bold text-accent">{value}</div>
+                            <div key={key} className="text-center p-3 bg-muted/30 rounded-lg border">
+                              <div className="text-lg font-semibold text-foreground">{value}</div>
                               <div className="text-xs text-muted-foreground uppercase tracking-wide">
                                 {key.replace(/_/g, '-')}
                               </div>
@@ -856,9 +851,9 @@ export default function ModelPage({ params }: ModelPageProps) {
             </TabsContent>
 
             <TabsContent value="api" className="space-y-6">
-                    <Card className="bg-card/50 border-border/50">
+                    <Card className="bg-card border rounded-2xl shadow-elevation-1">
                 <CardHeader>
-                        <CardTitle className="flex items-center gap-2">
+                        <CardTitle className="flex items-center gap-2 text-lg">
                           <Terminal className="h-5 w-5" />
                           API Reference
                         </CardTitle>
@@ -867,8 +862,8 @@ export default function ModelPage({ params }: ModelPageProps) {
                 <CardContent>
                         <div className="space-y-6">
                           {model.apiReference.map((api: any, index: number) => (
-                            <div key={index} className="border border-border/50 rounded-lg p-4 bg-muted/30">
-                              <h4 className="font-mono font-medium mb-2 text-primary">{api.function}()</h4>
+                            <div key={index} className="border rounded-lg p-4 bg-muted/30">
+                              <h4 className="font-mono font-medium mb-2 text-foreground">{api.function}()</h4>
                               <p className="text-sm text-muted-foreground mb-4">{api.description}</p>
                               
                               <div className="space-y-2 mb-4">
@@ -893,9 +888,9 @@ export default function ModelPage({ params }: ModelPageProps) {
                   </TabsContent>
 
                   <TabsContent value="validation" className="space-y-6">
-                    <Card className="bg-card/50 border-border/50">
+                    <Card className="bg-card border rounded-2xl shadow-elevation-1">
                       <CardHeader>
-                        <CardTitle className="flex items-center gap-2">
+                        <CardTitle className="flex items-center gap-2 text-lg">
                           <Shield className="h-5 w-5" />
                           Reproducibility & Validation
                         </CardTitle>
@@ -903,16 +898,16 @@ export default function ModelPage({ params }: ModelPageProps) {
                       </CardHeader>
                       <CardContent>
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                          <div className="text-center p-4 bg-accent/10 rounded-lg border border-accent/20">
-                            <div className="text-2xl font-bold text-accent mb-2">{model.reproducibilityScore}%</div>
+                          <div className="text-center p-4 bg-accent/10 rounded-lg border">
+                            <div className="text-2xl font-semibold text-foreground mb-2">{model.reproducibilityScore}%</div>
                             <div className="text-sm text-muted-foreground">Reproducibility Score</div>
                           </div>
-                          <div className="text-center p-4 bg-primary/10 rounded-lg border border-primary/20">
-                            <div className="text-2xl font-bold text-primary mb-2">{model.validationTests}</div>
+                          <div className="text-center p-4 bg-primary/10 rounded-lg border">
+                            <div className="text-2xl font-semibold text-foreground mb-2">{model.validationTests}</div>
                             <div className="text-sm text-muted-foreground">Validation Tests</div>
                           </div>
-                          <div className="text-center p-4 bg-green-500/10 rounded-lg border border-green-500/20">
-                            <div className="text-2xl font-bold text-green-700 mb-2">✓ Verified</div>
+                          <div className="text-center p-4 bg-green-500/10 rounded-lg border">
+                            <div className="text-2xl font-semibold text-foreground mb-2">✓ Verified</div>
                             <div className="text-sm text-muted-foreground">Scientific Review</div>
                     </div>
                   </div>
@@ -923,10 +918,10 @@ export default function ModelPage({ params }: ModelPageProps) {
             <TabsContent value="changelog" className="space-y-6">
               <div className="space-y-4">
                       {model.changelog.map((release: any, index: number) => (
-                        <Card key={index} className="bg-card/50 border-border/50">
+                        <Card key={index} className="bg-card border rounded-2xl shadow-elevation-1">
                     <CardHeader>
                       <div className="flex justify-between items-start">
-                        <CardTitle className="text-lg">Version {release.version}</CardTitle>
+                        <CardTitle className="text-base font-semibold">Version {release.version}</CardTitle>
                         <Badge variant="outline">{release.date}</Badge>
                       </div>
                     </CardHeader>

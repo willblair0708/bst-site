@@ -1,0 +1,52 @@
+openapi: 3.0.3
+info:
+  title: Chemistry Service (Stub)
+  version: 0.1.0
+servers:
+  - url: http://localhost:8787/services
+paths:
+  /chem/design:
+    post:
+      summary: Propose candidate molecules
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                constraints:
+                  type: object
+                n:
+                  type: integer
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  candidates:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        smiles:
+                          type: string
+                        score:
+                          type: number
+                        rationale:
+                          type: string
+                  disclaimer:
+                    type: string
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+

@@ -1,0 +1,45 @@
+openapi: 3.0.3
+info:
+  title: Docs Service (Stub)
+  version: 0.1.0
+servers:
+  - url: http://localhost:8787/services
+paths:
+  /docs/ingest:
+    post:
+      summary: Ingest a document by DOI or URL
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                doi:
+                  type: string
+                url:
+                  type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  docId:
+                    type: string
+                  status:
+                    type: string
+                  note:
+                    type: string
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+

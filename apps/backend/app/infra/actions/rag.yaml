@@ -1,0 +1,80 @@
+openapi: 3.0.3
+info:
+  title: RAG Service (Stub)
+  version: 0.1.0
+servers:
+  - url: http://localhost:8787/services
+paths:
+  /rag/search:
+    get:
+      summary: Search retrieval passages
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: query
+          name: q
+          schema:
+            type: string
+          required: true
+        - in: query
+          name: k
+          schema:
+            type: integer
+          required: false
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  passages:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        source:
+                          type: string
+                        text:
+                          type: string
+                        span:
+                          type: array
+                          items:
+                            type: integer
+  /rag/expand:
+    post:
+      summary: Query expansion
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                q:
+                  type: string
+                n:
+                  type: integer
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  queries:
+                    type: array
+                    items:
+                      type: string
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+

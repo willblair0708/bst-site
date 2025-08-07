@@ -7,12 +7,33 @@ from pydantic import BaseModel
 from dotenv import load_dotenv
 from openai import OpenAI
 from fastapi.responses import StreamingResponse, JSONResponse
+from fastapi.staticfiles import StaticFiles
+import logging
+import json as _json
+
+# Local imports
+try:
+    from app.routes.tasks import router as tasks_router
+    from app.routes.agents import router as agents_router
+    from app.services.rag import router as rag_router
+    from app.services.chem import router as chem_router
+    from app.services.docs import router as docs_router
+except Exception:  # pragma: no cover - allow running as module
+    from .routes.tasks import router as tasks_router  # type: ignore
+    from .routes.agents import router as agents_router  # type: ignore
+    from .services.rag import router as rag_router  # type: ignore
+    from .services.chem import router as chem_router  # type: ignore
+    from .services.docs import router as docs_router  # type: ignore
 
 load_dotenv()
 
 DEFAULT_OPENAI_API_KEY = os.getenv("OPENAI_API_KEY", "")
 
 app = FastAPI(title="Runix Backend", version="0.1.0")
+# JSON logging
+logging.basicConfig(level=logging.INFO, format='%(message)s')
+logger = logging.getLogger("runix")
+
 
 origins = os.getenv("CORS_ORIGINS", "http://localhost:3000").split(",")
 app.add_middleware(
@@ -116,17 +137,19 @@ async def chat(req: Request):
             ) as stream:
                 for event in stream:
                     # Text deltas
-                    if getattr(event, "type", "") == "response.output_text.delta":
+                    et = getattr(event, "type", "")
+                    if et == "response.output_text.delta":
                         delta = getattr(event, "delta", "") or ""
                         if delta:
                             buffer += delta
-                            import json as _json
                             yield "data: " + _json.dumps({"delta": delta}) + "\n\n"
+                    # Log non-text events briefly
+                    if et and et != "response.output_text.delta":
+                        logger.info(_json.dumps({"event": et}))
                     # You may also inspect other event types if needed
                 # Final assembled response
                 final_resp = stream.get_final_response()
                 content_text = getattr(final_resp, "output_text", None) or buffer
-                import json as _json
                 final = {"done": True, "message": {"id": 0, "author": "AI", "content": content_text}}
                 yield "data: " + _json.dumps(final) + "\n\n"
 
@@ -148,6 +171,30 @@ async def chat(req: Request):
         except Exception:
             content = ""
     return {"message": {"id": 0, "author": "AI", "content": content}}
+
+
+# Healthcheck
+@app.get("/health")
+async def health():
+    return {"ok": True}
+
+
+# Routers for Phase 0 services and tasks API
+app.include_router(tasks_router, prefix="")
+app.include_router(agents_router, prefix="")
+app.include_router(rag_router, prefix="/services")
+app.include_router(chem_router, prefix="/services")
+app.include_router(docs_router, prefix="/services")
+
+
+# Serve OpenAPI action specs statically
+infra_actions_dir = os.path.join(os.path.dirname(__file__), "infra", "actions")
+if os.path.isdir(os.path.abspath(infra_actions_dir)):
+    app.mount(
+        "/infra/actions",
+        StaticFiles(directory=os.path.abspath(infra_actions_dir)),
+        name="infra-actions",
+    )
 
 
 def main():

@@ -1252,7 +1252,9 @@ network = tokenizer.decode_attention(attention_weights)`,
     }
   };
 
-  return models[id as keyof typeof models] || null;
+  const decodedId = decodeURIComponent(id);
+  const formattedId = decodedId.toLowerCase().replace(/ /g, '-');
+  return models[formattedId as keyof typeof models] || null;
 };
 
 interface ModelPageProps {

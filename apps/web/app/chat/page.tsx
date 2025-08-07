@@ -2,17 +2,12 @@
 
 import { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import { motion } from "framer-motion";
 import {
   Plus, 
   ArrowUp,
   Hash,
-  MessageSquare,
-  Users,
-  Brain,
   Sparkles,
-  Copy as CopyIcon,
   RotateCcw,
   Square,
   Globe,
@@ -20,37 +15,12 @@ import {
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { cn } from "@/lib/utils";
-import Link from "next/link";
 import { ThemeToggle } from "@/components/theme-toggle";
 import Textarea from "react-textarea-autosize";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 // Simplified UI: sliders/selects removed
-
-// Three Pillars System - Following Astra-Soft Design
-const PILLARS = {
-  VERSIONED_KNOWLEDGE: { 
-    icon: Hash, 
-    color: "primary", 
-    bg: "primary-100",
-    motion: "snap",
-    description: "Every claim becomes verifiable, forkable knowledge"
-  },
-  COMPOSABLE_MODELS: { 
-    icon: Brain, 
-    color: "accent", 
-    bg: "accent-100",
-    motion: "spark-glow",
-    description: "Models and simulations that compose and scale"
-  },
-  HUMAN_AI_COLLAB: { 
-    icon: Users, 
-    color: "collaboration", 
-    bg: "collaboration-100",
-    motion: "pulse-success",
-    description: "Human expertise amplified by AI agents"
-  },
-};
 
 const fadeInUp = {
   initial: { opacity: 0, y: 40 },
@@ -60,13 +30,6 @@ const fadeInUp = {
 type ChatMessage = { id: number; author: "User" | "AI"; content: string; createdAt: number };
 type AgentId = "crow" | "falcon" | "owl" | "phoenix";
 type ChatSession = { id: string; title: string; createdAt: number; messages: ChatMessage[]; agent: AgentId };
-
-const AGENTS: Record<AgentId, { name: string; skill: string; risky?: boolean }> = {
-  crow: { name: "Crow", skill: "General retrieval + scholarly Q&A" },
-  falcon: { name: "Falcon", skill: "Deep literature survey & meta-analysis" },
-  owl: { name: "Owl", skill: "Novelty checks / prior-art sweeps" },
-  phoenix: { name: "Phoenix", skill: "ChemCrow planner (alpha)", risky: true },
-};
 
 const ChatPage = () => {
   const [sessions, setSessions] = useState<ChatSession[]>([]);
@@ -86,33 +49,12 @@ const ChatPage = () => {
   const [runStart, setRunStart] = useState<number | null>(null);
   const [runEnd, setRunEnd] = useState<number | null>(null);
   const runDuration = runStart && runEnd ? Math.max(0, runEnd - runStart) : null;
-  const messagesEndRef = useRef<HTMLDivElement>(null);
   const abortControllerRef = useRef<AbortController | null>(null);
+  const toolTimersRef = useRef<Record<string, number>>({});
   // Defaults kept; controls hidden for simplicity
   const [temperature] = useState<number>(0.7);
   const [maxTokens] = useState<number>(1000);
-  const scrollContainerRef = useRef<HTMLDivElement>(null);
-  const [autoScroll, setAutoScroll] = useState(true);
-
-  const scrollToBottom = () => {
-    const el = scrollContainerRef.current;
-    if (el) {
-      el.scrollTop = el.scrollHeight;
-    } else {
-      messagesEndRef.current?.scrollIntoView({ behavior: "auto" });
-    }
-  };
-
-  useEffect(() => {
-    if (autoScroll) scrollToBottom();
-  }, [messages, isAiTyping, autoScroll]);
-
-  const handleScroll = () => {
-    const el = scrollContainerRef.current;
-    if (!el) return;
-    const distanceFromBottom = el.scrollHeight - el.scrollTop - el.clientHeight;
-    setAutoScroll(distanceFromBottom < 120);
-  };
+  
 
   // Load sessions and API key
   useEffect(() => {
@@ -154,11 +96,7 @@ const ChatPage = () => {
       setActiveSessionId(next ? next.id : null);
     }
   };
-  const setAgentForActive = (agent: AgentId) => {
-    setCurrentAgent(agent);
-    if (!activeSessionId) return;
-    setSessions(prev => prev.map(s => s.id === activeSessionId ? { ...s, agent } : s));
-  };
+  // agent selection removed from UI for simplicity; sessions default to "crow"
 
   const handleSendMessage = async (forcedContent?: string) => {
     const contentToSend = (forcedContent ?? inputValue).trim();
@@ -191,6 +129,7 @@ const ChatPage = () => {
       setToolTrace([]);
       setRunStart(Date.now());
       setRunEnd(null);
+      toolTimersRef.current = {};
       
       try {
         // allow stop
@@ -245,7 +184,21 @@ const ChatPage = () => {
                   setSessions(prev => prev.map(s => s.id === sessionId ? { ...s, messages: s.messages.map(m => m.id === aiId ? { ...m, content: m.content + evt.delta } : m) } : s));
                 }
                 if (evt.event && (evt.event === 'tool_call' || evt.event === 'tool_result')) {
-                  setEvents(prev => [...prev, { ts: Date.now(), type: evt.event, detail: evt.tool }]);
+                  const toolName = String(evt.tool || "");
+                  setEvents(prev => [...prev, { ts: Date.now(), type: evt.event, detail: toolName }]);
+                  if (evt.event === 'tool_call' && toolName) {
+                    toolTimersRef.current[toolName] = Date.now();
+                    setToolTrace(prev => {
+                      const exists = prev.find(t => t.tool === toolName);
+                      if (exists) return prev;
+                      return [...prev, { tool: toolName, phase: 'call' }];
+                    });
+                  }
+                  if (evt.event === 'tool_result' && toolName) {
+                    const start = toolTimersRef.current[toolName];
+                    const elapsed = start ? Date.now() - start : undefined;
+                    setToolTrace(prev => prev.map(t => t.tool === toolName ? { ...t, phase: 'result', t_ms: elapsed } : t));
+                  }
                 }
                 if (evt.error) {
                   setEvents(prev => [...prev, { ts: Date.now(), type: 'error', detail: String(evt.error) }]);
@@ -354,8 +307,13 @@ const ChatPage = () => {
     }
   };
 
+  const MAX_SESSIONS = 6;
+  const MAX_MESSAGES = 6;
+  const MAX_EVENTS = 6;
+  const MAX_TOOLS = 4;
+
   const Sidebar = () => (
-    <aside className="w-80 flex-col bg-muted/20 p-4 hidden lg:flex border-r">
+    <aside className="w-80 flex-col bg-muted/20 p-4 hidden lg:flex border-r overflow-hidden">
       {/* Header */}
       <div className="flex items-center gap-3 mb-8 px-2">
         <div className="w-8 h-8 rounded-full bg-foreground flex items-center justify-center">
@@ -365,43 +323,23 @@ const ChatPage = () => {
           <span className="font-semibold text-foreground text-sm">Runix</span>
           <span className="text-xs text-muted-foreground">Research Chat</span>
         </div>
+        <div className="ml-auto"><ThemeToggle /></div>
       </div>
 
-      {/* Agent selection (kept minimal) */}
-      <div className="mb-6">
-        <h3 className="text-xs font-medium text-muted-foreground mb-3 px-2 tracking-wider uppercase">Agents</h3>
-        <div className="space-y-1">
-          {(Object.keys(AGENTS) as AgentId[]).map(a => (
-            <button key={a} onClick={() => setAgentForActive(a)} className={cn("w-full text-left px-3 py-2 rounded-lg border flex items-start gap-2", currentAgent === a ? "bg-muted border-primary/30" : "hover:bg-muted/60")}> 
-              <div className="mt-0.5 h-2 w-2 rounded-full" style={{ background: a === "phoenix" ? "#FF4664" : a === "falcon" ? "#0436FF" : a === "owl" ? "#A855F7" : "#18E0C8" }} />
-              <div>
-                <div className="text-sm font-medium text-foreground">{AGENTS[a].name}</div>
-                <div className="text-xs text-muted-foreground">{AGENTS[a].skill}</div>
-              </div>
-            </button>
-          ))}
-        </div>
-        {currentAgent === 'phoenix' && (
-          <div className="mt-2 text-xs text-destructive-500/90 px-2">Phoenix is experimental; verify outputs.</div>
-        )}
-      </div>
-
-      {/* Response controls removed for simplicity */}
-
-      {/* New Chat Button */}
+      {/* New Chat */}
       <div className="mb-6">
         <Button className="w-full h-11 rounded-xl bg-background text-foreground hover:bg-muted transition-colors font-medium shadow-sm border" onClick={createSession}>
           <Plus className="w-4 h-4 mr-2" />
           New Chat
         </Button>
       </div>
-      
+
       {/* Conversation History */}
-      <div className="flex-1">
-        <h3 className="text-xs font-medium text-muted-foreground mb-4 px-2 tracking-wider uppercase">History</h3>
-        <ScrollArea className="h-full">
+      <div className="flex-1 overflow-hidden">
+        <h3 className="text-xs font-medium text-muted-foreground mb-4 px-2 tracking-wider uppercase">Chats</h3>
+        <div className="h-full overflow-hidden">
           <div className="space-y-1">
-            {sessions.map(s => (
+            {sessions.slice(0, MAX_SESSIONS).map(s => (
               <div key={s.id} className={cn("group py-2 px-3 rounded-lg text-sm cursor-pointer flex items-center justify-between", activeSessionId === s.id ? "bg-muted text-foreground" : "text-muted-foreground hover:bg-muted")}
                 onClick={() => { setActiveSessionId(s.id); setCurrentAgent(s.agent); }}>
                 <span className="truncate mr-2">{s.title}</span>
@@ -416,10 +354,10 @@ const ChatPage = () => {
               </div>
             ))}
           </div>
-        </ScrollArea>
+        </div>
       </div>
 
-      {/* User Profile & Theme Toggle */}
+      {/* Actions */}
       <div className="mt-auto space-y-2">
         <Button variant="outline" className="w-full rounded-lg" onClick={() => setShowKeyModal(true)}>API Key</Button>
         {activeSession && (
@@ -428,15 +366,6 @@ const ChatPage = () => {
             <Button variant="destructive" className="rounded-lg" onClick={() => setSessions(prev => prev.map(s => s.id === activeSessionId ? { ...s, messages: [] } : s))}>Clear</Button>
           </div>
         )}
-        <div className="flex items-center justify-between p-2 rounded-lg hover:bg-muted cursor-pointer transition-colors">
-          <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-full bg-foreground flex items-center justify-center">
-              <span className="text-sm font-semibold text-background">N</span>
-            </div>
-            <span className="font-semibold text-foreground text-sm">Profile</span>
-          </div>
-          <ThemeToggle />
-        </div>
       </div>
     </aside>
   );
@@ -446,27 +375,21 @@ const ChatPage = () => {
       <Sidebar />
       
       <main className="flex-1 flex flex-col bg-background">
-        {/* Sticky Header */}
-        <div className="sticky top-0 z-10 border-b bg-background/80 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-          <div className="max-w-3xl mx-auto px-6 h-12 flex items-center gap-2">
-            <span className="inline-flex items-center gap-2 text-xs rounded-full border px-2 py-1">
-              <span className="h-2 w-2 rounded-full" style={{ background: currentAgent === 'phoenix' ? '#FF4664' : currentAgent === 'falcon' ? '#0436FF' : currentAgent === 'owl' ? '#A855F7' : '#18E0C8' }} />
-              {AGENTS[currentAgent].name}
-            </span>
-            <label className="ml-2 inline-flex items-center gap-2 text-xs border rounded-full px-2 py-1 cursor-pointer">
+        {/* Compact Header */}
+        <div className="border-b bg-background/80 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+          <div className="max-w-5xl mx-auto px-6 h-12 flex items-center gap-3">
+            <label className="inline-flex items-center gap-2 text-xs border rounded-full px-2 py-1 cursor-pointer bg-background/60">
               <input type="checkbox" className="accent-foreground" checked={useDirector} onChange={(e) => setUseDirector(e.target.checked)} />
-              Orchestrate (Director)
+              Director
             </label>
             {runDuration !== null && (
-              <span className="ml-2 text-xs text-muted-foreground">Run: {(runDuration/1000).toFixed(1)}s</span>
+              <span className="ml-1 text-xs text-muted-foreground">{(runDuration/1000).toFixed(1)}s</span>
             )}
-            <div className="ml-auto">
-              <Button size="sm" variant="outline" className="rounded-lg" onClick={createSession}>New Chat</Button>
-            </div>
           </div>
-
+        </div>
+        
         {/* Main Content with Inspector panel */}
-        <div className="flex-1 grid grid-cols-1 lg:grid-cols-[1fr_360px] overflow-hidden">
+        <div className="flex-1 grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_340px] overflow-hidden">
           {messages.length === 0 ? (
             <div className="flex-1 flex flex-col justify-center items-center p-8">
               <div className="max-w-2xl w-full">
@@ -483,7 +406,7 @@ const ChatPage = () => {
                 </div>
                 
                 {/* Example Prompts */}
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   {[
                     "Analyze the impact of HTRA1 mutations on macular degeneration.",
                     "Simulate electron transfer dynamics in protein complexes.",
@@ -503,9 +426,9 @@ const ChatPage = () => {
               </div>
             </div>
           ) : (
-            <div className="flex-1 overflow-y-scroll border-r" ref={scrollContainerRef} onScroll={handleScroll}>
-              <div className="max-w-3xl mx-auto px-6 py-8 space-y-8">
-                {messages.map((message, index) => {
+            <div className="flex-1 border-r bg-gradient-to-b from-background to-muted/20 overflow-hidden">
+              <div className="max-w-2xl mx-auto px-6 py-8 space-y-6 overflow-hidden">
+                {messages.slice(-MAX_MESSAGES).map((message, index) => {
                   const isUser = message.author === 'User';
                   return (
                     <motion.div
@@ -516,33 +439,33 @@ const ChatPage = () => {
                       animate="animate"
                       transition={{ delay: index * 0.05, duration: 0.35 }}
                     >
-                      <div className={cn(
-                        "max-w-[75ch] rounded-2xl px-4 py-3 text-sm shadow-sm",
-                        isUser ? "bg-foreground text-background" : "bg-muted"
-                      )}>
-                        <ReactMarkdown remarkPlugins={[remarkGfm]}>
-                          {message.content}
-                        </ReactMarkdown>
-                        {!isUser && extractLinks(message.content).length > 0 && (
-                          <div className="mt-3 flex flex-wrap gap-2">
-                            {extractLinks(message.content).map((l, i) => (
-                              <a key={i} href={l.href} target="_blank" rel="noreferrer" className="text-xs inline-flex items-center gap-1 px-2 py-1 rounded-full border bg-background/50 hover:bg-background transition-colors">
-                                <Globe className="w-3.5 h-3.5" /> {l.text}
-                              </a>
-                            ))}
-                          </div>
-                        )}
-                        {/* Hover toolbar */}
-                        <div className="absolute -top-3 right-2 hidden group-hover/message:flex gap-1">
-                          <button className="px-2 py-1 text-[11px] rounded-md border bg-background/90 hover:bg-background" onClick={() => copyToClipboard(message.content)}>Copy</button>
-                          {!isUser && (
-                            <button className="px-2 py-1 text-[11px] rounded-md border bg-background/90 hover:bg-background" onClick={() => regenerateFromAI(index)}>Regenerate</button>
+                      <Card className={cn("max-w-[68ch] rounded-2xl text-sm", isUser ? "bg-foreground text-background" : "bg-card/60")}
+                        variant={isUser ? undefined : "glass" as any}>
+                        <CardContent className="px-4 py-3">
+                          <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                            {message.content}
+                          </ReactMarkdown>
+                          {!isUser && extractLinks(message.content).length > 0 && (
+                            <div className="mt-3 flex flex-wrap gap-2">
+                              {extractLinks(message.content).map((l, i) => (
+                                <a key={i} href={l.href} target="_blank" rel="noreferrer" className="text-xs inline-flex items-center gap-1 px-2 py-1 rounded-full border bg-background/50 hover:bg-background transition-colors">
+                                  <Globe className="w-3.5 h-3.5" /> {l.text}
+                                </a>
+                              ))}
+                            </div>
                           )}
-                        </div>
-                        <div className="mt-1 text-[11px] text-muted-foreground opacity-0 group-hover/message:opacity-100 transition-opacity">
-                          {new Date(message.createdAt || Date.now()).toLocaleTimeString()}
-                        </div>
-                      </div>
+                          {/* Hover toolbar */}
+                          <div className="absolute -top-3 right-2 hidden group-hover/message:flex gap-1">
+                            <button className="px-2 py-1 text-[11px] rounded-md border bg-background/90 hover:bg-background" onClick={() => copyToClipboard(message.content)}>Copy</button>
+                            {!isUser && (
+                              <button className="px-2 py-1 text-[11px] rounded-md border bg-background/90 hover:bg-background" onClick={() => regenerateFromAI(index)}>Regenerate</button>
+                            )}
+                          </div>
+                          <div className="mt-1 text-[11px] text-muted-foreground opacity-0 group-hover/message:opacity-100 transition-opacity">
+                            {new Date(message.createdAt || Date.now()).toLocaleTimeString()}
+                          </div>
+                        </CardContent>
+                      </Card>
                     </motion.div>
                   );
                 })}
@@ -562,72 +485,63 @@ const ChatPage = () => {
                     </div>
                   </motion.div>
                 )}
-                <div ref={messagesEndRef} />
               </div>
             </div>
           )}
           {/* Inspector Panel */}
-          <aside className="hidden lg:flex flex-col max-h-full overflow-hidden">
-            <div className="px-4 py-3 border-b sticky top-0 bg-background/90 backdrop-blur">
+          <aside className="hidden lg:flex flex-col max-h-full overflow-hidden border-l bg-background/40">
+            <div className="px-4 py-3 border-b bg-background/80 backdrop-blur">
               <div className="text-sm font-semibold">Run Inspector</div>
-              <div className="text-xs text-muted-foreground">Live events and tool traces</div>
+              <div className="mt-2 flex items-center gap-2">
+                <span className="text-[10px] px-2 py-1 rounded-full border">Events: {events.length}</span>
+                <span className="text-[10px] px-2 py-1 rounded-full border">Tools: {Array.from(new Set(toolTrace.map(t=>t.tool))).length}</span>
+                <span className="text-[10px] px-2 py-1 rounded-full border">{runDuration!==null?`${(runDuration/1000).toFixed(1)}s`:'—'}</span>
+              </div>
             </div>
-            <div className="flex-1 overflow-y-auto p-4 space-y-4">
-              <div>
-                <div className="text-xs font-semibold mb-2">Orchestration Events</div>
-                <div className="space-y-1 max-h-64 overflow-auto text-xs border rounded p-2 bg-muted/50">
-                  {events.length === 0 ? (
-                    <div className="text-muted-foreground">No events yet</div>
-                  ) : events.slice(-300).map((e, i) => (
-                    <div key={i} className="font-mono">
-                      [{new Date(e.ts).toLocaleTimeString()}] {e.type}{e.detail ? ` — ${e.detail}` : ''}
-                    </div>
-                  ))}
-                </div>
-              </div>
-              <div>
-                <div className="text-xs font-semibold mb-2">Tool Trace</div>
-                <div className="overflow-auto border rounded">
-                  <table className="w-full text-xs">
-                    <thead>
-                      <tr className="text-left">
-                        <th className="py-1 px-2">Tool</th>
-                        <th className="py-1 px-2">Phase</th>
-                        <th className="py-1 px-2">Latency (ms)</th>
-                        <th className="py-1 px-2">Args</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {toolTrace.length === 0 ? (
-                        <tr><td colSpan={4} className="py-2 px-2 text-muted-foreground">No tool trace</td></tr>
-                      ) : toolTrace.map((t, i) => (
-                        <tr key={i} className="border-t border-border/40 align-top">
-                          <td className="py-1 px-2 font-mono">{t.tool}</td>
-                          <td className="py-1 px-2">{t.phase || ''}</td>
-                          <td className="py-1 px-2">{Number.isFinite(t.t_ms) ? t.t_ms : ''}</td>
-                          <td className="py-1 px-2 font-mono whitespace-pre-wrap break-words max-w-[280px]" title={JSON.stringify(t.args || {})}>
-                            {JSON.stringify(t.args || {})}
-                          </td>
-                        </tr>
+            <div className="flex-1 p-4 space-y-4 overflow-hidden">
+              {/* Events - compact list */}
+              {events.length > 0 && (
+                <Card variant="bento">
+                  <CardHeader className="py-3 px-3"><CardTitle className="text-xs">Events</CardTitle></CardHeader>
+                  <CardContent className="px-3 pb-3">
+                    <ul className="text-xs space-y-1">
+                      {events.slice(-MAX_EVENTS).map((e,i)=> (
+                        <li key={i} className="font-mono truncate">[{new Date(e.ts).toLocaleTimeString()}] {e.type}{e.detail?` — ${e.detail}`:''}</li>
                       ))}
-                    </tbody>
-                  </table>
-                </div>
-              </div>
+                    </ul>
+                  </CardContent>
+                </Card>
+              )}
+
+              {/* Tool Trace - compact list */}
+              {toolTrace.length > 0 && (
+                <Card variant="bento">
+                  <CardHeader className="py-3 px-3"><CardTitle className="text-xs">Tools</CardTitle></CardHeader>
+                  <CardContent className="px-3 pb-3">
+                    <ul className="text-xs space-y-2">
+                      {toolTrace.slice(-MAX_TOOLS).map((t,i)=> (
+                        <li key={i} className="flex items-center justify-between gap-2 border-b last:border-b-0 pb-1">
+                          <span className="font-mono truncate max-w-[120px]" title={t.tool}>{t.tool}</span>
+                          <span className="text-muted-foreground">{t.phase || ''}</span>
+                          <span className="text-muted-foreground">{Number.isFinite(t.t_ms)?t.t_ms:''}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </CardContent>
+                </Card>
+              )}
+
               <div className="flex gap-2">
                 <Button size="sm" variant="outline" className="rounded" onClick={() => { setEvents([]); setToolTrace([]); }}>Clear</Button>
-                {runDuration !== null && (
-                  <div className="text-xs text-muted-foreground self-center">Duration: {(runDuration/1000).toFixed(1)}s</div>
-                )}
               </div>
             </div>
           </aside>
         </div>
-          {/* Input Area */}
-          <div className="p-4 sm:p-6 bg-background border-t">
+          {/* Input Area - fixed height to avoid vertical scroll */}
+          <div className="p-4 sm:p-6 bg-background/80 border-t backdrop-blur supports-[backdrop-filter]:bg-background/60">
             <div className="max-w-3xl mx-auto">
               <motion.div 
-                className="relative bg-background rounded-xl border focus-within:border-ring transition-colors"
+                className="relative bg-background rounded-2xl border focus-within:border-ring transition-colors shadow-sm"
                 variants={fadeInUp}
                 initial="initial"
                 animate="animate"
@@ -636,7 +550,7 @@ const ChatPage = () => {
                 <div className="flex items-center p-2">
                   <Textarea
                     placeholder="Ask me about research, analysis, or any scientific concept..."
-                    className="flex-1 bg-transparent border-0 px-4 py-2 text-sm text-foreground placeholder:text-muted-foreground resize-none focus:outline-none min-h-[40px] max-h-[120px] leading-relaxed"
+                    className="flex-1 bg-transparent border-0 px-4 py-2 text-sm text-foreground placeholder:text-muted-foreground resize-none focus:outline-none min-h-[40px] max-h-[96px] leading-relaxed"
                     value={inputValue}
                     onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setInputValue(e.target.value)}
                     onKeyPress={(e: React.KeyboardEvent<HTMLTextAreaElement>) => {
@@ -677,7 +591,6 @@ const ChatPage = () => {
               </div>
             </div>
           </div>
-        </div>
       </main>
       {/* API Key Modal */}
       <Dialog open={showKeyModal} onOpenChange={setShowKeyModal}>

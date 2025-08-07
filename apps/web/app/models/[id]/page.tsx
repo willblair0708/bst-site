@@ -537,7 +537,7 @@ export default function ModelPage({ params }: ModelPageProps) {
           >
             <Button 
               size="lg" 
-              className="bg-gradient-to-r from-primary to-primary/90 hover:from-primary/90 hover:to-primary/80 shadow-md hover:shadow-lg transition-all whitespace-nowrap"
+              className="bg-gradient-to-r from-primary to-primary/90 hover:from-primary/90 hover:to-primary/80 shadow-md hover:shadow-lg transition-all whitespace-nowrap text-foreground"
             >
               <Play className="h-4 w-4 mr-2 flex-shrink-0" />
               <span>Run Model</span>

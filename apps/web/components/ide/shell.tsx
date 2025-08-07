@@ -2,7 +2,6 @@
 
 import React, { useMemo } from "react"
 import { Sidebar } from "@/components/ide/sidebar"
-import { Topbar } from "@/components/ide/topbar"
 import { AgentConsole } from "@/components/ide/agent-console"
 import { ProtocolEditor } from "@/components/protocol-editor"
 import { DAGGraph } from "@/components/dag-graph"
@@ -31,14 +30,12 @@ export function Shell() {
   ], [])
 
   return (
-    <div className="flex h-[calc(100vh-56px)] overflow-hidden">{/* subtract header if present */}
+    <div className="flex h-[calc(100vh-80px)] overflow-hidden">{/* subtract site header (h-20) */}
       {/* Left rail */}
       <Sidebar />
 
       {/* Main column */}
       <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
-        <Topbar />
-
         {/* Center work area */}
         <div className="flex-1 grid grid-rows-[minmax(0,1fr)_auto] gap-2 min-h-0 overflow-hidden p-2">
           <div className="grid grid-cols-[minmax(0,1fr)_360px] gap-2 min-h-0 overflow-hidden">

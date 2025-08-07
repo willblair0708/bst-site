@@ -33,30 +33,56 @@ class ChatRequest(BaseModel):
     messages: List[Message]
     agent: Optional[Literal["crow", "falcon", "owl", "phoenix"]] = "crow"
     stream: Optional[bool] = False
+    goal: Optional[str] = None
+    mode: Optional[Literal["qa", "review", "novelty", "planner"]] = None
+    output: Optional[Literal["bullets", "memo", "plan", "json"]] = None
+    temperature: Optional[float] = None
+    max_output_tokens: Optional[int] = None
 
 
-def build_system_prompt(agent: str) -> str:
+def build_system_prompt(agent: str, goal: Optional[str] = None, mode: Optional[str] = None, output: Optional[str] = None) -> str:
     base = (
         "You are Runix AI, a helpful research assistant for scientific discovery. "
-        "Provide concise, accurate answers with citations and step-wise reasoning when appropriate."
+        "Prefer verifiable claims with citations and high-level reasoning summaries (no hidden steps). "
+        "Always be precise and note uncertainties."
     )
     if agent == "falcon":
-        return base + " Focus on deep literature survey and meta-analysis across full texts."
+        base += " Focus on deep literature survey and meta-analysis across full texts."
     if agent == "owl":
-        return base + " Perform novelty checks and prior-art sweeps: 'Has anyone done X?'."
+        base += " Perform novelty checks and prior-art sweeps: 'Has anyone done X?'."
     if agent == "phoenix":
-        return base + " Act as a ChemCrow-style planner. Emphasize verification and uncertainty notes."
+        base += " Act as a ChemCrow-style planner. Emphasize verification and uncertainty notes."
+
+    if mode == "review":
+        base += " Structure as: Scope, Key Findings, Methods Notes, Gaps, References."
+    elif mode == "novelty":
+        base += " Structure as: Query framing, Known Work, Potential Gaps, Confidence, References."
+    elif mode == "planner":
+        base += " Structure as: Objective, Approach, Steps, Reagents/Tools, Risks, Alternatives."
+
+    if output == "bullets":
+        base += " Use compact bullet lists."
+    elif output == "memo":
+        base += " Write a concise research memo."
+    elif output == "plan":
+        base += " Present a stepwise plan with materials."
+    elif output == "json":
+        base += " Return JSON with fields: summary, steps[], citations[]."
+
+    if goal:
+        base += f" Current goal: {goal.strip()[:500]}"
+
     return base
 
 
-def to_openai_messages(payload: ChatRequest):
-    openai_messages = [
-        {"role": "system", "content": build_system_prompt(payload.agent or "crow")}
-    ]
+def to_transcript(payload: ChatRequest) -> str:
+    # Convert structured messages to a plain transcript for Responses API input
+    lines: list[str] = []
     for m in payload.messages:
-        role = "user" if m.author == "User" else "assistant"
-        openai_messages.append({"role": role, "content": m.content})
-    return openai_messages
+        role = "User" if m.author == "User" else "Assistant"
+        lines.append(f"{role}: {m.content}")
+    lines.append("Assistant:")
+    return "\n".join(lines)
 
 
 @app.post("/chat")
@@ -78,37 +104,49 @@ async def chat(req: Request):
 
     if payload.stream:
         def gen():
-            completion = client.chat.completions.create(
-                model="gpt-5-mini",
-                messages=to_openai_messages(payload),
-                temperature=0.7,
-                max_tokens=1000,
-                stream=True,
-            )
-            # SSE: emit deltas; also buffer final for convenience
+            system = build_system_prompt(payload.agent or "crow", payload.goal, payload.mode, payload.output)
             yield "event: open\n\n"
             buffer = ""
-            for chunk in completion:
-                delta = chunk.choices[0].delta.content if chunk.choices and chunk.choices[0].delta else None
-                if delta:
-                    buffer += delta
-                    import json as _json
-                    yield "data: " + _json.dumps({"delta": delta}) + "\n\n"
-            import json as _json
-            final = {"done": True, "message": {"id": 0, "author": "AI", "content": buffer}}
-            yield "data: " + _json.dumps(final) + "\n\n"
+            with client.responses.stream(
+                model="gpt-4o-mini",
+                instructions=system,
+                input=to_transcript(payload),
+                temperature=payload.temperature if payload.temperature is not None else 0.7,
+                max_output_tokens=payload.max_output_tokens if payload.max_output_tokens is not None else 1000,
+            ) as stream:
+                for event in stream:
+                    # Text deltas
+                    if getattr(event, "type", "") == "response.output_text.delta":
+                        delta = getattr(event, "delta", "") or ""
+                        if delta:
+                            buffer += delta
+                            import json as _json
+                            yield "data: " + _json.dumps({"delta": delta}) + "\n\n"
+                    # You may also inspect other event types if needed
+                # Final assembled response
+                final_resp = stream.get_final_response()
+                content_text = getattr(final_resp, "output_text", None) or buffer
+                import json as _json
+                final = {"done": True, "message": {"id": 0, "author": "AI", "content": content_text}}
+                yield "data: " + _json.dumps(final) + "\n\n"
 
         return StreamingResponse(gen(), media_type="text/event-stream")
 
     # Non-stream path
-    completion = client.chat.completions.create(
+    resp = client.responses.create(
         model="gpt-4o-mini",
-        messages=to_openai_messages(payload),
-        temperature=0.7,
-        max_tokens=1000,
-        stream=False,
+        instructions=build_system_prompt(payload.agent or "crow", payload.goal, payload.mode, payload.output),
+        input=to_transcript(payload),
+        temperature=payload.temperature if payload.temperature is not None else 0.7,
+        max_output_tokens=payload.max_output_tokens if payload.max_output_tokens is not None else 1000,
     )
-    content = completion.choices[0].message.content if completion.choices else ""
+    content = getattr(resp, "output_text", None)
+    if not content:
+        # Fallback: try to extract first text block
+        try:
+            content = resp.output[0].content[0].text["value"]  # type: ignore
+        except Exception:
+            content = ""
     return {"message": {"id": 0, "author": "AI", "content": content}}
 
 

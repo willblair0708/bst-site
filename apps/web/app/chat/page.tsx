@@ -94,46 +94,48 @@ const ChatPage = () => {
       
       <main className="flex-1 flex flex-col">
         {/* Main Content */}
-        <div className="flex-1 flex flex-col">
+        <div className="flex-1 flex flex-col overflow-hidden">
           {messages.length === 0 ? (
-            <div className="flex-1 flex flex-col justify-center items-center p-6 max-w-3xl mx-auto w-full">
-              <motion.h1 
-                className="text-4xl font-semibold text-center mb-8 text-foreground"
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6 }}
-              >
-                What's on your mind today?
-              </motion.h1>
+            <div className="flex-1 flex flex-col justify-center items-center p-4">
+              <div className="w-full text-center">
+                <motion.h1 
+                  className="text-2xl font-semibold mb-4 text-foreground"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.6 }}
+                >
+                  What's on your mind today?
+                </motion.h1>
+              </div>
             </div>
           ) : (
-            <ScrollArea className="flex-1">
-              <div className="max-w-3xl mx-auto w-full px-4 py-6">
+            <div className="flex-1 overflow-y-auto">
+              <div className="max-w-2xl mx-auto px-3 py-3">
                 <AnimatePresence>
                   {messages.map((message) => (
                     <motion.div
                       key={message.id}
-                      initial={{ opacity: 0, y: 20 }}
+                      initial={{ opacity: 0, y: 10 }}
                       animate={{ opacity: 1, y: 0 }}
-                      transition={{ duration: 0.5 }}
-                      className="mb-6"
+                      transition={{ duration: 0.3 }}
+                      className="mb-4"
                     >
-                      <div className="flex items-start gap-4">
-                        <Avatar className="w-6 h-6 shrink-0">
+                      <div className="flex items-start gap-2">
+                        <Avatar className="w-5 h-5 shrink-0">
                           <AvatarFallback className={cn(
                             "text-xs font-semibold",
                             message.author === "User" 
                               ? "bg-primary text-primary-foreground" 
                               : "bg-muted text-muted-foreground"
                           )}>
-                            {message.author === "User" ? "WB" : "AI"}
+                            {message.author === "User" ? "W" : "C"}
                           </AvatarFallback>
                         </Avatar>
-                        <div className="flex-1 space-y-1">
-                          <p className="text-sm font-semibold text-foreground">
+                        <div className="flex-1 space-y-0.5">
+                          <p className="text-xs font-semibold text-foreground">
                             {message.author === "User" ? "You" : "ChatGPT"}
                           </p>
-                          <div className="text-foreground leading-relaxed">
+                          <div className="text-sm text-foreground leading-relaxed">
                             {message.content}
                           </div>
                         </div>
@@ -142,18 +144,18 @@ const ChatPage = () => {
                   ))}
                   {isAiTyping && (
                     <motion.div
-                      initial={{ opacity: 0, y: 20 }}
+                      initial={{ opacity: 0, y: 10 }}
                       animate={{ opacity: 1, y: 0 }}
-                      className="mb-6"
+                      className="mb-4"
                     >
-                      <div className="flex items-start gap-4">
-                        <Avatar className="w-6 h-6 shrink-0">
+                      <div className="flex items-start gap-2">
+                        <Avatar className="w-5 h-5 shrink-0">
                           <AvatarFallback className="bg-muted text-muted-foreground text-xs font-semibold">
-                            AI
+                            C
                           </AvatarFallback>
                         </Avatar>
-                        <div className="flex-1 space-y-1">
-                          <p className="text-sm font-semibold text-foreground">ChatGPT</p>
+                        <div className="flex-1 space-y-0.5">
+                          <p className="text-xs font-semibold text-foreground">ChatGPT</p>
                           <div className="flex items-center gap-1">
                             <motion.div className="w-1 h-1 bg-muted-foreground rounded-full" animate={{ opacity: [0.3, 1, 0.3] }} transition={{ duration: 1.4, repeat: Infinity, ease: 'easeInOut' }} />
                             <motion.div className="w-1 h-1 bg-muted-foreground rounded-full" animate={{ opacity: [0.3, 1, 0.3] }} transition={{ duration: 1.4, repeat: Infinity, ease: 'easeInOut', delay: 0.2 }} />
@@ -166,20 +168,20 @@ const ChatPage = () => {
                 </AnimatePresence>
                 <div ref={messagesEndRef} />
               </div>
-            </ScrollArea>
+            </div>
           )}
           
           {/* Input */}
-          <div className="p-4">
-            <div className="max-w-3xl mx-auto">
-              <div className="relative bg-muted/50 rounded-3xl border border-border/50 focus-within:border-border transition-colors">
-                <div className="flex items-end p-2">
-                  <Button variant="ghost" size="icon" className="shrink-0 rounded-xl h-8 w-8 text-muted-foreground">
-                    <Plus className="w-4 h-4" />
+          <div className="border-t border-border/20 p-3">
+            <div className="max-w-2xl mx-auto">
+              <div className="relative bg-muted/50 rounded-2xl border border-border/50 focus-within:border-border transition-colors">
+                <div className="flex items-end p-1.5">
+                  <Button variant="ghost" size="icon" className="shrink-0 rounded-lg h-7 w-7 text-muted-foreground">
+                    <Plus className="w-3.5 h-3.5" />
                   </Button>
                   <textarea
                     placeholder="Ask anything"
-                    className="flex-1 bg-transparent border-0 px-2 py-2 text-foreground placeholder:text-muted-foreground resize-none focus:outline-none min-h-[32px] max-h-[200px]"
+                    className="flex-1 bg-transparent border-0 px-2 py-1.5 text-sm text-foreground placeholder:text-muted-foreground resize-none focus:outline-none min-h-[28px] max-h-[100px]"
                     value={inputValue}
                     onChange={(e) => setInputValue(e.target.value)}
                     onKeyPress={(e) => {
@@ -190,27 +192,27 @@ const ChatPage = () => {
                     }}
                     rows={1}
                   />
-                  <div className="flex items-center gap-1 shrink-0">
-                    <Button variant="ghost" size="icon" className="rounded-xl h-8 w-8 text-muted-foreground">
-                      <Search className="w-4 h-4" />
+                  <div className="flex items-center gap-0.5 shrink-0">
+                    <Button variant="ghost" size="icon" className="rounded-lg h-7 w-7 text-muted-foreground">
+                      <Search className="w-3.5 h-3.5" />
                     </Button>
                     {inputValue.trim() ? (
                       <Button
                         size="icon"
                         onClick={handleSendMessage}
-                        className="rounded-xl h-8 w-8 bg-foreground text-background hover:bg-foreground/90"
+                        className="rounded-lg h-7 w-7 bg-foreground text-background hover:bg-foreground/90"
                       >
-                        <ArrowUp className="w-4 h-4" />
+                        <ArrowUp className="w-3.5 h-3.5" />
                       </Button>
                     ) : (
-                      <Button variant="ghost" size="icon" className="rounded-xl h-8 w-8 text-muted-foreground">
-                        <ArrowUp className="w-4 h-4" />
+                      <Button variant="ghost" size="icon" className="rounded-lg h-7 w-7 text-muted-foreground">
+                        <ArrowUp className="w-3.5 h-3.5" />
                       </Button>
                     )}
                   </div>
                 </div>
               </div>
-              <p className="text-xs text-muted-foreground text-center mt-2">
+              <p className="text-xs text-muted-foreground text-center mt-1.5">
                 ChatGPT can make mistakes. Check important info.
               </p>
             </div>

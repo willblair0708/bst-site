@@ -163,14 +163,14 @@ export default function ModelsPage() {
 
   return (
     <motion.div 
-      className="min-h-screen bg-background relative overflow-hidden"
+      className="min-h-screen bg-gradient-to-br from-background via-background to-primary-100/20 relative overflow-hidden"
       variants={pageVariants}
       initial="initial"
       animate="animate"
       exit="exit"
     >
       <motion.div 
-        className="absolute inset-0 bg-gradient-to-b from-primary/5 via-transparent to-transparent"
+        className="absolute inset-0 bg-gradient-to-b from-primary-50/20 via-transparent to-accent-50/10"
         style={{ y: backgroundY }}
       />
       
@@ -206,68 +206,90 @@ export default function ModelsPage() {
         transition={{ duration: 35, repeat: Infinity, ease: "easeInOut" }}
       />
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-20 relative z-10">
-        {/* Hero Section - "Pastel Bento Tile" style */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16 relative z-10">
+        {/* Hero Section - Refined Astra-Soft style */}
         <motion.div 
-          className="text-center mb-16"
+          className="text-center mb-12"
           style={{ y: heroSpring, opacity: opacitySpring }}
           variants={heroVariants}
         >
           <motion.div
-            className="inline-block bg-primary/10 rounded-full p-3 mb-6 shadow-sm"
+            className="inline-block bg-gradient-to-br from-primary-100 to-primary-50 rounded-full p-3 mb-4 shadow-soft"
             variants={heroVariants}
           >
             <motion.div 
-              className="relative flex items-center justify-center bg-primary rounded-full p-2"
+              className="relative flex items-center justify-center bg-gradient-to-br from-primary-500 to-primary-600 rounded-full p-2 shadow-soft"
               animate={{ rotate: [0, 10, -5, 0] }}
               transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
             >
-              <Brain size={32} className="text-primary-foreground" />
+              <Brain size={28} className="text-white" />
             </motion.div>
           </motion.div>
           <motion.h1 
-            className="text-4xl sm:text-5xl lg:text-6xl font-semibold tracking-tight text-foreground"
+            className="text-3xl sm:text-4xl lg:text-5xl font-semibold tracking-tight bg-gradient-to-r from-neutral-900 via-neutral-800 to-neutral-700 bg-clip-text text-transparent"
             variants={heroVariants}
           >
             Scientific Models
           </motion.h1>
           
           <motion.p 
-            className="text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto mt-4 mb-8 leading-relaxed"
+            className="text-base md:text-lg text-neutral-600 max-w-2xl mx-auto mt-3 mb-6 leading-relaxed"
             variants={heroVariants}
           >
-            Discover and deploy cutting-edge foundation models with git-based versioning and automated reproducibility verification. Every scientific claim becomes runnable.
+            Discover and deploy cutting-edge foundation models with git-based versioning and automated reproducibility verification.
           </motion.p>
 
-          {/* Clean Stats Cards following design system */}
+          {/* Pastel Bento Stats Cards */}
           <motion.div
-            className="max-w-4xl mx-auto"
+            className="max-w-3xl mx-auto"
             variants={heroVariants}
           >
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6">
               {[
-                { icon: Brain, label: 'AI Models', value: models.length },
-                { icon: Download, label: 'Downloads', value: models.reduce((sum, m) => sum + m.downloads, 0) },
-                { icon: Trophy, label: 'Citations', value: models.reduce((sum, m) => sum + (m.citations || 0), 0) },
-                { icon: Verified, label: 'Verified', value: `${models.filter(m => m.verified).length}` }
+                { icon: Brain, label: 'AI Models', value: models.length, color: 'primary' },
+                { icon: Download, label: 'Downloads', value: models.reduce((sum, m) => sum + m.downloads, 0), color: 'accent' },
+                { icon: Trophy, label: 'Citations', value: models.reduce((sum, m) => sum + (m.citations || 0), 0), color: 'purple' },
+                { icon: Verified, label: 'Verified', value: `${models.filter(m => m.verified).length}`, color: 'green' }
               ].map((stat, i) => (
                 <motion.div
                   key={stat.label}
                   initial={{ opacity: 0, y: 15 }}
                   animate={{ opacity: 1, y: 0 }}
-                  whileHover={{ y: -4, scale: 1.05 }}
-                  transition={{ duration: 0.4, ease: "easeOut", delay: 0.3 + i * 0.05 }}
+                  whileHover={{ y: -4, rotate: i % 2 === 0 ? 1 : -1 }}
+                  transition={{ duration: 0.3, type: "spring", stiffness: 300, delay: 0.3 + i * 0.05 }}
                   className="group"
                 >
-                  <Card className="text-center border-border/20 bg-card/40 backdrop-blur-sm hover:bg-card/60 transition-all duration-300 group-hover:shadow-md rounded-xl">
-                    <CardContent className="p-4">
-                      <div className="flex items-center justify-center gap-2 mb-1">
-                        <stat.icon className={`h-4 w-4 ${i === 0 || i === 2 ? 'text-primary' : 'text-accent'}`} />
-                        <span className="text-xl font-semibold text-foreground font-mono">
-                          {typeof stat.value === 'number' ? stat.value.toLocaleString() : stat.value}
-                        </span>
+                  <Card className={`text-center bg-gradient-to-br ${
+                    stat.color === 'primary' ? 'from-primary-100 via-primary-50 to-white border-primary-200/60 hover:border-primary-300' :
+                    stat.color === 'accent' ? 'from-accent-100 via-accent-50 to-white border-accent-200/60 hover:border-accent-300' :
+                    stat.color === 'purple' ? 'from-purple-100 via-purple-50 to-white border-purple-200/60 hover:border-purple-300' :
+                    'from-green-100 via-emerald-50 to-white border-green-200/60 hover:border-green-300'
+                  } transition-all shadow-elevation-1 hover:shadow-elevation-2 rounded-2xl`}>
+                    <CardContent className="p-5">
+                      <div className={`p-2 rounded-xl mx-auto mb-3 w-fit shadow-soft ${
+                        stat.color === 'primary' ? 'bg-primary-500' :
+                        stat.color === 'accent' ? 'bg-accent-500' :
+                        stat.color === 'purple' ? 'bg-gradient-to-br from-purple-500 to-purple-600' :
+                        'bg-gradient-to-br from-green-500 to-emerald-600'
+                      }`}>
+                        <stat.icon className="h-5 w-5 text-white" />
                       </div>
-                      <span className="text-xs text-muted-foreground">{stat.label}</span>
+                      <div className={`text-2xl font-bold mb-1 ${
+                        stat.color === 'primary' ? 'text-primary-700' :
+                        stat.color === 'accent' ? 'text-accent-700' :
+                        stat.color === 'purple' ? 'text-purple-700' :
+                        'text-green-700'
+                      }`}>
+                        {typeof stat.value === 'number' ? stat.value.toLocaleString() : stat.value}
+                      </div>
+                      <div className={`text-xs font-medium ${
+                        stat.color === 'primary' ? 'text-primary-600' :
+                        stat.color === 'accent' ? 'text-accent-600' :
+                        stat.color === 'purple' ? 'text-purple-600' :
+                        'text-green-600'
+                      }`}>
+                        {stat.label}
+                      </div>
                     </CardContent>
                   </Card>
                 </motion.div>
@@ -276,14 +298,14 @@ export default function ModelsPage() {
           </motion.div>
         </motion.div>
 
-        {/* Search and Filters - "Soft-UI 2.0" style */}
+        {/* Search and Filters - Enhanced Astra-Soft style */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.2 }}
         >
-          <Card className="bg-card/50 backdrop-blur-md border border-border/20 mb-8 shadow-sm rounded-2xl">
-            <CardContent className="p-4 sm:p-6">
+          <Card className="bg-gradient-to-br from-primary-50/30 via-white/80 to-accent-50/20 backdrop-blur-md border-2 border-primary-100/60 mb-10 shadow-elevation-2 rounded-3xl overflow-hidden">
+            <CardContent className="p-6 sm:p-8">
               <div className="space-y-4">
                 <div className="relative max-w-xl mx-auto">
                   <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-muted-foreground h-5 w-5 pointer-events-none" />
@@ -291,13 +313,13 @@ export default function ModelsPage() {
                     placeholder="Search models, tags, or descriptions..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    className="pl-12 pr-4 py-3 h-12 text-base border-border/30 bg-background/50 focus:bg-background/80 focus:ring-2 focus:ring-primary/50 transition-all rounded-xl"
+                    className="pl-12 pr-4 py-3 h-12 text-base border-2 border-primary-200/60 bg-white/80 focus:bg-white focus:ring-2 focus:ring-primary-300/50 focus:border-primary-300 transition-all rounded-2xl shadow-soft"
                   />
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3">
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
                   <Select value={selectedCategory} onValueChange={setSelectedCategory}>
-                    <SelectTrigger className="border-border/30 h-11 rounded-lg">
+                    <SelectTrigger className="border-2 border-primary-200/60 bg-white/80 h-11 rounded-xl shadow-soft hover:shadow-elevation-1 transition-all">
                       <SelectValue placeholder="Category" />
                     </SelectTrigger>
                     <SelectContent>
@@ -308,7 +330,7 @@ export default function ModelsPage() {
                   </Select>
 
                   <Select value={selectedDomain} onValueChange={setSelectedDomain}>
-                    <SelectTrigger className="border-border/30 h-11 rounded-lg">
+                    <SelectTrigger className="border-2 border-primary-200/60 bg-white/80 h-11 rounded-xl shadow-soft hover:shadow-elevation-1 transition-all">
                       <SelectValue placeholder="Domain" />
                     </SelectTrigger>
                     <SelectContent>
@@ -319,7 +341,7 @@ export default function ModelsPage() {
                   </Select>
 
                   <Select value={selectedFramework} onValueChange={setSelectedFramework}>
-                    <SelectTrigger className="border-border/30 h-11 rounded-lg">
+                    <SelectTrigger className="border-2 border-primary-200/60 bg-white/80 h-11 rounded-xl shadow-soft hover:shadow-elevation-1 transition-all">
                       <SelectValue placeholder="Framework" />
                     </SelectTrigger>
                     <SelectContent>
@@ -330,12 +352,12 @@ export default function ModelsPage() {
                   </Select>
 
                   <Tabs value={viewMode} onValueChange={setViewMode}>
-                    <TabsList className="grid w-full grid-cols-2 bg-muted/40 h-11 rounded-lg">
-                      <TabsTrigger value="featured" className="text-sm data-[state=active]:bg-background data-[state=active]:shadow-sm rounded-md">
+                    <TabsList className="grid w-full grid-cols-2 bg-gradient-to-r from-accent-50 to-accent-100/50 border-2 border-accent-200/60 h-11 rounded-xl shadow-soft">
+                      <TabsTrigger value="featured" className="text-sm data-[state=active]:bg-gradient-to-r data-[state=active]:from-accent-500 data-[state=active]:to-accent-600 data-[state=active]:text-white data-[state=active]:shadow-soft rounded-lg transition-all font-medium">
                         <Flame className="h-4 w-4 mr-1.5" />
                         Featured
                       </TabsTrigger>
-                      <TabsTrigger value="all" className="text-sm data-[state=active]:bg-background data-[state=active]:shadow-sm rounded-md">
+                      <TabsTrigger value="all" className="text-sm data-[state=active]:bg-gradient-to-r data-[state=active]:from-primary-500 data-[state=active]:to-primary-600 data-[state=active]:text-white data-[state=active]:shadow-soft rounded-lg transition-all font-medium">
                         <Brain className="h-4 w-4 mr-1.5" />
                         All
                       </TabsTrigger>
@@ -344,18 +366,18 @@ export default function ModelsPage() {
                 </div>
               </div>
               
-              <div className="border-t border-border/20 mt-6 pt-4">
+              <div className="border-t border-primary-200/30 mt-8 pt-6">
                 <div className="flex items-center justify-between">
-                  <span className="text-muted-foreground text-sm font-medium">
+                  <span className="text-neutral-600 text-sm font-medium">
                     {filteredModels.length} model{filteredModels.length !== 1 ? 's' : ''} found
                   </span>
                   <div className="flex items-center gap-3">
-                    <Badge variant="secondary" className="flex items-center gap-1.5 bg-primary/10 text-primary border-primary/20 rounded-md px-2.5 py-1 text-xs">
-                      <Flame className="h-3.5 w-3.5" />
+                    <Badge className="flex items-center gap-2 bg-gradient-to-r from-accent-500 to-accent-600 text-white border-0 shadow-soft rounded-xl px-3 py-1.5 text-sm font-medium">
+                      <Flame className="h-4 w-4" />
                       {models.filter(m => m.trending).length} Trending
                     </Badge>
-                    <Badge variant="secondary" className="flex items-center gap-1.5 bg-accent/10 text-accent border-accent/20 rounded-md px-2.5 py-1 text-xs">
-                      <Verified className="h-3.5 w-3.5" />
+                    <Badge className="flex items-center gap-2 bg-gradient-to-r from-green-500 to-emerald-600 text-white border-0 shadow-soft rounded-xl px-3 py-1.5 text-sm font-medium">
+                      <Verified className="h-4 w-4" />
                       {models.filter(m => m.verified).length} Verified
                     </Badge>
                   </div>
@@ -447,7 +469,7 @@ export default function ModelsPage() {
                     setSelectedFramework('All');
                     setViewMode('all');
                   }}
-                  className="bg-background hover:bg-muted/50 border-border/50 rounded-lg"
+                  className="bg-white hover:bg-primary-50 border-2 border-primary-200 text-primary-700 hover:text-primary-800 rounded-xl px-6 py-2.5 shadow-soft hover:shadow-elevation-1 transition-all font-medium"
                 >
                   <Search className="h-4 w-4 mr-2" />
                   Clear All Filters

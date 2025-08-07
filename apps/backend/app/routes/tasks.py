@@ -135,7 +135,21 @@ async def create_task(req: Request):
                 return
 
             try:
-                agents_map = build_agents()
+                # Build MCP servers if configured and pass to DIRECTOR
+                mcp_servers = []
+                try:
+                    from app.mcp.manager import build_mcp_servers  # type: ignore
+                    mcp_servers = build_mcp_servers()
+                    # Connect servers up-front for faster first call
+                    for s in mcp_servers:
+                        try:
+                            await s.connect()
+                        except Exception:
+                            pass
+                except Exception:
+                    mcp_servers = []
+
+                agents_map = build_agents(mcp_servers=mcp_servers)
                 scout = agents_map["SCOUT"]
                 scholar = agents_map["SCHOLAR"]
                 archivist = agents_map["ARCHIVIST"]

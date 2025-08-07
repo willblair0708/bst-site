@@ -163,7 +163,7 @@ def normalize_agent_name(name: str) -> str:
     return ALIASES.get(key, key)
 
 
-def build_agents() -> dict[str, Any]:
+def build_agents(mcp_servers: list[Any] | None = None) -> dict[str, Any]:
     if Agent is None:
         raise ImportError("openai-agents is not installed")
 
@@ -266,6 +266,7 @@ def build_agents() -> dict[str, Any]:
             analyst_tool,
             run_all_specialists_parallel,
         ],
+        mcp_servers=mcp_servers or [],
         model=os.getenv("MODEL_DIRECTOR", "gpt-4o"),
         model_settings=ModelSettings(parallel_tool_calls=True, tool_choice="required") if ModelSettings else None,
     )

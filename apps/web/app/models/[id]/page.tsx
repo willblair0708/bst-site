@@ -371,6 +371,13 @@ export default function ModelPage({ params }: ModelPageProps) {
       transition={{ duration: 0.6 }}
     >
       <div className="max-w-7xl mx-auto px-6 py-12">
+        {/* Breadcrumb / Back link */}
+        <div className="mb-6">
+          <Link href="/models" className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 rounded">
+            <ChevronRight className="rotate-180 h-4 w-4" />
+            Back to models
+          </Link>
+        </div>
                   {/* Hero Section - Enhanced Design */}
         <motion.div 
           className="mb-16"
@@ -445,6 +452,17 @@ export default function ModelPage({ params }: ModelPageProps) {
                       <span className="text-muted-foreground">•</span>
                       <span className="text-muted-foreground">Updated {new Date(model.lastModified).toLocaleDateString()}</span>
                     </div>
+                    {/* Meta chips */}
+                    <div className="mt-2 flex items-center gap-3 text-xs text-muted-foreground">
+                      <span className="inline-flex items-center gap-1">
+                        <Star className="h-3 w-3" />
+                        <span className="font-mono">{formatNumber(model.likes)}</span>
+                      </span>
+                      <span className="inline-flex items-center gap-1">
+                        <Download className="h-3 w-3" />
+                        <span className="font-mono">{formatNumber(model.downloads)}</span>
+                      </span>
+                    </div>
                   </div>
 
                   <p className="text-base text-muted-foreground leading-relaxed max-w-3xl">
@@ -461,7 +479,7 @@ export default function ModelPage({ params }: ModelPageProps) {
 
           {/* Enhanced Metrics Grid - Pastel Bento Tiles */}
           <motion.div 
-            className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6 mb-12"
+            className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-5 mb-10"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.3 }}
@@ -478,7 +496,7 @@ export default function ModelPage({ params }: ModelPageProps) {
                       <Download className="h-4 w-4 text-muted-foreground" />
                     </div>
                   </div>
-                  <div className="text-2xl font-semibold text-foreground">{formatNumber(model.downloads)}</div>
+                  <div className="text-xl font-semibold text-foreground">{formatNumber(model.downloads)}</div>
                   <div className="text-xs text-muted-foreground mt-1">Downloads</div>
                 </CardContent>
               </Card>
@@ -496,7 +514,7 @@ export default function ModelPage({ params }: ModelPageProps) {
                       <Star className="h-4 w-4 text-muted-foreground" />
                     </div>
                   </div>
-                  <div className="text-2xl font-semibold text-foreground">{formatNumber(model.likes)}</div>
+                  <div className="text-xl font-semibold text-foreground">{formatNumber(model.likes)}</div>
                   <div className="text-xs text-muted-foreground mt-1">Stars</div>
                 </CardContent>
               </Card>
@@ -514,7 +532,7 @@ export default function ModelPage({ params }: ModelPageProps) {
                       <Trophy className="h-4 w-4 text-muted-foreground" />
                     </div>
                   </div>
-                  <div className="text-2xl font-semibold text-foreground">{formatNumber(model.citations)}</div>
+                  <div className="text-xl font-semibold text-foreground">{formatNumber(model.citations)}</div>
                   <div className="text-xs text-muted-foreground mt-1">Citations</div>
                 </CardContent>
               </Card>
@@ -532,7 +550,7 @@ export default function ModelPage({ params }: ModelPageProps) {
                       <BarChart3 className="h-4 w-4 text-muted-foreground" />
                     </div>
                   </div>
-                  <div className="text-2xl font-semibold text-foreground">{model.accuracy}%</div>
+                  <div className="text-xl font-semibold text-foreground">{model.accuracy}%</div>
                   <div className="text-xs text-muted-foreground mt-1">Accuracy</div>
                 </CardContent>
               </Card>
@@ -549,7 +567,7 @@ export default function ModelPage({ params }: ModelPageProps) {
                       <Shield className="h-4 w-4 text-muted-foreground" />
                     </div>
                   </div>
-                  <div className="text-2xl font-semibold text-foreground">{model.reproducibilityScore}%</div>
+                  <div className="text-xl font-semibold text-foreground">{model.reproducibilityScore}%</div>
                   <div className="text-xs text-muted-foreground mt-1">Reproducible</div>
                 </CardContent>
               </Card>
@@ -566,7 +584,7 @@ export default function ModelPage({ params }: ModelPageProps) {
                       <Target className="h-4 w-4 text-muted-foreground" />
                     </div>
                   </div>
-                  <div className="text-2xl font-semibold text-foreground">#{model.benchmarkRank}</div>
+                  <div className="text-xl font-semibold text-foreground">#{model.benchmarkRank}</div>
                   <div className="text-xs text-muted-foreground mt-1">Global Rank</div>
                 </CardContent>
               </Card>
@@ -654,7 +672,7 @@ export default function ModelPage({ params }: ModelPageProps) {
           >
             <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
               <div className="mb-12">
-                <TabsList className="grid w-full grid-cols-3 lg:grid-cols-6 bg-muted border p-1 rounded-xl">
+                <TabsList className="grid w-full grid-cols-3 lg:grid-cols-6 bg-muted border p-1 rounded-xl sticky top-0 z-10">
                   <TabsTrigger value="overview" className="rounded-lg px-3 py-1.5 text-sm data-[state=active]:bg-background">
                     <Brain className="h-5 w-5 mr-2" />
                     <span className="hidden sm:inline">Overview</span>

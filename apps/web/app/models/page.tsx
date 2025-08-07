@@ -74,9 +74,10 @@ export default function ModelsPage() {
   const [selectedCategory, setSelectedCategory] = useState('All');
   const [selectedFramework, setSelectedFramework] = useState('All');
   const [showFilters, setShowFilters] = useState(false);
+  const [sortBy, setSortBy] = useState<'relevance' | 'stars' | 'downloads' | 'verified'>('relevance');
 
   const filteredModels = useMemo(() => {
-    return models.filter(model => {
+    const base = models.filter(model => {
       const matchesSearch = model.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
                           model.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
                           model.tags.some(tag => tag.toLowerCase().includes(searchQuery.toLowerCase()));
@@ -85,7 +86,22 @@ export default function ModelsPage() {
       
       return matchesSearch && matchesCategory && matchesFramework;
     });
-  }, [searchQuery, selectedCategory, selectedFramework]);
+
+    const sorted = [...base].sort((a, b) => {
+      switch (sortBy) {
+        case 'stars':
+          return b.stars - a.stars;
+        case 'downloads':
+          return b.downloads - a.downloads;
+        case 'verified':
+          if (a.verified === b.verified) return b.stars - a.stars;
+          return a.verified ? -1 : 1;
+        default:
+          return 0; // relevance (no-op for now)
+      }
+    });
+    return sorted;
+  }, [searchQuery, selectedCategory, selectedFramework, sortBy]);
 
 
 
@@ -143,6 +159,18 @@ export default function ModelsPage() {
               </SelectContent>
             </Select>
 
+            <Select value={sortBy} onValueChange={(v) => setSortBy(v as any)}>
+              <SelectTrigger className="w-40">
+                <SelectValue placeholder="Sort" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="relevance">Relevance</SelectItem>
+                <SelectItem value="stars">Stars</SelectItem>
+                <SelectItem value="downloads">Downloads</SelectItem>
+                <SelectItem value="verified">Verified first</SelectItem>
+              </SelectContent>
+            </Select>
+
             <Button
               variant="outline"
               size="sm"
@@ -160,18 +188,21 @@ export default function ModelsPage() {
           <p className="text-muted-foreground">
             {filteredModels.length} models found
           </p>
-          <div className="flex gap-2">
+          <div className="flex gap-2 items-center">
             <Badge variant="success">
               <Verified className="h-3 w-3 mr-1" />
               {models.filter(m => m.verified).length} Verified
             </Badge>
+            {sortBy !== 'relevance' && (
+              <Badge variant="outline" className="text-xs">Sorted by {sortBy}</Badge>
+            )}
           </div>
         </div>
 
         {/* Models Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {filteredModels.map((model) => (
-            <div key={model.id} className="group rounded-3xl border bg-card shadow-elevation-1 transition-all hover:shadow-elevation-2">
+            <div key={model.id} className="group rounded-3xl border bg-card shadow-elevation-1 transition-all hover:shadow-elevation-2 hover:border-primary-200/60">
               <div className="p-5">
                 {/* Header */}
                 <div className="flex items-start justify-between mb-2">
@@ -180,7 +211,9 @@ export default function ModelsPage() {
                       <Bot className="h-4 w-4 text-muted-foreground" />
                     </div>
                     <div className="min-w-0">
-                      <h3 className="truncate font-semibold text-foreground">{model.name}</h3>
+                      <Link href={`/models/${model.id}`} className="truncate font-semibold text-foreground hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 rounded">
+                        {model.name}
+                      </Link>
                       <div className="text-xs text-muted-foreground truncate">by {model.author}</div>
                     </div>
                   </div>
@@ -212,8 +245,8 @@ export default function ModelsPage() {
                       <span className="font-mono">{model.downloads.toLocaleString()}</span>
                     </span>
                   </div>
-                  <Link href={`/models/${model.id}`} className="focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 rounded">
-                    <Button size="sm" variant="outline" className="h-8 px-3 text-xs rounded-lg">
+                  <Link href={`/models/${model.id}`} className="focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 rounded" aria-label={`View ${model.name}`}>
+                    <Button size="sm" variant="outline" className="h-8 px-3 text-xs rounded-lg" role="button">
                       View
                     </Button>
                   </Link>

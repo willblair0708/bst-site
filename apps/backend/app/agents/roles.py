@@ -21,6 +21,7 @@ except Exception as _e:  # pragma: no cover
 
 INTERNAL_BEARER = os.getenv("ACTIONS_BEARER", "dev-token")
 BASE_URL = os.getenv("RUNIX_BASE_URL", "http://localhost:8787")
+FIRECRAWL_API_KEY = os.getenv("FIRECRAWL_API_KEY", "")
 
 
 async def _get_headers() -> Dict[str, str]:
@@ -86,6 +87,32 @@ def chem_calc(smiles: str) -> str:
     from app.tools.local import chem_calc as _chem
     return json.dumps(_chem(smiles))
 
+
+@function_tool
+@retry(
+    reraise=True,
+    stop=stop_after_attempt(3),
+    wait=wait_exponential(multiplier=0.2, min=0.2, max=2),
+    retry=retry_if_exception_type(httpx.HTTPError),
+)
+async def web_scrape_firecrawl(url: str, mode: str = "scrape") -> str:
+    if not FIRECRAWL_API_KEY:
+        return json.dumps({"error": "FIRECRAWL_API_KEY not configured"})
+    start = time.perf_counter()
+    headers = {"Content-Type": "application/json", "x-api-key": FIRECRAWL_API_KEY}
+    async with httpx.AsyncClient(timeout=45) as client:
+        resp = await client.post(
+            "https://api.firecrawl.dev/v1/scrape",
+            headers=headers,
+            json={"url": url, "formats": ["markdown"], "mode": mode},
+        )
+        resp.raise_for_status()
+        out = resp.json()
+    elapsed = int((time.perf_counter() - start) * 1000)
+    trace = TOOL_TRACE_CVAR.get()
+    if trace is not None:
+        trace.append({"tool": "web.firecrawl", "args": {"url": url, "mode": mode}, "t_ms": elapsed})
+    return json.dumps(out)
 
 @function_tool
 @retry(
@@ -181,7 +208,7 @@ def build_agents(mcp_servers: list[Any] | None = None) -> dict[str, Any]:
     scholar = Agent(
         name="SCHOLAR",
         instructions=_scholar_instructions(),
-        tools=[rag_search, rag_expand, format_markdown_with_refs],
+        tools=[rag_search, rag_expand, format_markdown_with_refs, web_scrape_firecrawl],
         model=os.getenv("MODEL_SCHOLAR", "gpt-4o"),
         mcp_servers=mcp_servers or [],
         model_settings=common_settings,
@@ -190,7 +217,7 @@ def build_agents(mcp_servers: list[Any] | None = None) -> dict[str, Any]:
     archivist = Agent(
         name="ARCHIVIST",
         instructions=_archivist_instructions(),
-        tools=[rag_search, format_markdown_with_refs],
+        tools=[rag_search, format_markdown_with_refs, web_scrape_firecrawl],
         model=os.getenv("MODEL_ARCHIVIST", "gpt-4o-mini"),
         mcp_servers=mcp_servers or [],
         model_settings=common_settings,

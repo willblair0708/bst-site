@@ -25,7 +25,14 @@ except Exception:  # pragma: no cover - allow running as module
     from .services.chem import router as chem_router  # type: ignore
     from .services.docs import router as docs_router  # type: ignore
 
-load_dotenv()
+# Load environment variables from multiple potential .env locations
+load_dotenv()  # current working directory
+_here = os.path.dirname(__file__)
+_app_env = os.path.abspath(os.path.join(_here, ".env"))
+_backend_env = os.path.abspath(os.path.join(_here, "..", ".env"))
+for _p in (_app_env, _backend_env):
+    if os.path.exists(_p):
+        load_dotenv(_p, override=False)
 
 DEFAULT_OPENAI_API_KEY = os.getenv("OPENAI_API_KEY", "")
 

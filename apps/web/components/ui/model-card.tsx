@@ -68,7 +68,7 @@ export const ModelCard = ({ model, variants }: { model: Model, variants: Variant
           </div>
         </div>
         <Button size="sm" variant="ghost" asChild>
-          <Link href={`/models/${model.name.toLowerCase()}/playground`}>
+          <Link href={`/models/${model.name.toLowerCase()}`}>
             Use Model
           </Link>
         </Button>

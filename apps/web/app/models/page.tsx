@@ -1,478 +1,248 @@
 'use client';
 
 import { useState, useMemo } from 'react';
-import { motion, AnimatePresence, useScroll, useTransform, useSpring, Variants } from 'framer-motion';
 import { 
   Brain,
   Search,
-  Flame,
-  Verified,
+  Filter,
+  Star,
   Download,
-  Trophy,
+  Verified,
   Bot
 } from 'lucide-react';
 import { 
   Card, 
-  CardHeader, 
-  CardTitle, 
-  CardDescription, 
   CardContent 
 } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
-import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { ModelCard } from '@/components/ui/model-card';
 import Link from 'next/link';
 
-// Animation variants for enhanced micro-interactions
-const pageVariants: Variants = {
-  initial: { opacity: 0 },
-  animate: { 
-    opacity: 1, 
-    transition: {
-      duration: 0.8,
-      staggerChildren: 0.1,
-      delayChildren: 0.2
-    }
-  },
-  exit: { opacity: 0, transition: { duration: 0.3 } }
-};
-
-const containerVariants: Variants = {
-  initial: { opacity: 0 },
-  animate: {
-    opacity: 1,
-    transition: {
-      staggerChildren: 0.08,
-      delayChildren: 0.1
-    }
-  }
-};
-
-const itemVariants: Variants = {
-  initial: { opacity: 0, y: 20, scale: 0.98 },
-  animate: { 
-    opacity: 1, 
-    y: 0, 
-    scale: 1,
-    transition: {
-      duration: 0.5,
-      ease: [0.4, 0.0, 0.2, 1]
-    }
-  },
-};
-
-const heroVariants: Variants = {
-  initial: { opacity: 0, y: 30 },
-  animate: { 
-    opacity: 1, 
-    y: 0,
-    transition: {
-      duration: 0.7,
-      ease: [0.4, 0.0, 0.2, 1],
-      staggerChildren: 0.15
-    }
-  }
-};
-
-// Enhanced models data with AI-first metrics
+// Sample models data
 const models = [
   {
     id: 'esm-2',
     name: 'ESM-2',
     author: 'Meta AI',
-    authorAvatar: '/avatars/meta.png',
     description: 'Evolutionary scale modeling for protein sequence analysis and functional annotation.',
     category: 'Protein Analysis',
     domain: 'Computational Biology',
     downloads: 89000,
-    likes: 5200,
-    lastModified: '2024-05-05',
-    tags: ['protein-sequences', 'evolution', 'language-model', 'biology'],
-    license: 'MIT',
-    size: '15 GB',
-    framework: 'PyTorch',
-    language: 'Python',
-    featured: true,
+    stars: 5200,
     verified: true,
-    citations: 9800,
-    trending: true,
+    featured: true,
+    tags: ['protein-sequences', 'evolution', 'language-model', 'biology'],
+    framework: 'PyTorch',
   },
+  {
+    id: 'alphafold2',
+    name: 'AlphaFold 2',
+    author: 'DeepMind',
+    description: 'Highly accurate protein structure prediction using deep learning.',
+    category: 'Protein Structure',
+    domain: 'Structural Biology',
+    downloads: 125000,
+    stars: 8900,
+    verified: true,
+    featured: true,
+    tags: ['protein-structure', 'deep-learning', 'prediction'],
+    framework: 'PyTorch',
+  },
+  {
+    id: 'gpt-chem',
+    name: 'GPT-Chem',
+    author: 'ChemAI Labs',
+    description: 'Chemical compound generation and property prediction model.',
+    category: 'Chemistry',
+    domain: 'Drug Discovery',
+    downloads: 34000,
+    stars: 2100,
+    verified: false,
+    featured: false,
+    tags: ['chemistry', 'generation', 'properties'],
+    framework: 'TensorFlow',
+  }
 ];
 
 const categories = ['All', 'Protein Structure', 'Genomics', 'Chemistry', 'Protein Analysis'];
-const domains = ['All', 'Structural Biology', 'Drug Discovery', 'Single Cell Analysis', 'Computational Biology', 'Gene Networks'];
 const frameworks = ['All', 'PyTorch', 'TensorFlow'];
 
 export default function ModelsPage() {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('All');
-  const [selectedDomain, setSelectedDomain] = useState('All');
   const [selectedFramework, setSelectedFramework] = useState('All');
-  const [sortBy, setSortBy] = useState('trending');
-  const [viewMode, setViewMode] = useState('all');
-
-  const { scrollY } = useScroll();
-  const heroY = useTransform(scrollY, [0, 400], [0, -80]);
-  const heroOpacity = useTransform(scrollY, [0, 300], [1, 0]);
-  const backgroundY = useTransform(scrollY, [0, 800], [0, -150]);
-  
-  const springConfig = { stiffness: 260, damping: 30 };
-  const heroSpring = useSpring(heroY, springConfig);
-  const opacitySpring = useSpring(heroOpacity, { stiffness: 100, damping: 20 });
+  const [showFilters, setShowFilters] = useState(false);
 
   const filteredModels = useMemo(() => {
-    let filtered = models.filter(model => {
+    return models.filter(model => {
       const matchesSearch = model.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
                           model.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
                           model.tags.some(tag => tag.toLowerCase().includes(searchQuery.toLowerCase()));
       const matchesCategory = selectedCategory === 'All' || model.category === selectedCategory;
-      const matchesDomain = selectedDomain === 'All' || model.domain === selectedDomain;
       const matchesFramework = selectedFramework === 'All' || model.framework === selectedFramework;
       
-      return matchesSearch && matchesCategory && matchesDomain && matchesFramework;
+      return matchesSearch && matchesCategory && matchesFramework;
     });
-
-    if (viewMode === 'featured') {
-      filtered = filtered.filter(model => model.featured);
-    }
-
-    // Sort models
-    filtered.sort((a, b) => {
-      switch (sortBy) {
-        case 'likes':
-          return b.likes - a.likes;
-        case 'recent':
-          return new Date(b.lastModified).getTime() - new Date(a.lastModified).getTime();
-        case 'name':
-          return a.name.localeCompare(b.name);
-        case 'trending':
-          return (b.trending ? 1 : 0) - (a.trending ? 1 : 0) || b.downloads - a.downloads;
-        default: // downloads
-          return b.downloads - a.downloads;
-      }
-    });
-
-    return filtered;
-  }, [searchQuery, selectedCategory, selectedDomain, selectedFramework, sortBy, viewMode]);
+  }, [searchQuery, selectedCategory, selectedFramework]);
 
 
 
   return (
-    <motion.div 
-      className="min-h-screen bg-gradient-to-br from-background via-background to-primary-100/20 relative overflow-hidden"
-      variants={pageVariants}
-      initial="initial"
-      animate="animate"
-      exit="exit"
-    >
-      <motion.div 
-        className="absolute inset-0 bg-gradient-to-b from-primary-100/20 via-transparent to-accent-100/10"
-        style={{ y: backgroundY }}
-      />
-      
-      {/* Subtle geometric elements with @design.mdc colors */}
-      <motion.div
-        className="absolute w-96 h-96 rounded-full opacity-[0.04] bg-primary-500"
-        style={{ 
-          top: '5%', 
-          left: '10%',
-          filter: 'blur(80px)'
-        }}
-        animate={{ 
-          x: [0, 40, 0], 
-          y: [0, -30, 0],
-          scale: [1, 1.1, 1]
-        }}
-        transition={{ duration: 40, repeat: Infinity, ease: "easeInOut" }}
-      />
-      <motion.div
-        className="absolute w-80 h-80 rounded-full opacity-[0.04] bg-accent-500"
-        style={{ 
-          bottom: '10%', 
-          right: '15%',
-          filter: 'blur(70px)'
-        }}
-        animate={{ 
-          x: [0, -35, 0], 
-          y: [0, 35, 0],
-          scale: [1, 0.9, 1]
-        }}
-        transition={{ duration: 35, repeat: Infinity, ease: "easeInOut" }}
-      />
-
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16 relative z-10">
-        {/* Hero Section - Refined Astra-Soft style */}
-        <motion.div 
-          className="text-center mb-12"
-          style={{ y: heroSpring, opacity: opacitySpring }}
-          variants={heroVariants}
-        >
-          <motion.div
-            className="inline-block bg-gradient-to-br from-primary-100 to-primary-100/50 rounded-2xl p-3 mb-4 shadow-elevation-2"
-            variants={heroVariants}
-          >
-            <motion.div 
-              className="relative flex items-center justify-center bg-primary-500 rounded-2xl p-3 shadow-soft"
-              animate={{ rotate: [0, 10, -5, 0] }}
-              transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
-            >
-              <Brain size={32} className="text-foreground" />
-            </motion.div>
-          </motion.div>
-          <motion.h1 
-            className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-foreground mb-4"
-            variants={heroVariants}
-          >
-            Scientific Models
-          </motion.h1>
-          
-          <motion.p 
-            className="text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto mt-4 mb-8 leading-relaxed font-medium"
-            variants={heroVariants}
-          >
-            Discover and deploy cutting-edge foundation models with git-based versioning and automated reproducibility verification.
-          </motion.p>
-
-          {/* Pastel Bento Stats Cards */}
-          <motion.div
-            className="max-w-3xl mx-auto"
-            variants={heroVariants}
-          >
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6">
-              {[
-                { icon: Brain, label: 'AI Models', value: models.length, color: 'primary' },
-                { icon: Download, label: 'Downloads', value: models.reduce((sum, m) => sum + m.downloads, 0), color: 'accent' },
-                { icon: Trophy, label: 'Citations', value: models.reduce((sum, m) => sum + (m.citations || 0), 0), color: 'collaboration' },
-                { icon: Verified, label: 'Verified', value: `${models.filter(m => m.verified).length}`, color: 'accent' }
-              ].map((stat, i) => (
-                <motion.div
-                  key={stat.label}
-                  initial={{ opacity: 0, y: 15 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  whileHover={{ y: -4, rotate: i % 2 === 0 ? 1 : -1 }}
-                  transition={{ duration: 0.3, type: "spring", stiffness: 300, delay: 0.3 + i * 0.05 }}
-                  className="group"
-                >
-                  <Card className={`text-center bg-gradient-to-br ${
-                    stat.color === 'primary' ? 'from-primary-100 to-primary-50 border-primary-200/60 hover:border-primary-300' :
-                    stat.color === 'accent' ? 'from-accent-100 to-accent-50 border-accent-200/60 hover:border-accent-300' :
-                    'from-collaboration-100 to-collaboration-50 border-collaboration-200/60 hover:border-collaboration-300'
-                  } transition-all shadow-elevation-1 hover:shadow-elevation-2 rounded-2xl border-2`}>
-                    <CardContent className="p-6">
-                      <div className={`p-3 rounded-2xl mx-auto mb-4 w-fit shadow-soft ${
-                        stat.color === 'primary' ? 'bg-primary-500' :
-                        stat.color === 'accent' ? 'bg-accent-500' :
-                        'bg-collaboration-500'
-                      }`}>
-                        <stat.icon className="h-6 w-6 text-foreground" />
-                      </div>
-                      <div className={`text-3xl font-bold mb-2 ${
-                        stat.color === 'primary' ? 'text-primary-700' :
-                        stat.color === 'accent' ? 'text-accent-700' :
-                        'text-collaboration-700'
-                      }`}>
-                        {typeof stat.value === 'number' ? stat.value.toLocaleString() : stat.value}
-                      </div>
-                      <div className={`text-sm font-semibold ${
-                        stat.color === 'primary' ? 'text-primary-600' :
-                        stat.color === 'accent' ? 'text-accent-600' :
-                        'text-collaboration-600'
-                      }`}>
-                        {stat.label}
-                      </div>
-                    </CardContent>
-                  </Card>
-                </motion.div>
-              ))}
+    <div className="min-h-screen bg-background">
+      <div className="max-w-6xl mx-auto px-4 py-8">
+        {/* Simple Header */}
+        <div className="mb-8">
+          <div className="flex items-center gap-3 mb-3">
+            <div className="p-2 bg-primary-100 rounded-lg">
+              <Brain className="h-6 w-6 text-primary-600" />
             </div>
-          </motion.div>
-        </motion.div>
+            <h1 className="text-3xl font-bold text-gray-900">Scientific Models</h1>
+          </div>
+          <p className="text-gray-600 text-lg">
+            Discover verified AI models for scientific research
+          </p>
+        </div>
 
-        {/* Search and Filters - Enhanced Astra-Soft style */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.2 }}
-        >
-          <Card className="bg-gradient-to-br from-primary-100/30 via-white/80 to-accent-100/20 backdrop-blur-md border-2 border-primary-200/60 mb-10 shadow-elevation-2 rounded-2xl overflow-hidden">
-            <CardContent className="p-6 sm:p-8">
-              <div className="space-y-4">
-                <div className="relative max-w-xl mx-auto">
-                  <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-muted-foreground h-5 w-5 pointer-events-none" />
-                  <Input
-                    placeholder="Search models, tags, or descriptions..."
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    className="pl-12 pr-4 py-3 h-12 text-base border-2 border-primary-200/60 bg-white/80 focus:bg-white focus:ring-2 focus:ring-primary-300/50 focus:border-primary-300 transition-all rounded-2xl shadow-soft"
-                  />
-                </div>
-
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
-                  <Select value={selectedCategory} onValueChange={setSelectedCategory}>
-                    <SelectTrigger className="border-2 border-primary-200/60 bg-white/80 h-11 rounded-2xl shadow-soft hover:shadow-elevation-1 transition-all">
-                      <SelectValue placeholder="Category" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {categories.map(category => (
-                        <SelectItem key={category} value={category}>{category}</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-
-                  <Select value={selectedDomain} onValueChange={setSelectedDomain}>
-                    <SelectTrigger className="border-2 border-primary-200/60 bg-white/80 h-11 rounded-xl shadow-soft hover:shadow-elevation-1 transition-all">
-                      <SelectValue placeholder="Domain" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {domains.map(domain => (
-                        <SelectItem key={domain} value={domain}>{domain}</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-
-                  <Select value={selectedFramework} onValueChange={setSelectedFramework}>
-                    <SelectTrigger className="border-2 border-primary-200/60 bg-white/80 h-11 rounded-xl shadow-soft hover:shadow-elevation-1 transition-all">
-                      <SelectValue placeholder="Framework" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {frameworks.map(framework => (
-                        <SelectItem key={framework} value={framework}>{framework}</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-
-                  <Tabs value={viewMode} onValueChange={setViewMode}>
-                    <TabsList className="grid w-full grid-cols-2 bg-gradient-to-r from-accent-50 to-accent-100/50 border-2 border-accent-200/60 h-11 rounded-xl shadow-soft">
-                      <TabsTrigger value="featured" className="text-sm data-[state=active]:bg-gradient-to-r data-[state=active]:from-accent-500 data-[state=active]:to-accent-600 data-[state=active]:text-foreground data-[state=active]:shadow-soft rounded-lg transition-all font-medium">
-                        <Flame className="h-4 w-4 mr-1.5" />
-                        Featured
-                      </TabsTrigger>
-                      <TabsTrigger value="all" className="text-sm data-[state=active]:bg-gradient-to-r data-[state=active]:from-primary-500 data-[state=active]:to-primary-600 data-[state=active]:text-foreground data-[state=active]:shadow-soft rounded-lg transition-all font-medium">
-                        <Brain className="h-4 w-4 mr-1.5" />
-                        All
-                      </TabsTrigger>
-                    </TabsList>
-                  </Tabs>
-                </div>
-              </div>
-              
-              <div className="border-t border-primary-200/30 mt-8 pt-6">
-                <div className="flex items-center justify-between">
-                  <span className="text-neutral-600 text-sm font-medium">
-                    {filteredModels.length} model{filteredModels.length !== 1 ? 's' : ''} found
-                  </span>
-                  <div className="flex items-center gap-3">
-                    <Badge className="flex items-center gap-2 bg-gradient-to-r from-accent-500 to-accent-600 text-foreground border-0 shadow-soft rounded-xl px-3 py-1.5 text-sm font-medium">
-                      <Flame className="h-4 w-4" />
-                      {models.filter(m => m.trending).length} Trending
-                    </Badge>
-                    <Badge className="flex items-center gap-2 bg-gradient-to-r from-green-500 to-emerald-600 text-foreground border-0 shadow-soft rounded-xl px-3 py-1.5 text-sm font-medium">
-                      <Verified className="h-4 w-4" />
-                      {models.filter(m => m.verified).length} Verified
-                    </Badge>
-                  </div>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </motion.div>
-
-        {/* Models Grid - "Pastel Bento" style */}
-        <motion.div 
-          className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6"
-          variants={containerVariants}
-          initial="initial"
-          animate="animate"
-        >
-          {filteredModels.map((model, index) => (
-            <ModelCard
-              key={model.id}
-              model={{
-                name: model.name,
-                version: "1.0", // Placeholder
-                description: model.description,
-                provider: model.author,
-                Icon: Bot,
-                stars: model.likes,
-                forks: model.downloads,
-              }}
-              variants={itemVariants}
+        {/* Search and Filter */}
+        <div className="mb-8">
+          <div className="relative mb-4">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
+            <Input
+              placeholder="Search models..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="pl-10 h-12 text-base border-gray-200 focus:border-primary-300 focus:ring-primary-200"
             />
-          ))}
-        </motion.div>
+          </div>
 
-        {/* Enhanced Empty State */}
-        <AnimatePresence>
-          {filteredModels.length === 0 && (
-            <motion.div 
-              className="text-center py-20"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
-              transition={{ duration: 0.4, ease: "easeOut" }}
+          <div className="flex items-center gap-4">
+            <Select value={selectedCategory} onValueChange={setSelectedCategory}>
+              <SelectTrigger className="w-48 border-gray-200">
+                <SelectValue placeholder="Category" />
+              </SelectTrigger>
+              <SelectContent>
+                {categories.map(category => (
+                  <SelectItem key={category} value={category}>{category}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+
+            <Select value={selectedFramework} onValueChange={setSelectedFramework}>
+              <SelectTrigger className="w-48 border-gray-200">
+                <SelectValue placeholder="Framework" />
+              </SelectTrigger>
+              <SelectContent>
+                {frameworks.map(framework => (
+                  <SelectItem key={framework} value={framework}>{framework}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setShowFilters(!showFilters)}
+              className="ml-auto"
             >
-              <motion.div
-                initial={{ scale: 0.8, opacity: 0 }}
-                animate={{ scale: 1, opacity: 1 }}
-                transition={{ duration: 0.5, delay: 0.1, type: 'spring', stiffness: 150 }}
-                className="mb-6"
-              >
-                <div className="relative inline-block">
-                  <Brain className="w-20 h-20 text-muted-foreground/30" />
-                  <motion.div
-                    className="absolute top-0 right-0 w-5 h-5 bg-primary/20 rounded-full"
-                    animate={{ scale: [1, 1.3, 1], opacity: [0.6, 1, 0.6] }}
-                    transition={{ duration: 2.5, repeat: Infinity, ease: 'easeInOut' }}
-                  />
+              <Filter className="h-4 w-4 mr-2" />
+              Filters
+            </Button>
+          </div>
+        </div>
+
+        {/* Results Count */}
+        <div className="flex items-center justify-between mb-6">
+          <p className="text-gray-600">
+            {filteredModels.length} models found
+          </p>
+          <div className="flex gap-2">
+            <Badge variant="secondary" className="bg-green-100 text-green-700">
+              <Verified className="h-3 w-3 mr-1" />
+              {models.filter(m => m.verified).length} Verified
+            </Badge>
+          </div>
+        </div>
+
+        {/* Models Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {filteredModels.map((model) => (
+            <Card key={model.id} className="border border-gray-200 hover:shadow-md transition-shadow">
+              <CardContent className="p-6">
+                <div className="flex items-start justify-between mb-3">
+                  <div className="flex items-center gap-2">
+                    <Bot className="h-5 w-5 text-gray-400" />
+                    <h3 className="font-semibold text-gray-900">{model.name}</h3>
+                  </div>
+                  {model.verified && (
+                    <Badge variant="secondary" className="bg-green-100 text-green-700 text-xs">
+                      <Verified className="h-3 w-3 mr-1" />
+                      Verified
+                    </Badge>
+                  )}
                 </div>
-              </motion.div>
-              
-              <motion.h3 
-                className="text-xl font-semibold text-foreground mb-2"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ duration: 0.5, delay: 0.2 }}
-              >
-                No models found
-              </motion.h3>
-              
-              <motion.p 
-                className="text-muted-foreground mb-6 max-w-md mx-auto"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ duration: 0.5, delay: 0.3 }}
-              >
-                Try adjusting your search or filter criteria to discover new AI models.
-              </motion.p>
-              
-              <motion.div
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: 0.4 }}
-              >
-                <Button 
-                  variant="outline" 
-                  onClick={() => {
-                    setSearchQuery('');
-                    setSelectedCategory('All');
-                    setSelectedDomain('All');
-                    setSelectedFramework('All');
-                    setViewMode('all');
-                  }}
-                  className="bg-white hover:bg-primary-50 border-2 border-primary-200 text-primary-700 hover:text-primary-800 rounded-xl px-6 py-2.5 shadow-soft hover:shadow-elevation-1 transition-all font-medium"
-                >
-                  <Search className="h-4 w-4 mr-2" />
-                  Clear All Filters
-                </Button>
-              </motion.div>
-            </motion.div>
-          )}
-        </AnimatePresence>
+
+                <p className="text-gray-600 text-sm mb-4 line-clamp-3">
+                  {model.description}
+                </p>
+
+                <div className="flex items-center justify-between text-sm text-gray-500 mb-4">
+                  <span>by {model.author}</span>
+                  <span>{model.framework}</span>
+                </div>
+
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-4 text-sm text-gray-500">
+                    <span className="flex items-center gap-1">
+                      <Star className="h-3 w-3" />
+                      {model.stars.toLocaleString()}
+                    </span>
+                    <span className="flex items-center gap-1">
+                      <Download className="h-3 w-3" />
+                      {model.downloads.toLocaleString()}
+                    </span>
+                  </div>
+                  <Link href={`/models/${model.id}`}>
+                    <Button size="sm" variant="outline">
+                      View
+                    </Button>
+                  </Link>
+                </div>
+
+                <div className="flex flex-wrap gap-1 mt-3">
+                  {model.tags.slice(0, 3).map((tag) => (
+                    <Badge key={tag} variant="secondary" className="text-xs bg-gray-100 text-gray-600">
+                      {tag}
+                    </Badge>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+
+        {/* Empty State */}
+        {filteredModels.length === 0 && (
+          <div className="text-center py-12">
+            <Brain className="h-12 w-12 text-gray-300 mx-auto mb-4" />
+            <h3 className="text-lg font-medium text-gray-900 mb-2">No models found</h3>
+            <p className="text-gray-600 mb-4">
+              Try adjusting your search or filter criteria
+            </p>
+            <Button
+              variant="outline"
+              onClick={() => {
+                setSearchQuery('');
+                setSelectedCategory('All');
+                setSelectedFramework('All');
+              }}
+            >
+              Clear filters
+            </Button>
+          </div>
+        )}
       </div>
-    </motion.div>
+    </div>
   );
 }

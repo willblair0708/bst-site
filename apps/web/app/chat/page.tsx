@@ -142,9 +142,22 @@ const ChatPage = () => {
         content: contentToSend,
         createdAt: Date.now(),
       };
-      if (!activeSessionId) return;
+      // Ensure there is an active session; create one on the fly if needed
+      let sessionId = activeSessionId;
+      if (!sessionId) {
+        sessionId = crypto.randomUUID();
+        const newSession: ChatSession = {
+          id: sessionId,
+          title: "New Chat",
+          createdAt: Date.now(),
+          agent: currentAgent,
+          messages: [],
+        };
+        setSessions(prev => [newSession, ...prev]);
+        setActiveSessionId(sessionId);
+      }
       const updatedMessages = [...messages, newUserMessage];
-      setSessions(prev => prev.map(s => s.id === activeSessionId ? { ...s, messages: updatedMessages } : s));
+      setSessions(prev => prev.map(s => s.id === sessionId ? { ...s, messages: updatedMessages } : s));
       if (forcedContent === undefined) setInputValue("");
       setIsAiTyping(true);
       
@@ -175,7 +188,7 @@ const ChatPage = () => {
           const reader = response.body.getReader();
           let partial = "";
           const aiId = Date.now() + 2;
-          setSessions(prev => prev.map(s => s.id === activeSessionId ? { ...s, messages: [...updatedMessages, { id: aiId, author: 'AI', content: '', createdAt: Date.now() }] } : s));
+          setSessions(prev => prev.map(s => s.id === sessionId ? { ...s, messages: [...updatedMessages, { id: aiId, author: 'AI', content: '', createdAt: Date.now() }] } : s));
           while (true) {
             const { done, value } = await reader.read();
             if (done) break;
@@ -190,10 +203,10 @@ const ChatPage = () => {
               try {
                 const evt = JSON.parse(payload);
                 if (evt.delta) {
-                  setSessions(prev => prev.map(s => s.id === activeSessionId ? { ...s, messages: s.messages.map(m => m.id === aiId ? { ...m, content: m.content + evt.delta } : m) } : s));
+                  setSessions(prev => prev.map(s => s.id === sessionId ? { ...s, messages: s.messages.map(m => m.id === aiId ? { ...m, content: m.content + evt.delta } : m) } : s));
                 }
                 if (evt.done && evt.message) {
-                  setSessions(prev => prev.map(s => s.id === activeSessionId ? { ...s, messages: s.messages.map(m => m.id === aiId ? { ...evt.message, id: aiId, createdAt: Date.now() } : m) } : s));
+                  setSessions(prev => prev.map(s => s.id === sessionId ? { ...s, messages: s.messages.map(m => m.id === aiId ? { ...evt.message, id: aiId, createdAt: Date.now() } : m) } : s));
                 }
               } catch {}
             }
@@ -202,7 +215,7 @@ const ChatPage = () => {
           const data = await response.json();
           if (data.message) {
             const aiMessage: ChatMessage = { ...data.message, createdAt: Date.now() };
-            setSessions(prev => prev.map(s => s.id === activeSessionId ? { ...s, messages: [...updatedMessages, aiMessage] } : s));
+            setSessions(prev => prev.map(s => s.id === sessionId ? { ...s, messages: [...updatedMessages, aiMessage] } : s));
           } else {
             throw new Error('Invalid response format');
           }
@@ -215,7 +228,7 @@ const ChatPage = () => {
           content: "I apologize, but I'm having trouble responding right now. Please try again in a moment.",
           createdAt: Date.now(),
         };
-        setSessions(prev => prev.map(s => s.id === activeSessionId ? { ...s, messages: [...messages, errorMessage] } : s));
+        setSessions(prev => prev.map(s => s.id === (sessionId || '') ? { ...s, messages: [...messages, errorMessage] } : s));
       } finally {
         setIsAiTyping(false);
       }

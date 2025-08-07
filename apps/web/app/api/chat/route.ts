@@ -1,5 +1,8 @@
 import { NextRequest } from 'next/server';
 
+export const runtime = 'nodejs';
+export const dynamic = 'force-dynamic';
+
 // Proxy to Python backend to support agents and streaming
 export async function POST(req: NextRequest) {
   const backendUrl = process.env.RUNIX_BACKEND_URL || 'http://localhost:8787/chat';

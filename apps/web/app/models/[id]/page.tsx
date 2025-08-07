@@ -365,12 +365,12 @@ export default function ModelPage({ params }: ModelPageProps) {
 
   return (
     <motion.div 
-      className="min-h-screen bg-background"
+      className="min-h-screen bg-gradient-to-br from-background via-background to-primary-100/20"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.6 }}
     >
-      <div className="max-w-7xl mx-auto px-6 py-8">
+      <div className="max-w-7xl mx-auto px-6 py-12">
                   {/* Hero Section - Enhanced Design */}
         <motion.div 
           className="mb-16"
@@ -378,214 +378,258 @@ export default function ModelPage({ params }: ModelPageProps) {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.1 }}
         >
-          {/* Header with improved spacing and layout */}
-          <div className="bg-gradient-to-br from-card/30 to-card/10 border border-border/50 rounded-2xl p-8 mb-8 backdrop-blur-sm">
-            <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-8">
+          {/* Hero Header - Astra-Soft Pastel Bento Design */}
+          <div className="bg-gradient-to-br from-primary-100 via-primary-50/30 to-accent-100/50 border border-primary-200/60 rounded-3xl p-8 mb-10 backdrop-blur-sm shadow-elevation-2 relative overflow-hidden">
+            {/* Subtle geometric background pattern */}
+            <div className="absolute inset-0 opacity-5">
+              <div className="absolute top-6 right-6 w-24 h-24 bg-primary-500 rounded-full blur-3xl"></div>
+              <div className="absolute bottom-6 left-6 w-20 h-20 bg-accent-500 rounded-full blur-2xl"></div>
+            </div>
+            <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-8 relative z-10">
               <div className="flex items-start gap-6 flex-1">
                 <div className="relative">
-                  <Avatar className="h-20 w-20 ring-2 ring-border shadow-xl">
+                  <Avatar className="h-20 w-20 ring-3 ring-white/50 shadow-soft">
                     <AvatarImage src={model.authorAvatar} alt={model.author} />
-                    <AvatarFallback className="bg-primary/10 text-primary text-2xl font-bold">
+                    <AvatarFallback className="bg-gradient-to-br from-primary-500 to-primary-600 text-foreground text-2xl font-bold">
                       {model.author.split(' ').map((n: string) => n[0]).join('')}
                     </AvatarFallback>
-            </Avatar>
+                  </Avatar>
                   {model.verified && (
-                    <div className="absolute -bottom-1 -right-1 w-6 h-6 bg-accent rounded-full flex items-center justify-center border-2 border-background">
-                      <Verified className="h-3 w-3 text-background" />
-                    </div>
+                    <motion.div 
+                      className="absolute -bottom-2 -right-2 w-8 h-8 bg-gradient-to-br from-accent-500 to-accent-600 rounded-full flex items-center justify-center border-3 border-white shadow-lg"
+                      initial={{ scale: 0 }}
+                      animate={{ scale: 1 }}
+                      transition={{ delay: 0.5, type: "spring", stiffness: 150 }}
+                    >
+                      <Verified className="h-4 w-4 text-foreground" />
+                    </motion.div>
                   )}
                 </div>
                 
                 <div className="flex-1 min-w-0">
                   <div className="flex flex-col gap-3 mb-4">
                     <div className="flex items-center gap-3 flex-wrap">
-                      <h1 className="text-3xl lg:text-4xl font-light tracking-tight text-foreground">
+                      <h1 className="text-2xl lg:text-3xl font-semibold tracking-tight bg-gradient-to-r from-neutral-900 via-neutral-800 to-neutral-700 bg-clip-text text-transparent">
                         {model.name}
                       </h1>
                       <div className="flex gap-2">
-                {model.featured && (
-                          <Badge className="bg-gradient-to-r from-primary to-primary/80 text-primary-foreground border-0 shadow-sm">
-                            <Trophy className="h-3 w-3 mr-1" />
-                    Featured
-                  </Badge>
-                )}
+                        {model.featured && (
+                          <motion.div
+                            initial={{ opacity: 0, scale: 0.8 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            transition={{ delay: 0.3 }}
+                          >
+                            <Badge className="bg-gradient-to-r from-primary-500 to-primary-600 text-foreground border-0 shadow-soft px-3 py-1.5 rounded-lg text-sm">
+                              <Trophy className="h-3 w-3 mr-1.5" />
+                              Featured
+                            </Badge>
+                          </motion.div>
+                        )}
                         {model.trending && (
-                          <Badge className="bg-gradient-to-r from-accent to-accent/80 text-accent-foreground border-0 shadow-sm">
-                            <TrendingUp className="h-3 w-3 mr-1" />
-                            Trending
-                  </Badge>
-                )}
-            </div>
-          </div>
+                          <motion.div
+                            initial={{ opacity: 0, scale: 0.8 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            transition={{ delay: 0.4 }}
+                          >
+                            <Badge className="bg-gradient-to-r from-accent-500 to-accent-600 text-foreground border-0 shadow-soft px-3 py-1.5 rounded-lg text-sm">
+                              <TrendingUp className="h-3 w-3 mr-1.5" />
+                              Trending
+                            </Badge>
+                          </motion.div>
+                        )}
+                      </div>
+                    </div>
           
                     <div className="flex items-center gap-2 text-sm">
-                      <span className="text-muted-foreground">by</span>
-                      <span className="font-semibold text-foreground">{model.author}</span>
-                      <span className="text-muted-foreground">•</span>
-                      <Badge variant="outline" className="text-xs px-2 py-0.5">
+                      <span className="text-neutral-500">by</span>
+                      <span className="font-medium text-neutral-700">{model.author}</span>
+                      <span className="text-neutral-300">•</span>
+                      <Badge variant="outline" className="bg-white/80 border-primary-200 text-primary-600 text-xs px-2 py-1 rounded-md">
                         v{model.version}
                       </Badge>
-                      <span className="text-muted-foreground">•</span>
-                      <span className="text-muted-foreground">Updated {new Date(model.lastModified).toLocaleDateString()}</span>
+                      <span className="text-neutral-300">•</span>
+                      <span className="text-neutral-500">Updated {new Date(model.lastModified).toLocaleDateString()}</span>
                     </div>
-        </div>
+                  </div>
 
-                  <p className="text-base lg:text-lg text-muted-foreground leading-relaxed">
+                  <p className="text-base text-neutral-600 leading-relaxed max-w-3xl">
                     {model.description}
                   </p>
-          </div>
-          </div>
+                </div>
+              </div>
               
               <div className="lg:ml-8">
-                                <ModelActions likes={model.likes} />
+                <ModelActions likes={model.likes} />
+              </div>
+            </div>
           </div>
-          </div>
-        </div>
 
-          {/* Enhanced Metrics Grid */}
+          {/* Enhanced Metrics Grid - Pastel Bento Tiles */}
           <motion.div 
-            className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-8"
+            className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6 mb-12"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.3 }}
           >
             <motion.div
-              whileHover={{ y: -2 }}
-              transition={{ duration: 0.2 }}
+              whileHover={{ y: -4, rotate: 1 }}
+              transition={{ duration: 0.2, type: "spring", stiffness: 300 }}
             >
-              <Card className="text-center bg-gradient-to-br from-primary/5 to-primary/10 border-primary/20 hover:border-primary/30 transition-colors">
+              <Card className="text-center bg-gradient-to-br from-primary-100 via-primary-50 to-white border-primary-200/60 hover:border-primary-300 transition-all shadow-elevation-1 hover:shadow-elevation-2 rounded-2xl">
                 <CardContent className="p-6">
-                  <Download className="h-5 w-5 text-primary mx-auto mb-2" />
-                  <div className="text-2xl font-bold text-primary mb-1">{formatNumber(model.downloads)}</div>
-                  <div className="text-xs text-muted-foreground font-medium">Downloads</div>
+                  <div className="p-2 bg-primary-500 rounded-xl mx-auto mb-3 w-fit shadow-soft">
+                    <Download className="h-5 w-5 text-foreground" />
+                  </div>
+                  <div className="text-2xl font-bold text-primary-700 mb-1">{formatNumber(model.downloads)}</div>
+                  <div className="text-xs text-primary-600 font-medium">Downloads</div>
                 </CardContent>
               </Card>
             </motion.div>
             
             <motion.div
-              whileHover={{ y: -2 }}
-              transition={{ duration: 0.2 }}
+              whileHover={{ y: -4, rotate: -1 }}
+              transition={{ duration: 0.2, type: "spring", stiffness: 300 }}
             >
-              <Card className="text-center bg-gradient-to-br from-accent/5 to-accent/10 border-accent/20 hover:border-accent/30 transition-colors">
+              <Card className="text-center bg-gradient-to-br from-accent-100 via-accent-50 to-white border-accent-200/60 hover:border-accent-300 transition-all shadow-elevation-1 hover:shadow-elevation-2 rounded-2xl">
                 <CardContent className="p-6">
-                  <Star className="h-5 w-5 text-accent mx-auto mb-2" />
-                  <div className="text-2xl font-bold text-accent mb-1">{formatNumber(model.likes)}</div>
-                  <div className="text-xs text-muted-foreground font-medium">Stars</div>
+                  <div className="p-2 bg-accent-500 rounded-xl mx-auto mb-3 w-fit shadow-soft">
+                    <Star className="h-5 w-5 text-foreground" />
+                  </div>
+                  <div className="text-2xl font-bold text-accent-700 mb-1">{formatNumber(model.likes)}</div>
+                  <div className="text-xs text-accent-600 font-medium">Stars</div>
                 </CardContent>
               </Card>
             </motion.div>
             
             <motion.div
-              whileHover={{ y: -2 }}
-              transition={{ duration: 0.2 }}
+              whileHover={{ y: -4, rotate: 1 }}
+              transition={{ duration: 0.2, type: "spring", stiffness: 300 }}
             >
-              <Card className="text-center bg-gradient-to-br from-primary/5 to-primary/10 border-primary/20 hover:border-primary/30 transition-colors">
+              <Card className="text-center bg-gradient-to-br from-collaboration-100 via-purple-50 to-white border-purple-200/60 hover:border-purple-300 transition-all shadow-elevation-1 hover:shadow-elevation-2 rounded-2xl">
                 <CardContent className="p-6">
-                  <Trophy className="h-5 w-5 text-primary mx-auto mb-2" />
-                  <div className="text-2xl font-bold text-primary mb-1">{formatNumber(model.citations)}</div>
-                  <div className="text-xs text-muted-foreground font-medium">Citations</div>
+                  <div className="p-2 bg-gradient-to-br from-purple-500 to-purple-600 rounded-xl mx-auto mb-3 w-fit shadow-soft">
+                    <Trophy className="h-5 w-5 text-foreground" />
+                  </div>
+                  <div className="text-2xl font-bold text-purple-700 mb-1">{formatNumber(model.citations)}</div>
+                  <div className="text-xs text-purple-600 font-medium">Citations</div>
                 </CardContent>
               </Card>
             </motion.div>
             
             <motion.div
-              whileHover={{ y: -2 }}
-              transition={{ duration: 0.2 }}
+              whileHover={{ y: -4, rotate: -1 }}
+              transition={{ duration: 0.2, type: "spring", stiffness: 300 }}
             >
-              <Card className="text-center bg-gradient-to-br from-accent/5 to-accent/10 border-accent/20 hover:border-accent/30 transition-colors">
+              <Card className="text-center bg-gradient-to-br from-accent-100 via-accent-50 to-white border-accent-200/60 hover:border-accent-300 transition-all shadow-elevation-1 hover:shadow-elevation-2 rounded-2xl">
                 <CardContent className="p-6">
-                  <BarChart3 className="h-5 w-5 text-accent mx-auto mb-2" />
-                  <div className="text-2xl font-bold text-accent mb-1">{model.accuracy}%</div>
-                  <div className="text-xs text-muted-foreground font-medium">Accuracy</div>
+                  <div className="p-2 bg-accent-500 rounded-xl mx-auto mb-3 w-fit shadow-soft">
+                    <BarChart3 className="h-5 w-5 text-foreground" />
+                  </div>
+                  <div className="text-2xl font-bold text-accent-700 mb-1">{model.accuracy}%</div>
+                  <div className="text-xs text-accent-600 font-medium">Accuracy</div>
                 </CardContent>
               </Card>
             </motion.div>
             
             <motion.div
-              whileHover={{ y: -2 }}
-              transition={{ duration: 0.2 }}
+              whileHover={{ y: -4, rotate: 1 }}
+              transition={{ duration: 0.2, type: "spring", stiffness: 300 }}
             >
-              <Card className="text-center bg-gradient-to-br from-green-500/5 to-green-500/10 border-green-500/20 hover:border-green-500/30 transition-colors">
+              <Card className="text-center bg-gradient-to-br from-green-100 via-emerald-50 to-white border-green-200/60 hover:border-green-300 transition-all shadow-elevation-1 hover:shadow-elevation-2 rounded-2xl">
                 <CardContent className="p-6">
-                  <Shield className="h-5 w-5 text-green-600 mx-auto mb-2" />
-                  <div className="text-2xl font-bold text-green-600 mb-1">{model.reproducibilityScore}%</div>
-                  <div className="text-xs text-muted-foreground font-medium">Reproducible</div>
+                  <div className="p-2 bg-gradient-to-br from-green-500 to-emerald-600 rounded-xl mx-auto mb-3 w-fit shadow-soft">
+                    <Shield className="h-5 w-5 text-foreground" />
+                  </div>
+                  <div className="text-2xl font-bold text-green-700 mb-1">{model.reproducibilityScore}%</div>
+                  <div className="text-xs text-green-600 font-medium">Reproducible</div>
                 </CardContent>
               </Card>
             </motion.div>
             
             <motion.div
-              whileHover={{ y: -2 }}
-              transition={{ duration: 0.2 }}
+              whileHover={{ y: -4, rotate: -1 }}
+              transition={{ duration: 0.2, type: "spring", stiffness: 300 }}
             >
-              <Card className="text-center bg-gradient-to-br from-primary/5 to-primary/10 border-primary/20 hover:border-primary/30 transition-colors">
+              <Card className="text-center bg-gradient-to-br from-primary-100 via-primary-50 to-white border-primary-200/60 hover:border-primary-300 transition-all shadow-elevation-1 hover:shadow-elevation-2 rounded-2xl">
                 <CardContent className="p-6">
-                  <Target className="h-5 w-5 text-primary mx-auto mb-2" />
-                  <div className="text-2xl font-bold text-primary mb-1">#{model.benchmarkRank}</div>
-                  <div className="text-xs text-muted-foreground font-medium">Global Rank</div>
+                  <div className="p-2 bg-primary-500 rounded-xl mx-auto mb-3 w-fit shadow-soft">
+                    <Target className="h-5 w-5 text-foreground" />
+                  </div>
+                  <div className="text-2xl font-bold text-primary-700 mb-1">#{model.benchmarkRank}</div>
+                  <div className="text-xs text-primary-600 font-medium">Global Rank</div>
                 </CardContent>
               </Card>
             </motion.div>
           </motion.div>
 
-          {/* Enhanced Action Buttons */}
+          {/* Enhanced Action Buttons - Soft-UI Design */}
           <motion.div 
-            className="flex flex-wrap gap-3 justify-center lg:justify-start"
+            className="flex flex-wrap gap-4 justify-center lg:justify-start"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.5 }}
           >
-            <Button 
-              size="lg" 
-              className="bg-gradient-to-r from-primary to-primary/90 hover:from-primary/90 hover:to-primary/80 shadow-md hover:shadow-lg transition-all whitespace-nowrap text-foreground"
-            >
-              <Play className="h-4 w-4 mr-2 flex-shrink-0" />
-              <span>Run Model</span>
-            </Button>
+            <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
+              <Button 
+                size="default" 
+                className="bg-gradient-to-r from-primary-500 to-primary-600 hover:from-primary-600 hover:to-primary-700 shadow-soft hover:shadow-elevation-2 transition-all duration-200 whitespace-nowrap text-foreground px-6 py-2.5 rounded-xl font-medium"
+              >
+                <Play className="h-4 w-4 mr-2 flex-shrink-0" />
+                <span>Run Model</span>
+              </Button>
+            </motion.div>
             
-            <Button 
-              variant="outline" 
-              size="lg" 
-              className="border-border/50 hover:bg-muted/50 transition-colors whitespace-nowrap"
-            >
-              <Download className="h-4 w-4 mr-2 flex-shrink-0" />
-              <span>Download</span>
-            </Button>
+            <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
+              <Button 
+                variant="outline" 
+                size="default" 
+                className="border border-primary-200 bg-white/80 hover:bg-primary-50 transition-all duration-200 whitespace-nowrap shadow-soft hover:shadow-elevation-1 px-6 py-2.5 rounded-xl font-medium text-primary-700 hover:text-primary-800"
+              >
+                <Download className="h-4 w-4 mr-2 flex-shrink-0" />
+                <span>Download</span>
+              </Button>
+            </motion.div>
             
-            <Button 
-              variant="outline" 
-              size="lg" 
-              className="border-border/50 hover:bg-muted/50 transition-colors whitespace-nowrap"
-            >
-              <GitFork className="h-4 w-4 mr-2 flex-shrink-0" />
-              <span>Fork</span>
-            </Button>
+            <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
+              <Button 
+                variant="outline" 
+                size="default" 
+                className="border border-accent-200 bg-white/80 hover:bg-accent-50 transition-all duration-200 whitespace-nowrap shadow-soft hover:shadow-elevation-1 px-6 py-2.5 rounded-xl font-medium text-accent-700 hover:text-accent-800"
+              >
+                <GitFork className="h-4 w-4 mr-2 flex-shrink-0" />
+                <span>Fork</span>
+              </Button>
+            </motion.div>
             
-            <Button 
-              variant="outline" 
-              size="lg" 
-              asChild 
-              className="border-border/50 hover:bg-muted/50 transition-colors whitespace-nowrap"
-            >
-              <Link href={model.codeUrl} target="_blank" className="flex items-center">
-                <Code className="h-4 w-4 mr-2 flex-shrink-0" />
-                <span>View Code</span>
-                <ExternalLink className="h-3 w-3 ml-1 flex-shrink-0" />
-              </Link>
-            </Button>
+            <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
+              <Button 
+                variant="outline" 
+                size="default" 
+                asChild 
+                className="border border-neutral-200 bg-white/80 hover:bg-neutral-50 transition-all duration-200 whitespace-nowrap shadow-soft hover:shadow-elevation-1 px-6 py-2.5 rounded-xl font-medium text-neutral-700 hover:text-neutral-800"
+              >
+                <Link href={model.codeUrl} target="_blank" className="flex items-center">
+                  <Code className="h-4 w-4 mr-2 flex-shrink-0" />
+                  <span>View Code</span>
+                  <ExternalLink className="h-3 w-3 ml-1 flex-shrink-0" />
+                </Link>
+              </Button>
+            </motion.div>
             
-            <Button 
-              variant="outline" 
-              size="lg" 
-              asChild 
-              className="border-border/50 hover:bg-muted/50 transition-colors whitespace-nowrap"
-            >
-              <Link href={model.paperUrl} target="_blank" className="flex items-center">
-                <FileText className="h-4 w-4 mr-2 flex-shrink-0" />
-                <span>Read Paper</span>
-                <ExternalLink className="h-3 w-3 ml-1 flex-shrink-0" />
-              </Link>
-            </Button>
+            <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
+              <Button 
+                variant="outline" 
+                size="default" 
+                asChild 
+                className="border border-neutral-200 bg-white/80 hover:bg-neutral-50 transition-all duration-200 whitespace-nowrap shadow-soft hover:shadow-elevation-1 px-6 py-2.5 rounded-xl font-medium text-neutral-700 hover:text-neutral-800"
+              >
+                <Link href={model.paperUrl} target="_blank" className="flex items-center">
+                  <FileText className="h-4 w-4 mr-2 flex-shrink-0" />
+                  <span>Read Paper</span>
+                  <ExternalLink className="h-3 w-3 ml-1 flex-shrink-0" />
+                </Link>
+              </Button>
+            </motion.div>
           </motion.div>
         </motion.div>
 
@@ -598,33 +642,33 @@ export default function ModelPage({ params }: ModelPageProps) {
             transition={{ duration: 0.8, delay: 0.2 }}
           >
             <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-              <div className="mb-8">
-                <TabsList className="grid w-full grid-cols-3 lg:grid-cols-6 bg-card/50 border border-border/50 p-1 rounded-xl backdrop-blur-sm">
-                  <TabsTrigger value="overview" className="data-[state=active]:bg-background data-[state=active]:shadow-sm rounded-lg transition-all">
-                    <Brain className="h-4 w-4 mr-2" />
+              <div className="mb-12">
+                <TabsList className="grid w-full grid-cols-3 lg:grid-cols-6 bg-gradient-to-r from-primary-50/50 via-white/80 to-accent-50/50 border-2 border-primary-100/60 p-2 rounded-3xl backdrop-blur-sm shadow-soft">
+                  <TabsTrigger value="overview" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-primary-500 data-[state=active]:to-primary-600 data-[state=active]:text-foreground data-[state=active]:shadow-soft rounded-2xl transition-all duration-200 font-semibold">
+                    <Brain className="h-5 w-5 mr-2" />
                     <span className="hidden sm:inline">Overview</span>
                   </TabsTrigger>
-                  <TabsTrigger value="quickstart" className="data-[state=active]:bg-background data-[state=active]:shadow-sm rounded-lg transition-all">
-                    <Zap className="h-4 w-4 mr-2" />
+                  <TabsTrigger value="quickstart" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-accent-500 data-[state=active]:to-accent-600 data-[state=active]:text-foreground data-[state=active]:shadow-soft rounded-2xl transition-all duration-200 font-semibold">
+                    <Zap className="h-5 w-5 mr-2" />
                     <span className="hidden sm:inline">Quick Start</span>
                   </TabsTrigger>
-                  <TabsTrigger value="benchmarks" className="data-[state=active]:bg-background data-[state=active]:shadow-sm rounded-lg transition-all">
-                    <Trophy className="h-4 w-4 mr-2" />
+                  <TabsTrigger value="benchmarks" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-500 data-[state=active]:to-purple-600 data-[state=active]:text-foreground data-[state=active]:shadow-soft rounded-2xl transition-all duration-200 font-semibold">
+                    <Trophy className="h-5 w-5 mr-2" />
                     <span className="hidden sm:inline">Benchmarks</span>
                   </TabsTrigger>
-                  <TabsTrigger value="api" className="data-[state=active]:bg-background data-[state=active]:shadow-sm rounded-lg transition-all">
-                    <Terminal className="h-4 w-4 mr-2" />
+                  <TabsTrigger value="api" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-neutral-500 data-[state=active]:to-neutral-600 data-[state=active]:text-foreground data-[state=active]:shadow-soft rounded-2xl transition-all duration-200 font-semibold">
+                    <Terminal className="h-5 w-5 mr-2" />
                     <span className="hidden sm:inline">API Docs</span>
                   </TabsTrigger>
-                  <TabsTrigger value="validation" className="data-[state=active]:bg-background data-[state=active]:shadow-sm rounded-lg transition-all">
-                    <Shield className="h-4 w-4 mr-2" />
+                  <TabsTrigger value="validation" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-green-500 data-[state=active]:to-emerald-600 data-[state=active]:text-foreground data-[state=active]:shadow-soft rounded-2xl transition-all duration-200 font-semibold">
+                    <Shield className="h-5 w-5 mr-2" />
                     <span className="hidden sm:inline">Validation</span>
                   </TabsTrigger>
-                  <TabsTrigger value="changelog" className="data-[state=active]:bg-background data-[state=active]:shadow-sm rounded-lg transition-all">
-                    <Clock className="h-4 w-4 mr-2" />
+                  <TabsTrigger value="changelog" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-neutral-500 data-[state=active]:to-neutral-600 data-[state=active]:text-foreground data-[state=active]:shadow-soft rounded-2xl transition-all duration-200 font-semibold">
+                    <Clock className="h-5 w-5 mr-2" />
                     <span className="hidden sm:inline">Changelog</span>
                   </TabsTrigger>
-            </TabsList>
+                </TabsList>
               </div>
             
               <AnimatePresence mode="wait">
@@ -635,17 +679,17 @@ export default function ModelPage({ params }: ModelPageProps) {
                   exit={{ opacity: 0, y: -20 }}
                   transition={{ duration: 0.3 }}
                 >
-                  <TabsContent value="overview" className="space-y-8">
-                    <Card className="bg-gradient-to-br from-card/40 to-card/20 border-border/50 shadow-sm">
-                      <CardHeader className="pb-6">
-                        <CardTitle className="flex items-center gap-3 text-xl">
-                          <div className="p-2 bg-primary/10 rounded-lg">
-                            <BookOpen className="h-5 w-5 text-primary" />
+                  <TabsContent value="overview" className="space-y-10">
+                    <Card className="bg-gradient-to-br from-primary-50/30 via-white/60 to-primary-100/20 border-2 border-primary-200/50 shadow-elevation-2 rounded-3xl overflow-hidden">
+                      <CardHeader className="pb-8 bg-gradient-to-r from-primary-500/5 to-accent-500/5">
+                        <CardTitle className="flex items-center gap-4 text-2xl font-semibold">
+                          <div className="p-4 bg-gradient-to-br from-primary-500 to-primary-600 rounded-2xl shadow-soft">
+                            <BookOpen className="h-6 w-6 text-foreground" />
                           </div>
                           About This Model
                         </CardTitle>
-                </CardHeader>
-                <CardContent>
+                      </CardHeader>
+                      <CardContent className="p-8">
                   <div className="prose max-w-none">
                           {model.longDescription.split('\n\n').map((paragraph: string, index: number) => (
                             <p key={index} className="mb-6 text-muted-foreground leading-relaxed text-base">

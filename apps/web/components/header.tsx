@@ -72,6 +72,12 @@ export function GitHubHeader() {
               >
                 Models
               </Link>
+              <Link 
+                href="/chat" 
+                className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors px-3 py-1.5 rounded-xl hover:bg-muted/80"
+              >
+                Chat
+              </Link>
             </nav>
 
 

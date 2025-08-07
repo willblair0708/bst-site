@@ -51,6 +51,8 @@ const ChatPage = () => {
   // Defaults kept; controls hidden for simplicity
   const [temperature] = useState<number>(0.7);
   const [maxTokens] = useState<number>(1000);
+  const [lastTaskId, setLastTaskId] = useState<string | null>(null);
+  const [evidence, setEvidence] = useState<Array<any>>([]);
   
 
   // Load sessions and API key
@@ -204,6 +206,13 @@ const ChatPage = () => {
                   // optional backend may include tool_trace on non-stream path; safe-merge if present
                   if (evt.tool_trace && Array.isArray(evt.tool_trace)) {
                     setToolTrace(evt.tool_trace as ToolTrace[]);
+                  }
+                  if (evt.task_id) {
+                    setLastTaskId(String(evt.task_id));
+                    try {
+                      const ev = await fetch(`/api/evidence?task_id=${encodeURIComponent(String(evt.task_id))}`, { headers: { ...(apiKey ? { 'Authorization': `Bearer ${apiKey}` } : {}) } }).then(r=>r.json());
+                      if (ev && Array.isArray(ev.evidence)) setEvidence(ev.evidence);
+                    } catch {}
                   }
                   setSessions(prev => prev.map(s => s.id === sessionId ? { ...s, messages: s.messages.map(m => m.id === aiId ? { ...evt.message, id: aiId, createdAt: Date.now() } : m) } : s));
                   // Auto-title session on first assistant reply
@@ -534,8 +543,25 @@ const ChatPage = () => {
                 </Card>
               )}
 
+              {/* Evidence - compact list */}
+              {evidence.length > 0 && (
+                <Card variant="bento" className="bg-accent-100 shadow-elevation-1">
+                  <CardHeader className="py-3 px-3"><CardTitle className="text-xs">Evidence</CardTitle></CardHeader>
+                  <CardContent className="px-3 pb-3">
+                    <ul className="text-xs space-y-2 max-h-56 overflow-auto">
+                      {evidence.slice(0, 12).map((e:any, i:number)=> (
+                        <li key={i} className="border-b last:border-b-0 pb-1">
+                          <div className="font-medium truncate" title={e.doc_id || ''}>{e.doc_id || 'Unknown source'}</div>
+                          {e.raw_text && <div className="text-muted-foreground line-clamp-2">{e.raw_text}</div>}
+                        </li>
+                      ))}
+                    </ul>
+                  </CardContent>
+                </Card>
+              )}
+
               <div className="flex gap-2">
-                <Button size="sm" variant="outline" className="rounded" onClick={() => { setEvents([]); setToolTrace([]); }}>Clear</Button>
+                <Button size="sm" variant="outline" className="rounded" onClick={() => { setEvents([]); setToolTrace([]); setEvidence([]); }}>Clear</Button>
               </div>
             </div>
           </aside>

@@ -13,6 +13,7 @@ from pydantic import BaseModel
 from openai import OpenAI
 from app.tools.local import extract_citations
 from app.agents.roles import TOOL_TRACE_CVAR
+import hashlib
 
 DB_PATH = os.getenv("RUNIX_TASKS_DB", os.path.join(os.path.dirname(__file__), "..", "tasks.db"))
 
@@ -53,6 +54,26 @@ def _init_db():
         )
         """
     )
+    # Evidence storage for passages/DOIs used per task
+    cur.execute(
+        """
+        CREATE TABLE IF NOT EXISTS evidence (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            task_id TEXT NOT NULL,
+            doc_id TEXT,
+            source_type TEXT,
+            section TEXT,
+            span_start INTEGER,
+            span_end INTEGER,
+            text_hash TEXT,
+            figure_id TEXT,
+            table_id TEXT,
+            claim_id TEXT,
+            raw_text TEXT,
+            created_at TEXT NOT NULL
+        )
+        """
+    )
     conn.commit()
     conn.close()
 
@@ -62,6 +83,35 @@ _init_db()
 
 def _now_iso() -> str:
     return datetime.utcnow().isoformat() + "Z"
+
+
+def _insert_evidence_for_task(task_id: str, answer_text: str | None):
+    if not answer_text:
+        return
+    try:
+        cits = extract_citations(answer_text) or []
+    except Exception:
+        cits = []
+    if not cits:
+        return
+    conn = _connect()
+    cur = conn.cursor()
+    now = _now_iso()
+    for c in cits:
+        doc_id = c.get("doi") or c.get("url") or c.get("title") or "unknown"
+        source_type = "doi" if c.get("doi") else ("url" if c.get("url") else "unknown")
+        section = "unknown"
+        snippet = c.get("snippet") or ""
+        text_hash = hashlib.sha256(snippet.encode("utf-8")).hexdigest() if snippet else None
+        cur.execute(
+            """
+            INSERT INTO evidence (task_id, doc_id, source_type, section, span_start, span_end, text_hash, figure_id, table_id, claim_id, raw_text, created_at)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            """,
+            (task_id, doc_id, source_type, section, 0, 0, text_hash, None, None, None, snippet, now),
+        )
+    conn.commit()
+    conn.close()
 
 
 class CreateTaskRequest(BaseModel):
@@ -207,6 +257,7 @@ async def create_task(req: Request):
                     "task_id": task_id,
                     "message": {"id": 0, "author": "AI", "content": final_text},
                 }) + "\n\n"
+                _insert_evidence_for_task(task_id, final_text)
             except Exception as e:
                 yield "data: " + json.dumps({"error": str(e)}) + "\n\n"
                 return
@@ -251,6 +302,9 @@ async def create_task(req: Request):
             )
             conn2.commit()
             conn2.close()
+
+            # Persist evidence rows from extracted citations
+            _insert_evidence_for_task(task_id, text)
 
             final = {
                 "done": True,
@@ -311,6 +365,7 @@ async def create_task(req: Request):
     )
     conn3.commit()
     conn3.close()
+    _insert_evidence_for_task(task_id, text)
     return JSONResponse({
         "task_id": task_id,
         "status": "succeeded",

@@ -74,11 +74,18 @@ const ChatPage = () => {
   const activeSession = sessions.find(s => s.id === activeSessionId) || null;
   const messages = activeSession?.messages ?? [];
   const [currentAgent, setCurrentAgent] = useState<AgentId>("crow");
+  const [useDirector, setUseDirector] = useState<boolean>(true);
   const [apiKey, setApiKey] = useState<string>("");
   const [showKeyModal, setShowKeyModal] = useState(false);
   const [inputValue, setInputValue] = useState("");
   const [isAiTyping, setIsAiTyping] = useState(false);
-  const [events, setEvents] = useState<Array<{ ts: number; type: string; detail?: string }>>([]);
+  type TraceEvent = { ts: number; type: string; detail?: string };
+  type ToolTrace = { tool: string; t_ms?: number; args?: Record<string, any>; phase?: string };
+  const [events, setEvents] = useState<TraceEvent[]>([]);
+  const [toolTrace, setToolTrace] = useState<ToolTrace[]>([]);
+  const [runStart, setRunStart] = useState<number | null>(null);
+  const [runEnd, setRunEnd] = useState<number | null>(null);
+  const runDuration = runStart && runEnd ? Math.max(0, runEnd - runStart) : null;
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const abortControllerRef = useRef<AbortController | null>(null);
   // Defaults kept; controls hidden for simplicity
@@ -180,6 +187,10 @@ const ChatPage = () => {
       setSessions(prev => prev.map(s => s.id === sessionId ? { ...s, messages: updatedMessages } : s));
       if (forcedContent === undefined) setInputValue("");
       setIsAiTyping(true);
+      setEvents([]);
+      setToolTrace([]);
+      setRunStart(Date.now());
+      setRunEnd(null);
       
       try {
         // allow stop
@@ -194,7 +205,7 @@ const ChatPage = () => {
           },
           body: JSON.stringify({
             messages: updatedMessages,
-            agent: currentAgent,
+            agent: useDirector ? 'DIRECTOR' : currentAgent,
             stream: true,
             temperature,
             max_output_tokens: maxTokens,
@@ -236,7 +247,14 @@ const ChatPage = () => {
                 if (evt.event && (evt.event === 'tool_call' || evt.event === 'tool_result')) {
                   setEvents(prev => [...prev, { ts: Date.now(), type: evt.event, detail: evt.tool }]);
                 }
+                if (evt.error) {
+                  setEvents(prev => [...prev, { ts: Date.now(), type: 'error', detail: String(evt.error) }]);
+                }
                 if (evt.done && evt.message) {
+                  // optional backend may include tool_trace on non-stream path; safe-merge if present
+                  if (evt.tool_trace && Array.isArray(evt.tool_trace)) {
+                    setToolTrace(evt.tool_trace as ToolTrace[]);
+                  }
                   setSessions(prev => prev.map(s => s.id === sessionId ? { ...s, messages: s.messages.map(m => m.id === aiId ? { ...evt.message, id: aiId, createdAt: Date.now() } : m) } : s));
                   // Auto-title session on first assistant reply
                   setSessions(prev => prev.map(s => {
@@ -246,6 +264,7 @@ const ChatPage = () => {
                     const title = text.replace(/\n+/g, " ").slice(0, 80).split(" ").slice(0, 8).join(" ");
                     return { ...s, title: title || s.title };
                   }));
+                  setRunEnd(Date.now());
                 }
               } catch {}
             }
@@ -278,6 +297,7 @@ const ChatPage = () => {
         setSessions(prev => prev.map(s => s.id === (sessionId || '') ? { ...s, messages: [...messages, errorMessage] } : s));
       } finally {
         setIsAiTyping(false);
+        if (!runEnd) setRunEnd(Date.now());
       }
     }
   };
@@ -433,14 +453,20 @@ const ChatPage = () => {
               <span className="h-2 w-2 rounded-full" style={{ background: currentAgent === 'phoenix' ? '#FF4664' : currentAgent === 'falcon' ? '#0436FF' : currentAgent === 'owl' ? '#A855F7' : '#18E0C8' }} />
               {AGENTS[currentAgent].name}
             </span>
+            <label className="ml-2 inline-flex items-center gap-2 text-xs border rounded-full px-2 py-1 cursor-pointer">
+              <input type="checkbox" className="accent-foreground" checked={useDirector} onChange={(e) => setUseDirector(e.target.checked)} />
+              Orchestrate (Director)
+            </label>
+            {runDuration !== null && (
+              <span className="ml-2 text-xs text-muted-foreground">Run: {(runDuration/1000).toFixed(1)}s</span>
+            )}
             <div className="ml-auto">
               <Button size="sm" variant="outline" className="rounded-lg" onClick={createSession}>New Chat</Button>
             </div>
           </div>
-        </div>
 
-        {/* Main Content */}
-        <div className="flex-1 flex flex-col overflow-hidden">
+        {/* Main Content with Inspector panel */}
+        <div className="flex-1 grid grid-cols-1 lg:grid-cols-[1fr_360px] overflow-hidden">
           {messages.length === 0 ? (
             <div className="flex-1 flex flex-col justify-center items-center p-8">
               <div className="max-w-2xl w-full">
@@ -477,7 +503,7 @@ const ChatPage = () => {
               </div>
             </div>
           ) : (
-            <div className="flex-1 overflow-y-scroll" ref={scrollContainerRef} onScroll={handleScroll}>
+            <div className="flex-1 overflow-y-scroll border-r" ref={scrollContainerRef} onScroll={handleScroll}>
               <div className="max-w-3xl mx-auto px-6 py-8 space-y-8">
                 {messages.map((message, index) => {
                   const isUser = message.author === 'User';
@@ -537,23 +563,66 @@ const ChatPage = () => {
                   </motion.div>
                 )}
                 <div ref={messagesEndRef} />
-                {/* Tool/Orchestration Timeline */}
-                {events.length > 0 && (
-                  <div className="mt-6 p-4 border rounded-xl bg-muted">
-                    <div className="text-xs font-semibold mb-2">Orchestration Events</div>
-                    <div className="space-y-1 max-h-48 overflow-auto text-xs">
-                      {events.slice(-200).map((e, i) => (
-                        <div key={i} className="font-mono">
-                          [{new Date(e.ts).toLocaleTimeString()}] {e.type}{e.detail ? ` — ${e.detail}` : ''}
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                )}
               </div>
             </div>
           )}
-          
+          {/* Inspector Panel */}
+          <aside className="hidden lg:flex flex-col max-h-full overflow-hidden">
+            <div className="px-4 py-3 border-b sticky top-0 bg-background/90 backdrop-blur">
+              <div className="text-sm font-semibold">Run Inspector</div>
+              <div className="text-xs text-muted-foreground">Live events and tool traces</div>
+            </div>
+            <div className="flex-1 overflow-y-auto p-4 space-y-4">
+              <div>
+                <div className="text-xs font-semibold mb-2">Orchestration Events</div>
+                <div className="space-y-1 max-h-64 overflow-auto text-xs border rounded p-2 bg-muted/50">
+                  {events.length === 0 ? (
+                    <div className="text-muted-foreground">No events yet</div>
+                  ) : events.slice(-300).map((e, i) => (
+                    <div key={i} className="font-mono">
+                      [{new Date(e.ts).toLocaleTimeString()}] {e.type}{e.detail ? ` — ${e.detail}` : ''}
+                    </div>
+                  ))}
+                </div>
+              </div>
+              <div>
+                <div className="text-xs font-semibold mb-2">Tool Trace</div>
+                <div className="overflow-auto border rounded">
+                  <table className="w-full text-xs">
+                    <thead>
+                      <tr className="text-left">
+                        <th className="py-1 px-2">Tool</th>
+                        <th className="py-1 px-2">Phase</th>
+                        <th className="py-1 px-2">Latency (ms)</th>
+                        <th className="py-1 px-2">Args</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {toolTrace.length === 0 ? (
+                        <tr><td colSpan={4} className="py-2 px-2 text-muted-foreground">No tool trace</td></tr>
+                      ) : toolTrace.map((t, i) => (
+                        <tr key={i} className="border-t border-border/40 align-top">
+                          <td className="py-1 px-2 font-mono">{t.tool}</td>
+                          <td className="py-1 px-2">{t.phase || ''}</td>
+                          <td className="py-1 px-2">{Number.isFinite(t.t_ms) ? t.t_ms : ''}</td>
+                          <td className="py-1 px-2 font-mono whitespace-pre-wrap break-words max-w-[280px]" title={JSON.stringify(t.args || {})}>
+                            {JSON.stringify(t.args || {})}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+              <div className="flex gap-2">
+                <Button size="sm" variant="outline" className="rounded" onClick={() => { setEvents([]); setToolTrace([]); }}>Clear</Button>
+                {runDuration !== null && (
+                  <div className="text-xs text-muted-foreground self-center">Duration: {(runDuration/1000).toFixed(1)}s</div>
+                )}
+              </div>
+            </div>
+          </aside>
+        </div>
           {/* Input Area */}
           <div className="p-4 sm:p-6 bg-background border-t">
             <div className="max-w-3xl mx-auto">

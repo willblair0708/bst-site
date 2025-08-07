@@ -15,11 +15,13 @@ export async function POST(req: NextRequest) {
   const lastUser = [...messages].reverse().find((m: any) => m?.author === 'User' || m?.role === 'user');
   const query = (lastUser?.content || '').toString();
   const auth = req.headers.get('authorization') || '';
-  const targetUrl = stream
+  // Route streaming to multi-agent endpoint only for DIRECTOR/AUTO/auto
+  const wantsDirector = /^(director|auto)$/i.test(agent || '');
+  const targetUrl = stream && wantsDirector
     ? `${defaultBase}/v1/tasks`
     : `${defaultBase}/chat`;
 
-  const bodyToSend = stream
+  const bodyToSend = stream && wantsDirector
     ? JSON.stringify({ agent: 'DIRECTOR', query, stream: true })
     : bodyText;
 

@@ -25,8 +25,7 @@ import { ThemeToggle } from "@/components/theme-toggle";
 import Textarea from "react-textarea-autosize";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
-import { Slider } from "@/components/ui/slider";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+// Simplified UI: sliders/selects removed
 
 // Three Pillars System - Following Astra-Soft Design
 const PILLARS = {
@@ -81,8 +80,9 @@ const ChatPage = () => {
   const [isAiTyping, setIsAiTyping] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const abortControllerRef = useRef<AbortController | null>(null);
-  const [temperature, setTemperature] = useState<number>(0.7);
-  const [maxTokens, setMaxTokens] = useState<number>(1000);
+  // Defaults kept; controls hidden for simplicity
+  const [temperature] = useState<number>(0.7);
+  const [maxTokens] = useState<number>(1000);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const [autoScroll, setAutoScroll] = useState(true);
 
@@ -312,28 +312,7 @@ const ChatPage = () => {
     URL.revokeObjectURL(url);
   };
 
-  const agentSuggestions: Record<AgentId, string[]> = {
-    crow: [
-      "Summarize the latest findings on PTHR in SCLC with citations.",
-      "List top 5 reviews on protein phase separation since 2022.",
-      "Explain CRISPRi vs CRISPRa in a lab-ready cheatsheet."
-    ],
-    falcon: [
-      "Do a systematic review plan for IL-6 blockade in RA (PICO + sources).",
-      "Create a meta-analysis outline for GLP-1 effects on NASH.",
-      "Survey tools for single-cell multi-omics integration with pros/cons."
-    ],
-    owl: [
-      "Has anyone used optogenetics to control mitochondrial fission?",
-      "Is there prior art on using PTH1R antagonists in SCLC?",
-      "What’s the earliest evidence linking HTRA1 to AMD risk?"
-    ],
-    phoenix: [
-      "Plan a synthesis route for a simple aryl bromide to aryl amine (verify risks).",
-      "Propose a reaction screen for Suzuki coupling of substrate X.",
-      "Select purchasable reagents for a Grignard to alcohol conversion."
-    ],
-  };
+  // Suggestions removed to reduce visual load
 
   const regenerateFromAI = async (aiIndex: number) => {
     // find nearest preceding user message
@@ -358,7 +337,7 @@ const ChatPage = () => {
         </div>
       </div>
 
-      {/* Agent selection */}
+      {/* Agent selection (kept minimal) */}
       <div className="mb-6">
         <h3 className="text-xs font-medium text-muted-foreground mb-3 px-2 tracking-wider uppercase">Agents</h3>
         <div className="space-y-1">
@@ -377,29 +356,7 @@ const ChatPage = () => {
         )}
       </div>
 
-      {/* Response controls */}
-      <div className="mb-6">
-        <h3 className="text-xs font-medium text-muted-foreground mb-3 px-2 tracking-wider uppercase">Response</h3>
-        <div className="space-y-3 px-2">
-          <div className="flex items-center justify-between text-xs">
-            <span className="text-muted-foreground">Creativity</span>
-            <span className="tabular-nums">{temperature.toFixed(1)}</span>
-          </div>
-          <Slider value={[temperature]} min={0} max={1} step={0.1} onValueChange={(v) => setTemperature(Number(v[0]))} />
-          <div className="text-xs text-muted-foreground">Output length</div>
-          <Select value={String(maxTokens)} onValueChange={(v) => setMaxTokens(Number(v))}>
-            <SelectTrigger className="h-8 rounded-md">
-              <SelectValue placeholder="Max tokens" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="256">256</SelectItem>
-              <SelectItem value="512">512</SelectItem>
-              <SelectItem value="1000">1000</SelectItem>
-              <SelectItem value="2000">2000</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-      </div>
+      {/* Response controls removed for simplicity */}
 
       {/* New Chat Button */}
       <div className="mb-6">
@@ -461,15 +418,12 @@ const ChatPage = () => {
       <main className="flex-1 flex flex-col bg-background">
         {/* Sticky Header */}
         <div className="sticky top-0 z-10 border-b bg-background/80 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-          <div className="max-w-3xl mx-auto px-6 h-14 flex items-center gap-3">
-            <div className="text-sm text-muted-foreground">Runix</div>
-            <div className="w-1 h-1 rounded-full bg-border" />
-            <div className="text-sm font-medium">Research Chat</div>
-            <div className="ml-auto flex items-center gap-2">
-              <span className="hidden sm:inline-flex items-center gap-2 text-xs rounded-full border px-2 py-1">
-                <span className="h-2 w-2 rounded-full" style={{ background: currentAgent === 'phoenix' ? '#FF4664' : currentAgent === 'falcon' ? '#0436FF' : currentAgent === 'owl' ? '#A855F7' : '#18E0C8' }} />
-                {AGENTS[currentAgent].name}
-              </span>
+          <div className="max-w-3xl mx-auto px-6 h-12 flex items-center gap-2">
+            <span className="inline-flex items-center gap-2 text-xs rounded-full border px-2 py-1">
+              <span className="h-2 w-2 rounded-full" style={{ background: currentAgent === 'phoenix' ? '#FF4664' : currentAgent === 'falcon' ? '#0436FF' : currentAgent === 'owl' ? '#A855F7' : '#18E0C8' }} />
+              {AGENTS[currentAgent].name}
+            </span>
+            <div className="ml-auto">
               <Button size="sm" variant="outline" className="rounded-lg" onClick={createSession}>New Chat</Button>
             </div>
           </div>
@@ -520,18 +474,15 @@ const ChatPage = () => {
                   return (
                     <motion.div
                       key={message.id}
-                      className={cn("group/message relative flex gap-3", isUser ? "justify-end" : "justify-start")}
+                      className={cn("group/message relative flex", isUser ? "justify-end" : "justify-start")}
                       variants={fadeInUp}
                       initial="initial"
                       animate="animate"
                       transition={{ delay: index * 0.05, duration: 0.35 }}
                     >
-                      {!isUser && (
-                        <div className="w-7 h-7 rounded-full bg-muted text-foreground flex items-center justify-center text-xs font-semibold shrink-0">R</div>
-                      )}
                       <div className={cn(
-                        "max-w-[82%] rounded-2xl px-4 py-3 text-sm shadow-sm border",
-                        isUser ? "bg-foreground text-background border-foreground/10" : "bg-background border-border"
+                        "max-w-[75ch] rounded-2xl px-4 py-3 text-sm shadow-sm",
+                        isUser ? "bg-foreground text-background" : "bg-muted"
                       )}>
                         <ReactMarkdown remarkPlugins={[remarkGfm]}>
                           {message.content}
@@ -539,38 +490,34 @@ const ChatPage = () => {
                         {!isUser && extractLinks(message.content).length > 0 && (
                           <div className="mt-3 flex flex-wrap gap-2">
                             {extractLinks(message.content).map((l, i) => (
-                              <a key={i} href={l.href} target="_blank" rel="noreferrer" className="text-xs inline-flex items-center gap-1 px-2 py-1 rounded-full border hover:bg-muted transition-colors">
+                              <a key={i} href={l.href} target="_blank" rel="noreferrer" className="text-xs inline-flex items-center gap-1 px-2 py-1 rounded-full border bg-background/50 hover:bg-background transition-colors">
                                 <Globe className="w-3.5 h-3.5" /> {l.text}
                               </a>
                             ))}
                           </div>
                         )}
                         {/* Hover toolbar */}
-                        <div className="absolute -top-3 right-10 hidden group-hover/message:flex gap-1">
-                          <button className="px-2 py-1 text-[11px] rounded-md border bg-background hover:bg-muted" onClick={() => copyToClipboard(message.content)}>Copy</button>
+                        <div className="absolute -top-3 right-2 hidden group-hover/message:flex gap-1">
+                          <button className="px-2 py-1 text-[11px] rounded-md border bg-background/90 hover:bg-background" onClick={() => copyToClipboard(message.content)}>Copy</button>
                           {!isUser && (
-                            <button className="px-2 py-1 text-[11px] rounded-md border bg-background hover:bg-muted" onClick={() => regenerateFromAI(index)}>Regenerate</button>
+                            <button className="px-2 py-1 text-[11px] rounded-md border bg-background/90 hover:bg-background" onClick={() => regenerateFromAI(index)}>Regenerate</button>
                           )}
                         </div>
                         <div className="mt-1 text-[11px] text-muted-foreground opacity-0 group-hover/message:opacity-100 transition-opacity">
                           {new Date(message.createdAt || Date.now()).toLocaleTimeString()}
                         </div>
                       </div>
-                      {isUser && (
-                        <div className="w-7 h-7 rounded-full bg-foreground text-background flex items-center justify-center text-xs font-semibold shrink-0">U</div>
-                      )}
                     </motion.div>
                   );
                 })}
                 {isAiTyping && (
                   <motion.div
-                    className="flex gap-3 justify-start"
+                    className="flex justify-start"
                     variants={fadeInUp}
                     initial="initial"
                     animate="animate"
                   >
-                    <div className="w-7 h-7 rounded-full bg-muted text-foreground flex items-center justify-center text-xs font-semibold shrink-0">R</div>
-                    <div className="max-w-[82%] rounded-2xl px-4 py-3 text-sm shadow-sm border bg-background border-border">
+                    <div className="rounded-2xl px-4 py-3 text-sm shadow-sm bg-muted">
                       <div className="flex items-center gap-2">
                         <motion.div className="w-2 h-2 rounded-full bg-muted-foreground" animate={{ opacity: [0.3, 1, 0.3] }} transition={{ repeat: Infinity, duration: 1 }} />
                         <motion.div className="w-2 h-2 rounded-full bg-muted-foreground" animate={{ opacity: [0.3, 1, 0.3] }} transition={{ repeat: Infinity, duration: 1, delay: 0.15 }} />
@@ -595,12 +542,6 @@ const ChatPage = () => {
                 transition={{ delay: 0.2, duration: 0.5 }}
               >
                 <div className="flex items-center p-2">
-                  <div className="hidden sm:flex items-center gap-2 pl-2 pr-1 text-xs text-muted-foreground">
-                    <span className="inline-flex items-center gap-1 rounded-full border px-2 py-0.5">
-                      <span className="h-2 w-2 rounded-full" style={{ background: currentAgent === 'phoenix' ? '#FF4664' : currentAgent === 'falcon' ? '#0436FF' : currentAgent === 'owl' ? '#A855F7' : '#18E0C8' }} />
-                      {AGENTS[currentAgent].name}
-                    </span>
-                  </div>
                   <Textarea
                     placeholder="Ask me about research, analysis, or any scientific concept..."
                     className="flex-1 bg-transparent border-0 px-4 py-2 text-sm text-foreground placeholder:text-muted-foreground resize-none focus:outline-none min-h-[40px] max-h-[120px] leading-relaxed"

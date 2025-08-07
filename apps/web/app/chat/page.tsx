@@ -349,7 +349,7 @@ const ChatPage = () => {
       {/* Actions */}
       <div className="mt-auto space-y-2">
         {activeSession && (
-          <Button variant="destructive" className="w-full rounded-lg" onClick={() => setSessions(prev => prev.map(s => s.id === activeSessionId ? { ...s, messages: [] } : s))}>Clear</Button>
+          <Button variant="destructive" className="w-full rounded-lg text-foreground" onClick={() => setSessions(prev => prev.map(s => s.id === activeSessionId ? { ...s, messages: [] } : s))}>Clear</Button>
         )}
       </div>
     </aside>

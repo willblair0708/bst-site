@@ -88,115 +88,88 @@ const ChatPage = () => {
   };
 
   const Sidebar = () => (
-    <aside className="w-64 flex-col bg-primary-100/30 border-r border-primary-500/10 p-4 hidden lg:flex">
-      {/* Header with Runix branding */}
-      <div className="flex items-center justify-between mb-6">
+    <aside className="w-72 flex-col bg-gray-100 border-r border-gray-200 p-3 hidden lg:flex">
+      {/* Header */}
+      <div className="flex items-center justify-between mb-4 px-2">
         <Link href="/" className="flex items-center gap-3 group">
-          <motion.div 
-            className="w-8 h-8 rounded-2xl bg-primary-500 text-white flex items-center justify-center shadow-elevation-2"
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            transition={{ duration: 0.07, ease: "easeOut" }}
-          >
-            <Hash className="w-4 h-4" />
-          </motion.div>
-          <div>
-            <span className="font-semibold text-sm text-foreground">Runix</span>
-            <div className="text-xs text-muted-foreground">AI Agent</div>
+          <div className="w-7 h-7 rounded-lg bg-gray-900 text-white flex items-center justify-center text-sm font-bold">
+            R
           </div>
+          <span className="font-semibold text-base text-gray-900">Runix</span>
         </Link>
-        <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-          <Button 
-            variant="ghost" 
-            size="icon" 
-            className="h-8 w-8 rounded-xl hover:bg-accent-100/60 transition-colors"
-          >
-            <Plus className="w-4 h-4 text-accent-500" />
-          </Button>
-        </motion.div>
+        <Button 
+          variant="ghost" 
+          size="icon" 
+          className="h-8 w-8 rounded-lg text-gray-600 hover:text-gray-900 hover:bg-gray-200 transition-colors"
+        >
+          <Plus className="w-4 h-4" />
+        </Button>
       </div>
       
       {/* Chat History */}
-      <ScrollArea className="flex-1 -mx-2">
-        <div className="space-y-2 px-2">
-          <motion.div
-            whileHover={{ x: 2, scale: 1.01 }}
-            transition={{ duration: 0.07, ease: "easeOut" }}
-          >
-            <Button variant="ghost" className="w-full justify-start text-sm font-normal h-10 px-3 text-muted-foreground hover:bg-accent-100/40 rounded-2xl border border-transparent hover:border-accent-500/20">
-              <MessageSquare className="w-4 h-4 mr-3 shrink-0 text-accent-500" />
-              <span className="truncate">Recent conversation</span>
-            </Button>
-          </motion.div>
-          <motion.div
-            whileHover={{ x: 2, scale: 1.01 }}
-            transition={{ duration: 0.07, ease: "easeOut" }}
-          >
-            <Button variant="ghost" className="w-full justify-start text-sm font-normal h-10 px-3 text-muted-foreground hover:bg-accent-100/40 rounded-2xl border border-transparent hover:border-accent-500/20">
-              <MessageSquare className="w-4 h-4 mr-3 shrink-0 text-accent-500" />
-              <span className="truncate">Another chat</span>
-            </Button>
-          </motion.div>
+      <ScrollArea className="flex-1 -mx-1">
+        <div className="space-y-1 px-1">
+          <Button variant="ghost" className="w-full justify-start text-sm font-normal h-9 px-3 text-gray-600 hover:text-gray-900 hover:bg-gray-200 rounded-lg">
+            <MessageSquare className="w-4 h-4 mr-3 shrink-0" />
+            <span className="truncate">Previous conversation</span>
+          </Button>
+          <Button variant="ghost" className="w-full justify-start text-sm font-normal h-9 px-3 text-gray-600 hover:text-gray-900 hover:bg-gray-200 rounded-lg">
+            <MessageSquare className="w-4 h-4 mr-3 shrink-0" />
+            <span className="truncate">Design discussion</span>
+          </Button>
+          <Button variant="ghost" className="w-full justify-start text-sm font-normal h-9 px-3 text-gray-600 hover:text-gray-900 hover:bg-gray-200 rounded-lg">
+            <MessageSquare className="w-4 h-4 mr-3 shrink-0" />
+            <span className="truncate">Code review help</span>
+          </Button>
         </div>
       </ScrollArea>
 
-      {/* Theme Toggle */}
-      <div className="pt-4 border-t border-primary-500/10">
-        <div className="flex items-center justify-between">
-          <span className="text-xs text-muted-foreground font-medium">Appearance</span>
+      {/* Bottom Actions */}
+      <div className="pt-3 border-t border-gray-200 space-y-2">
+        <div className="flex items-center justify-between px-2">
+          <span className="text-xs text-gray-600 font-medium">Settings</span>
           <ThemeToggle />
         </div>
+        <Button variant="ghost" size="sm" className="w-full justify-start text-xs text-gray-600 hover:text-gray-900 hover:bg-gray-200 rounded-lg">
+          <Settings className="w-3 h-3 mr-2" />
+          Preferences
+        </Button>
       </div>
     </aside>
   );
 
   return (
-    <div className="flex h-screen w-full bg-background text-foreground">
+    <div className="flex h-screen w-full bg-white text-gray-900">
       <Sidebar />
       
-      <main className="flex-1 flex flex-col">
+      <main className="flex-1 flex flex-col bg-gray-50">
+        {/* Top Header */}
+        <header className="border-b border-gray-200 bg-white/80 backdrop-blur-sm p-4">
+          <div className="flex items-center justify-between max-w-4xl mx-auto">
+            <div className="flex items-center gap-3">
+              <h1 className="font-semibold text-lg text-gray-900">New Chat</h1>
+            </div>
+            <div className="flex items-center gap-2">
+              <Button variant="ghost" size="sm" className="text-gray-600 hover:text-gray-900 hover:bg-gray-100">
+                Model: o3-MAX
+              </Button>
+            </div>
+          </div>
+        </header>
+
         {/* Main Content */}
-        <div className="flex-1 flex flex-col overflow-hidden bg-gradient-to-b from-accent-100/20 via-transparent to-transparent">
+        <div className="flex-1 flex flex-col overflow-hidden">
           {messages.length === 0 ? (
-            <div className="flex-1 flex flex-col justify-center items-center px-6">
-              <div className="w-full max-w-2xl text-center">
-                {/* Hero Pastel Tile */}
-                <motion.div 
-                  className="bg-primary-100/50 shadow-elevation-2 rounded-2xl p-8 mb-8 border border-primary-500/10"
-                  initial={{ opacity: 0, scale: 0.95 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  transition={{ duration: 0.6, ease: "easeOut" }}
+            <div className="flex-1 flex flex-col justify-center items-center p-6">
+              <div className="max-w-2xl text-center">
+                <motion.h1 
+                  className="text-3xl font-medium mb-3 text-gray-900"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.6 }}
                 >
-                  <motion.div 
-                    className="w-16 h-16 mx-auto mb-6 rounded-2xl bg-accent-500 text-white flex items-center justify-center shadow-elevation-4"
-                    initial={{ scale: 0.8 }}
-                    animate={{ scale: 1 }}
-                    transition={{ 
-                      duration: 0.6, 
-                      delay: 0.2,
-                      type: "spring", 
-                      stiffness: 150 
-                    }}
-                  >
-                    <Sparkles className="w-8 h-8" />
-                  </motion.div>
-                  <motion.h1 
-                    className="text-2xl font-semibold mb-3 text-foreground"
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.6, delay: 0.3 }}
-                  >
-                    What can I help you build today?
-                  </motion.h1>
-                  <motion.p 
-                    className="text-muted-foreground"
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.6, delay: 0.4 }}
-                  >
-                    🤝 Human–AI Collaboration · Ask me anything about code, research, or ideas
-                  </motion.p>
-                </motion.div>
+                  How can I help you today?
+                </motion.h1>
               </div>
             </div>
           ) : (
@@ -208,32 +181,26 @@ const ChatPage = () => {
                       key={message.id}
                       initial={{ opacity: 0, y: 20 }}
                       animate={{ opacity: 1, y: 0 }}
-                      transition={{ duration: 0.4, ease: "easeOut" }}
-                      className="mb-8"
+                      transition={{ duration: 0.4 }}
+                      className="mb-6 group"
                     >
-                      <div className="flex items-start gap-4">
-                        <motion.div 
-                          className={cn(
-                            "w-8 h-8 rounded-2xl flex items-center justify-center shrink-0 shadow-elevation-1",
-                            message.author === "User" 
-                              ? "bg-collaboration-100 text-viz-purple-500" 
-                              : "bg-accent-100 text-accent-500"
-                          )}
-                          whileHover={{ scale: 1.05 }}
-                          transition={{ duration: 0.07 }}
-                        >
-                          {message.author === "User" ? (
-                            <User className="w-4 h-4" />
-                          ) : (
-                            <Bot className="w-4 h-4" />
-                          )}
-                        </motion.div>
+                      <div className="flex items-start gap-3">
+                        <div className={cn(
+                          "w-7 h-7 rounded-full flex items-center justify-center shrink-0 text-xs font-semibold",
+                          message.author === "User" 
+                            ? "bg-blue-500 text-white" 
+                            : "bg-gray-200 text-gray-700"
+                        )}>
+                          {message.author === "User" ? "WB" : "R"}
+                        </div>
                         <div className="flex-1 pt-1">
-                          <div className="text-xs font-semibold text-muted-foreground mb-2">
-                            {message.author === "User" ? "You" : "Runix Agent"}
+                          <div className="text-sm font-medium text-gray-900 mb-1">
+                            {message.author === "User" ? "You" : "Runix"}
                           </div>
-                          <div className="text-foreground leading-relaxed">
-                            {message.content}
+                          <div className="prose prose-sm max-w-none">
+                            <p className="text-gray-800 leading-relaxed whitespace-pre-wrap">
+                              {message.content}
+                            </p>
                           </div>
                         </div>
                       </div>
@@ -243,29 +210,29 @@ const ChatPage = () => {
                     <motion.div
                       initial={{ opacity: 0, y: 20 }}
                       animate={{ opacity: 1, y: 0 }}
-                      className="mb-8"
+                      className="mb-6"
                     >
-                      <div className="flex items-start gap-4">
-                        <div className="w-8 h-8 rounded-2xl bg-accent-100 text-accent-500 flex items-center justify-center shrink-0 shadow-elevation-1">
-                          <Bot className="w-4 h-4" />
+                      <div className="flex items-start gap-3">
+                        <div className="w-7 h-7 rounded-full bg-gray-200 text-gray-700 flex items-center justify-center shrink-0 text-xs font-semibold">
+                          R
                         </div>
                         <div className="flex-1 pt-1">
-                          <div className="text-xs font-semibold text-muted-foreground mb-2">Runix Agent</div>
-                          <div className="flex items-center gap-1.5">
+                          <div className="text-sm font-medium text-gray-900 mb-1">Runix</div>
+                          <div className="flex items-center gap-1">
                             <motion.div 
-                              className="w-2 h-2 bg-accent-500/60 rounded-full" 
+                              className="w-2 h-2 bg-gray-400 rounded-full" 
                               animate={{ scale: [1, 1.2, 1] }} 
-                              transition={{ duration: 1, repeat: Infinity, ease: 'easeInOut' }} 
+                              transition={{ duration: 1.4, repeat: Infinity, ease: 'easeInOut' }} 
                             />
                             <motion.div 
-                              className="w-2 h-2 bg-accent-500/60 rounded-full" 
+                              className="w-2 h-2 bg-gray-400 rounded-full" 
                               animate={{ scale: [1, 1.2, 1] }} 
-                              transition={{ duration: 1, repeat: Infinity, ease: 'easeInOut', delay: 0.2 }} 
+                              transition={{ duration: 1.4, repeat: Infinity, ease: 'easeInOut', delay: 0.2 }} 
                             />
                             <motion.div 
-                              className="w-2 h-2 bg-accent-500/60 rounded-full" 
+                              className="w-2 h-2 bg-gray-400 rounded-full" 
                               animate={{ scale: [1, 1.2, 1] }} 
-                              transition={{ duration: 1, repeat: Infinity, ease: 'easeInOut', delay: 0.4 }} 
+                              transition={{ duration: 1.4, repeat: Infinity, ease: 'easeInOut', delay: 0.4 }} 
                             />
                           </div>
                         </div>
@@ -278,27 +245,21 @@ const ChatPage = () => {
             </div>
           )}
           
-          {/* Input - Soft-UI Design */}
-          <div className="p-6 bg-background/95 backdrop-blur-sm border-t border-primary-500/10">
+          {/* Input Area */}
+          <div className="p-4 bg-white border-t border-gray-200">
             <div className="max-w-3xl mx-auto">
-              <motion.div 
-                className="relative bg-accent-100/40 rounded-2xl border border-accent-500/20 shadow-elevation-1 focus-within:border-accent-500/40 focus-within:shadow-elevation-2 transition-all duration-200"
-                whileFocus={{ scale: 1.01 }}
-                transition={{ duration: 0.07 }}
-              >
-                <div className="flex items-end p-4">
-                  <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-                    <Button 
-                      variant="ghost" 
-                      size="icon" 
-                      className="shrink-0 rounded-xl h-9 w-9 text-accent-500 hover:bg-accent-100/60 transition-colors"
-                    >
-                      <Plus className="w-4 h-4" />
-                    </Button>
-                  </motion.div>
+              <div className="relative bg-white rounded-2xl border border-gray-300 shadow-sm focus-within:border-gray-400 transition-all duration-200">
+                <div className="flex items-end p-3">
+                  <Button 
+                    variant="ghost" 
+                    size="icon" 
+                    className="shrink-0 rounded-lg h-8 w-8 text-gray-500 hover:text-gray-700 hover:bg-gray-100 transition-colors"
+                  >
+                    <Plus className="w-4 h-4" />
+                  </Button>
                   <textarea
-                    placeholder="Ask me to build, fix, or explore..."
-                    className="flex-1 bg-transparent border-0 px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground/70 resize-none focus:outline-none min-h-[36px] max-h-[120px] leading-relaxed"
+                    placeholder="Ask Cursor to build, fix bugs, explore"
+                    className="flex-1 bg-transparent border-0 px-3 py-2 text-sm text-gray-900 placeholder:text-gray-500 resize-none focus:outline-none min-h-[32px] max-h-[200px] leading-relaxed"
                     value={inputValue}
                     onChange={(e) => setInputValue(e.target.value)}
                     onKeyPress={(e) => {
@@ -310,35 +271,34 @@ const ChatPage = () => {
                     rows={1}
                   />
                   <div className="flex items-center gap-2 shrink-0">
+                    <Button 
+                      variant="ghost" 
+                      size="icon" 
+                      className="rounded-lg h-8 w-8 text-gray-500 hover:text-gray-700 hover:bg-gray-100 transition-colors"
+                    >
+                      <Search className="w-4 h-4" />
+                    </Button>
                     {inputValue.trim() ? (
-                      <motion.div
-                        whileHover={{ scale: 1.05 }}
-                        whileTap={{ scale: 0.95 }}
-                        transition={{ duration: 0.07 }}
+                      <Button
+                        size="icon"
+                        onClick={handleSendMessage}
+                        className="rounded-lg h-8 w-8 bg-blue-500 text-white hover:bg-blue-600 transition-colors"
                       >
-                        <Button
-                          size="icon"
-                          onClick={handleSendMessage}
-                          className="rounded-xl h-9 w-9 bg-primary-500 text-white hover:bg-primary-600 shadow-elevation-2 transition-all duration-200"
-                        >
-                          <ArrowUp className="w-4 h-4" />
-                        </Button>
-                      </motion.div>
+                        <ArrowUp className="w-4 h-4" />
+                      </Button>
                     ) : (
                       <Button 
                         variant="ghost" 
                         size="icon" 
-                        className="rounded-xl h-9 w-9 text-muted-foreground hover:bg-accent-100/60 transition-colors"
+                        className="rounded-lg h-8 w-8 text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-colors"
+                        disabled
                       >
                         <ArrowUp className="w-4 h-4" />
                       </Button>
                     )}
                   </div>
                 </div>
-              </motion.div>
-              <p className="text-xs text-muted-foreground/70 text-center mt-3">
-                Runix AI can make mistakes. Verify important information.
-              </p>
+              </div>
             </div>
           </div>
         </div>

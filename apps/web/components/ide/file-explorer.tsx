@@ -6,10 +6,11 @@ import { motion } from "framer-motion"
 
 type Node = { name: string; path: string; type: 'file' | 'dir'; children?: Node[] }
 
-export function FileExplorer({ repoId, onOpen, selectedPath }: { repoId: string; onOpen: (p: string) => void; selectedPath?: string }) {
+export function FileExplorer({ repoId, onOpen, selectedPath, refreshKey }: { repoId: string; onOpen: (p: string) => void; selectedPath?: string; refreshKey?: number }) {
   const [tree, setTree] = useState<Node[]>([])
   const [open, setOpen] = useState<Record<string, boolean>>({})
   const [loading, setLoading] = useState(false)
+  const containerRef = React.useRef<HTMLDivElement | null>(null)
 
   useEffect(() => {
     const load = async () => {
@@ -23,7 +24,7 @@ export function FileExplorer({ repoId, onOpen, selectedPath }: { repoId: string;
       }
     }
     if (repoId) load()
-  }, [repoId])
+  }, [repoId, refreshKey])
 
   const toggle = (p: string) => setOpen((s) => ({ ...s, [p]: !s[p] }))
 
@@ -64,8 +65,27 @@ export function FileExplorer({ repoId, onOpen, selectedPath }: { repoId: string;
     </ul>
   )
 
+  // Basic keyboard navigation across visible file buttons
+  const onKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
+    const root = containerRef.current
+    if (!root) return
+    const items = Array.from(root.querySelectorAll<HTMLButtonElement>('button[data-file-item="true"]'))
+    const index = items.findIndex((el) => el === document.activeElement)
+    if (e.key === 'ArrowDown') {
+      e.preventDefault()
+      const next = items[Math.min(index + 1, items.length - 1)] || items[0]
+      next?.focus()
+    } else if (e.key === 'ArrowUp') {
+      e.preventDefault()
+      const prev = items[Math.max(index - 1, 0)] || items[items.length - 1]
+      prev?.focus()
+    } else if (e.key === 'Enter' && (document.activeElement as HTMLButtonElement)?.dataset?.fileItem === 'true') {
+      ;(document.activeElement as HTMLButtonElement)?.click()
+    }
+  }
+
   return (
-    <div className="h-full overflow-auto p-2">
+    <div ref={containerRef} className="h-full overflow-auto p-2 outline-none" tabIndex={0} onKeyDown={onKeyDown}>
       {loading ? (
         <div className="text-xs text-muted-foreground p-2">Loading…</div>
       ) : (

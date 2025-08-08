@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { motion, AnimatePresence } from "framer-motion"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
+import Sparkline from "@/components/ui/sparkline"
 
 export function WorkspaceTabs({ repoId, onOpenFile, selectedPath }: { repoId: string; onOpenFile: (p: string) => void; selectedPath?: string }) {
   const [tab, setTab] = React.useState("files")
@@ -102,20 +103,37 @@ export function WorkspaceTabs({ repoId, onOpenFile, selectedPath }: { repoId: st
 
 function RepoBranches({ repoId }: { repoId: string }) {
   const [branches, setBranches] = React.useState<string[]>([])
+  const [current, setCurrent] = React.useState<string>("")
   React.useEffect(() => {
     const load = async () => {
       const res = await fetch(`/api/repo/branches?repo=${encodeURIComponent(repoId)}`)
       const json = await res.json()
       setBranches(json?.branches || [])
+      setCurrent(json?.branches?.[0] || "main")
     }
     load()
   }, [repoId])
   return (
-    <div className="p-2 text-sm">
-      <div className="mb-2 font-medium">Branches</div>
+    <div className="p-2 text-sm space-y-2">
+      <div className="flex items-center justify-between">
+        <div className="font-medium">Branches</div>
+        {!!branches.length && (
+          <div className="text-xs text-muted-foreground">{branches.length} total</div>
+        )}
+      </div>
+      <div className="rounded-xl border p-2 bg-background/70">
+        <div className="text-xs mb-1">Current</div>
+        <div className="flex items-center justify-between">
+          <div className="px-2 py-1 rounded-md bg-primary-100 text-foreground text-xs font-medium">{current}</div>
+          <Sparkline data={[4,6,3,8,7,10,9]} width={60} height={18} />
+        </div>
+      </div>
       <ul className="space-y-1">
         {branches.map((b) => (
-          <li key={b} className="px-2 py-1 rounded hover:bg-muted/50 cursor-pointer">{b}</li>
+          <li key={b} className="px-2 py-1 rounded hover:bg-muted/50 cursor-pointer flex items-center justify-between">
+            <span>{b}</span>
+            {b === current && <span className="text-[10px] text-primary-600">active</span>}
+          </li>
         ))}
       </ul>
     </div>

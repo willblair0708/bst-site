@@ -694,9 +694,9 @@ const ChatPage = () => {
                               {isUser ? (
                                 /* User Message - In Bubble */
                                 <motion.div
-                                  className="relative max-w-2xl rounded-3xl rounded-br-lg px-4 py-3 bg-foreground text-background"
+                                  className="relative max-w-2xl rounded-3xl rounded-br-lg px-4 py-3 bg-gray-200 text-gray-800 shadow-sm"
                                 >
-                                  <div className="prose prose-sm prose-invert max-w-none leading-relaxed">
+                                  <div className="prose prose-sm max-w-none leading-relaxed text-gray-800">
                                     <ReactMarkdown remarkPlugins={[remarkGfm]} components={markdownComponents}>
                                       {message.content}
                                     </ReactMarkdown>
@@ -720,24 +720,24 @@ const ChatPage = () => {
                                 <div className="relative max-w-4xl">
                                   {!message.content ? (
                                     <div className="flex items-center gap-2 py-2">
-                                      <motion.div 
-                                        className="w-2 h-2 rounded-full bg-foreground/40" 
-                                        animate={{ opacity: [0.4, 1, 0.4] }} 
-                                        transition={{ repeat: Infinity, duration: 1 }} 
-                                      />
-                                      <motion.div 
-                                        className="w-2 h-2 rounded-full bg-foreground/40" 
-                                        animate={{ opacity: [0.4, 1, 0.4] }} 
-                                        transition={{ repeat: Infinity, duration: 1, delay: 0.2 }} 
-                                      />
-                                      <motion.div 
-                                        className="w-2 h-2 rounded-full bg-foreground/40" 
-                                        animate={{ opacity: [0.4, 1, 0.4] }} 
-                                        transition={{ repeat: Infinity, duration: 1, delay: 0.4 }} 
-                                      />
+                                                            <motion.div 
+                        className="w-2 h-2 rounded-full bg-gray-400" 
+                        animate={{ opacity: [0.4, 1, 0.4] }} 
+                        transition={{ repeat: Infinity, duration: 1 }} 
+                      />
+                      <motion.div 
+                        className="w-2 h-2 rounded-full bg-gray-400" 
+                        animate={{ opacity: [0.4, 1, 0.4] }} 
+                        transition={{ repeat: Infinity, duration: 1, delay: 0.2 }} 
+                      />
+                      <motion.div 
+                        className="w-2 h-2 rounded-full bg-gray-400" 
+                        animate={{ opacity: [0.4, 1, 0.4] }} 
+                        transition={{ repeat: Infinity, duration: 1, delay: 0.4 }} 
+                      />
                                     </div>
                                   ) : (
-                                    <div className="prose prose-sm dark:prose-invert max-w-none leading-relaxed text-foreground">
+                                    <div className="prose prose-sm max-w-none leading-relaxed text-gray-800">
                                       <ReactMarkdown remarkPlugins={[remarkGfm]} components={markdownComponents}>
                                         {message.content}
                                       </ReactMarkdown>

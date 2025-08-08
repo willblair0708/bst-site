@@ -36,10 +36,8 @@ const EvidenceDrawer: React.FC<EvidenceDrawerProps> = ({ jobs, trigger }) => {
       <SheetTrigger asChild>{trigger}</SheetTrigger>
       <SheetContent className="w-[500px] sm:w-[540px]">
         <SheetHeader>
-          <SheetTitle>Evidence Drawer</SheetTitle>
-          <SheetDescription>
-            CI job logs and artifacts for this pull request.
-          </SheetDescription>
+          <SheetTitle className="text-base">Evidence</SheetTitle>
+          <SheetDescription className="text-[12px]">Sources, logs, and artifacts</SheetDescription>
         </SheetHeader>
         <div className="mt-4 space-y-4">
           {jobs.map((job) => (

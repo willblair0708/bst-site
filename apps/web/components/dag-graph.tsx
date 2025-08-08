@@ -180,38 +180,16 @@ export function DAGGraph({ nodes = mockNodes, onNodeClick, onRunPipeline, classN
       className={`relative bg-background border border-border rounded-2xl p-6 ${className}`}
     >
       {/* Header */}
-      <div className="flex items-center justify-between mb-6">
-        <motion.div
-          initial={{ opacity: 0, x: -20 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ delay: 0.2, duration: 0.5 }}
-        >
-          <h3 className="text-lg font-display font-medium text-foreground">Pipeline Graph</h3>
-          <p className="text-sm text-muted-foreground">5 nodes • 2 running • 1 pending</p>
-        </motion.div>
+      <div className="flex items-center justify-between mb-3">
+        <div className="text-sm text-muted-foreground">Pipeline Graph</div>
         <motion.button
           onClick={handleRunPipeline}
-          whileHover={{ scale: 1.02 }}
-          whileTap={{ scale: 0.98 }}
-          initial={{ opacity: 0, x: 20 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ delay: 0.3, duration: 0.5 }}
-          className="flex items-center space-x-2 px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-medium font-medium"
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+          className="w-8 h-8 bg-background border border-border rounded-md flex items-center justify-center hover:bg-muted transition-medium"
+          aria-label="Run pipeline"
         >
-          <motion.div 
-            className="w-4 h-4 relative"
-            animate={{ rotate: runningNodes.size > 0 ? 360 : 0 }}
-            transition={{ duration: 2, repeat: runningNodes.size > 0 ? Infinity : 0, ease: "linear" }}
-          >
-            <svg className="w-4 h-4 progress-ring" viewBox="0 0 20 20">
-              <circle cx="10" cy="10" r="8" fill="none" stroke="currentColor" strokeWidth="2" opacity="0.3" />
-              <circle cx="10" cy="10" r="8" fill="none" stroke="currentColor" strokeWidth="2" 
-                      strokeDasharray="50.26" strokeDashoffset="12.5" 
-                      className="animate-progress-ring" />
-            </svg>
-            <Play className="w-2 h-2 absolute inset-1" />
-          </motion.div>
-          <span>Run Pipeline</span>
+          <Play className="w-3 h-3" />
         </motion.button>
       </div>
 

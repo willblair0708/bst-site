@@ -1,16 +1,18 @@
 "use client"
 
 import React, { useMemo } from "react"
+import { motion, useReducedMotion } from "framer-motion"
 import { Sidebar } from "@/components/ide/sidebar"
 import { AgentConsole } from "@/components/ide/agent-console"
 import { ProtocolEditor } from "@/components/protocol-editor"
 import { DAGGraph } from "@/components/dag-graph"
 import EvidenceDrawer from "@/components/evidence-drawer"
+import { QuickActions } from "@/components/ide/quick-actions"
 import { Button } from "@/components/ui/button"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Layers, PanelRight } from "lucide-react"
 
-export function Shell() {
+export function Shell({ repoId }: { repoId?: string }) {
   const jobs = useMemo(() => [
     {
       name: "Scholar · Literature pass",
@@ -29,6 +31,8 @@ export function Shell() {
     },
   ], [])
 
+  const prefersReducedMotion = useReducedMotion()
+
   return (
     <div className="flex h-[calc(100vh-80px)] overflow-hidden">{/* subtract site header (h-20) */}
       {/* Left rail */}
@@ -40,13 +44,24 @@ export function Shell() {
         <div className="flex-1 grid grid-rows-[minmax(0,1fr)_auto] gap-2 min-h-0 overflow-hidden p-2">
           <div className="grid grid-cols-[minmax(0,1fr)_360px] gap-2 min-h-0 overflow-hidden">
             {/* Notebook/Protocol editor */}
-            <div className="rounded-2xl bg-primary-100/60 border border-border shadow-elevation-2 overflow-hidden min-h-0">
+            <motion.div
+              initial={prefersReducedMotion ? false : { opacity: 0, y: 12 }}
+              animate={prefersReducedMotion ? {} : { opacity: 1, y: 0 }}
+              transition={{ duration: 0.4, ease: "easeOut" }}
+              whileHover={prefersReducedMotion ? undefined : { scale: 1.002 }}
+              className="rounded-2xl bg-primary-100/60 border border-border shadow-elevation-2 overflow-hidden min-h-0 hover:animate-spark-glow"
+            >
               <ProtocolEditor />
-            </div>
+            </motion.div>
 
             {/* Right rail: Evidence Drawer trigger + Graph view */}
-            <div className="flex flex-col min-h-0 overflow-hidden">
-              <div className="rounded-2xl bg-card border border-border shadow-elevation-1 p-2 mb-2">
+            <motion.div
+              initial={prefersReducedMotion ? false : { opacity: 0, y: 12 }}
+              animate={prefersReducedMotion ? {} : { opacity: 1, y: 0 }}
+              transition={{ duration: 0.4, ease: "easeOut", delay: 0.05 }}
+              className="flex flex-col min-h-0 overflow-hidden"
+            >
+              <div className="rounded-2xl bg-card border border-border shadow-elevation-1 p-2 mb-2 hover:animate-spark-glow">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
                     <Layers className="w-4 h-4 text-viz-purple-500" />
@@ -62,13 +77,22 @@ export function Shell() {
               <ScrollArea className="rounded-2xl bg-card border border-border shadow-elevation-1 p-2 flex-1">
                 <DAGGraph nodes={[]} height={260} className="h-full" />
               </ScrollArea>
-            </div>
+              {/* floating quick actions */}
+              <div className="absolute right-2 bottom-2">
+                <QuickActions />
+              </div>
+            </motion.div>
           </div>
 
           {/* Bottom: Agent console */}
-          <div className="rounded-2xl bg-collaboration-100/70 border border-border shadow-elevation-2 overflow-hidden">
+          <motion.div
+            initial={prefersReducedMotion ? false : { opacity: 0, y: 8 }}
+            animate={prefersReducedMotion ? {} : { opacity: 1, y: 0 }}
+            transition={{ duration: 0.3, ease: "easeOut", delay: 0.08 }}
+            className="rounded-2xl bg-collaboration-100/70 border border-border shadow-elevation-2 overflow-hidden hover:animate-spark-glow"
+          >
             <AgentConsole />
-          </div>
+          </motion.div>
         </div>
       </div>
     </div>

@@ -3,11 +3,11 @@
 import React from 'react'
 import { motion } from 'framer-motion'
 import Link from 'next/link'
-import { Button } from '@/components/ui/button'
+import { usePathname } from 'next/navigation'
 import { GlobalSearch } from '@/components/global-search'
 import { NotificationCenter } from '@/components/notifications'
 import { ThemeToggle } from '@/components/theme-toggle'
-import { Shield } from 'lucide-react'
+import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 
 
 
@@ -21,27 +21,54 @@ const currentUser = {
 }
 
 export function GitHubHeader() {
+  const pathname = usePathname()
+
+  const [ideHref, setIdeHref] = React.useState('/ide?repo=demo')
+  React.useEffect(() => {
+    try {
+      const last = localStorage.getItem('lastRepo')
+      if (last) setIdeHref(`/ide?repo=${encodeURIComponent(last)}`)
+    } catch {}
+  }, [])
+
+  const navItems = [
+    { href: ideHref, key: 'ide', label: 'IDE', variant: 'primary' as const },
+    { href: '/dashboard', label: 'Dashboard' },
+    { href: '/models', label: 'Models' },
+    { href: '/chat', label: 'Chat' },
+  ]
+
+  const isActive = (href: string) => pathname?.startsWith('/ide') ? href.includes('/ide') : pathname?.startsWith(href)
+
+  const baseLinkClasses =
+    'text-sm font-medium rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 transition-colors'
+
+  const getLinkClasses = (href: string, variant?: 'primary') => {
+    if (variant === 'primary') {
+      return `${baseLinkClasses} px-4 py-2 bg-primary-100 text-foreground border border-primary-100/60 hover:bg-primary-100/80 shadow-elevation-1`
+    }
+    const active = isActive(href)
+    return [
+      baseLinkClasses,
+      'px-4 py-2',
+      active
+        ? 'text-foreground bg-muted/70 border border-muted/60'
+        : 'text-muted-foreground hover:text-foreground hover:bg-muted/70',
+    ].join(' ')
+  }
+
   return (
-    <header className="sticky top-0 z-50 border-b border-border/80 bg-background/80 backdrop-blur supports-[backdrop-filter]:bg-background/70">
+    <header className="sticky top-0 z-50 border-b border-border/70 bg-background/70 backdrop-blur-xl supports-[backdrop-filter]:bg-background/60">
       {/* Pastel glow underlay */}
-      <div aria-hidden className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-24 bg-gradient-to-b from-primary-100/60 via-accent-100/30 to-transparent" />
+      <div aria-hidden className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-20 bg-gradient-to-b from-primary-100/50 via-accent-100/20 to-transparent" />
       <div className="w-full px-4 sm:px-6 lg:px-10">
-        <div className="flex items-center justify-between h-20">
+        <div className="grid grid-cols-[auto_1fr_auto] items-center gap-4 h-20">
           {/* Left side - Logo */}
           <div className="flex items-center">
-            <Link href="/" className="flex items-center space-x-3 group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 rounded-2xl">
-              <motion.div 
-                className="relative bg-primary-500 p-3 rounded-2xl border border-primary-600/20 shadow-elevation-1"
-                whileHover={{ scale: 1.05, rotate: 2 }}
-                whileTap={{ scale: 0.95 }}
-                transition={{ duration: 0.2 }}
-                aria-label="Runix Hub Home"
-              >
-                {/* sheen */}
-                <div aria-hidden className="pointer-events-none absolute inset-0 rounded-2xl bg-[radial-gradient(120%_60%_at_50%_-10%,rgba(255,255,255,0.7),transparent_60%)] opacity-40" />
-                <Shield className="w-5 h-5 text-primary-foreground relative" />
-              </motion.div>
-              <span className="text-xl font-bold text-foreground">Runix Hub</span>
+            <Link href="/" className="group inline-flex items-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 rounded-2xl">
+              <span className="text-2xl font-extrabold tracking-tight bg-gradient-to-br from-foreground to-foreground/70 bg-clip-text text-foreground transition-opacity group-hover:opacity-90">
+                Runix
+              </span>
             </Link>
           </div>
 
@@ -55,31 +82,17 @@ export function GitHubHeader() {
           {/* Right side - Navigation and User */}
           <div className="flex items-center space-x-5">
             {/* Navigation */}
-            <nav className="hidden lg:flex items-center space-x-4">
-              <Link 
-                href="/ide" 
-                className="text-sm font-medium text-foreground px-4 py-2 rounded-full bg-primary-100 hover:bg-primary-100/80 border border-primary-100/60 shadow-elevation-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500"
-              >
-                IDE
-              </Link>
-              <Link 
-                href="/dashboard" 
-                className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors px-4 py-2 rounded-full hover:bg-muted/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500"
-              >
-                Dashboard
-              </Link>
-              <Link 
-                href="/models" 
-                className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors px-4 py-2 rounded-full hover:bg-muted/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500"
-              >
-                Models
-              </Link>
-              <Link 
-                href="/chat" 
-                className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors px-4 py-2 rounded-full hover:bg-muted/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500"
-              >
-                Chat
-              </Link>
+            <nav className="hidden lg:flex items-center space-x-2">
+              {navItems.map(item => (
+                <Link
+                  key={item.key || item.href}
+                  href={item.href}
+                  aria-current={isActive(item.href) ? 'page' : undefined}
+                  className={getLinkClasses(item.href, item.variant)}
+                >
+                  {item.label}
+                </Link>
+              ))}
             </nav>
 
 
@@ -93,15 +106,13 @@ export function GitHubHeader() {
               <NotificationCenter />
 
               {/* User avatar */}
-              <motion.button 
-                className="w-10 h-10 bg-primary-500 dark:bg-primary-600 rounded-full flex items-center justify-center text-primary-foreground text-sm font-semibold border border-primary-600/20 dark:border-primary-700/30 shadow-elevation-1 transition-all duration-200 ml-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500"
-                whileHover={{ scale: 1.06, rotate: 1 }}
-                whileTap={{ scale: 0.96 }}
-                transition={{ duration: 0.2 }}
-                aria-label={`Account for ${currentUser.name}`}
-              >
-                {currentUser.name.split(' ').map(n => n[0]).join('')}
-              </motion.button>
+              <motion.div whileHover={{ scale: 1.06 }} whileTap={{ scale: 0.96 }} transition={{ duration: 0.2 }} className="ml-2">
+                <Avatar className="h-10 w-10 border border-primary-600/20 dark:border-primary-700/30 shadow-elevation-1">
+                  <AvatarFallback className="text-sm font-semibold bg-primary-500 text-primary-foreground">
+                    {currentUser.name.split(' ').map(n => n[0]).join('')}
+                  </AvatarFallback>
+                </Avatar>
+              </motion.div>
             </div>
 
 

@@ -217,6 +217,7 @@ export function ProtocolEditor({ initialValue = defaultProtocol, onSave, readOnl
               onClick={handleSave} 
               disabled={!isValid || loading}
               size="sm"
+              className="text-foreground"
             >
               <Save className="w-4 h-4 mr-2" />
               {loading ? 'Saving...' : 'Save Protocol'}

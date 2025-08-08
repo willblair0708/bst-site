@@ -5,7 +5,7 @@ import { GitHubHeader } from "@/components/header"
 import { ToastProvider } from "@/components/ui/toast"
 
 const platformRoutes = ['/trials', '/organizations', '/profile', '/dashboard', '/new', '/settings']
-const noHeaderRoutes = ['/chat']
+const noHeaderRoutes = ['/chat', '/ide']
 
 export function LayoutWrapper({ children }: { children: React.ReactNode }) {
   const pathname = usePathname()

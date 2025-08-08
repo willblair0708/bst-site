@@ -2,7 +2,6 @@
 
 import { GitBranch, CheckCircle2, Star, GitFork, Activity, Globe, Lock, ArrowRight, Database, ShieldCheck, FlaskConical, Users, Bot, Sparkles, Hash, Workflow, Brain, MessageSquare } from "lucide-react"
 import Link from "next/link"
-import Image from "next/image"
 import { AnimatedHero } from "@/components/ui/animated-hero"
 import { motion, useReducedMotion } from "framer-motion"
 import { Button } from "@/components/ui/button"
@@ -198,7 +197,7 @@ const staggerContainer = {
 
 export default function LandingPage() {
   const { addToast } = useToast()
-  const [isLoading, setIsLoading] = useState(false)
+  // removed unused isLoading
   const prefersReducedMotion = useReducedMotion()
   
   useEffect(() => {
@@ -324,6 +323,8 @@ export default function LandingPage() {
               <span className="font-semibold text-foreground">
                 Fork → Reproduce → Attest
               </span>
+              <br />
+              <span className="mt-2 inline-block text-sm">Make a <span className="font-semibold">discovery commit</span>, open a <span className="font-semibold">hypothesis branch</span>, request an <span className="font-semibold">insight merge</span>.</span>
             </p>
           </motion.div>
 
@@ -457,7 +458,7 @@ export default function LandingPage() {
               Composable models and workflows
             </h2>
             <p className="mt-6 text-lg leading-8 text-muted-foreground">
-              Pin workflows to OCI digests, declare I/O contracts, and compose datasets→models→analyses as graphs.
+              Pin workflows to OCI digests, declare I/O contracts, and compose datasets→models→analyses as graphs (export W3C PROV with each run).
               <br />
               <span className="font-semibold text-foreground">
                 Import → Configure → Run → Share
@@ -514,7 +515,7 @@ export default function LandingPage() {
               Human–AI collaboration with provenance
             </h2>
             <p className="mt-6 text-lg leading-8 text-muted-foreground">
-              Explainable agent help, peer review workflows, and compute receipts for each suggestion.
+              Explainable agent help, peer review workflows, and compute receipts for each suggestion. Each agent suggestion carries a compute receipt and attestation.
               <br />
               <span className="font-semibold text-foreground">
                 Suggest → Validate → Iterate → Publish
@@ -549,7 +550,7 @@ export default function LandingPage() {
                     <div className="mt-4 flex items-center gap-2">
                       <Button 
                         size="sm" 
-                        className="soft-ui bg-primary-500 hover:bg-primary-500/90 text-white"
+                        className="soft-ui bg-primary-500 hover:bg-primary-500/90 text-primary-foreground"
                         onClick={() => {
                           trackEvent('cta_accept_run_clicked')
                           addToast('Running experiment with suggested parameters...')
@@ -705,7 +706,7 @@ export default function LandingPage() {
                       icon: Database,
                       title: "FAIR + Contracts",
                       description:
-                        "FAIR metadata by default; explicit I/O contracts for workflows; automatic license and consent checks.",
+                        "FAIR metadata by default; explicit I/O contracts for workflows; automatic license and consent checks. Model cards + SHAP + hash-chained audit logs.",
                       bg: "",
                       text: "text-foreground",
                     },
@@ -763,11 +764,11 @@ export default function LandingPage() {
 
             <div className="mx-auto mt-16 max-w-5xl grid gap-8 sm:grid-cols-2">
               <motion.div className="rounded-3xl glass-card p-6 shadow-elevation-1" variants={fadeInUp}>
-                <h3 className="font-semibold">Platform trial scaffold</h3>
+                <h3 className="font-semibold">AEGIS-0 (twin design)</h3>
                 <p className="mt-2 text-sm text-muted-foreground">Arms, response-adaptive randomization, and interim analyses with a simulator notebook.</p>
               </motion.div>
               <motion.div className="rounded-3xl glass-card p-6 shadow-elevation-1" variants={fadeInUp}>
-                <h3 className="font-semibold">Eligibility & outcomes extraction</h3>
+                <h3 className="font-semibold">SENTINEL (adaptive engine)</h3>
                 <p className="mt-2 text-sm text-muted-foreground">NLP pipelines with test datasets (no PHI) and evaluation harnesses.</p>
               </motion.div>
               <motion.div className="rounded-3xl glass-card p-6 shadow-elevation-1" variants={fadeInUp}>
@@ -779,7 +780,7 @@ export default function LandingPage() {
                 <p className="mt-2 text-sm text-muted-foreground">Role-based approvals, protocol diffs, and Part 11–style audit records.</p>
               </motion.div>
               <motion.div className="rounded-3xl glass-card p-6 shadow-elevation-1 sm:col-span-2" variants={fadeInUp}>
-                <h3 className="font-semibold">VIGIL (Observability)</h3>
+                <h3 className="font-semibold">Vigil (Telemetry)</h3>
                 <p className="mt-2 text-sm text-muted-foreground">Lineage graphs for every dataset→analysis→result with provenance views.</p>
               </motion.div>
             </div>
@@ -790,7 +791,7 @@ export default function LandingPage() {
         <section className="py-24 sm:py-32" role="region" aria-labelledby="cta-heading">
           <div className="relative mx-auto max-w-7xl px-6 lg:px-8">
             {/* CTA glow accents */}
-            <div aria-hidden className="pointer-events-none absolute -top-8 left-12 -z-10 h-48 w-48 rounded-full bg-white/20 blur-2xl" />
+            <div aria-hidden className="pointer-events-none absolute -top-8 left-12 -z-10 h-48 w-48 rounded-full bg-foreground/20 blur-2xl" />
             <div aria-hidden className="pointer-events-none absolute -bottom-8 right-12 -z-10 h-56 w-56 rounded-full bg-accent-100/60 blur-3xl" />
                <motion.div 
             className="relative isolate overflow-hidden rounded-3xl bg-gradient-to-br from-primary via-primary-600 to-accent/30 px-6 py-24 text-center shadow-2xl sm:px-16 border border-primary/20"
@@ -806,13 +807,13 @@ export default function LandingPage() {
                   </h2>
             <p className="mx-auto mt-6 max-w-xl text-lg leading-8 text-primary-foreground/90">
               Join scientists worldwide building the future of reproducible discovery.
-                  </p>
+            </p>
                   <div className="mt-10 flex items-center justify-center gap-x-6">
               <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
                 <Link href="/explore">
-                                          <Button 
+                      <Button 
                           size="lg" 
-                          className="bg-white text-[#0436FF] hover:bg-white/90 shadow-lg hover:shadow-xl transition-all"
+                          className="bg-card text-primary hover:bg-card/90 border border-border shadow-lg hover:shadow-xl transition-all"
                           onClick={() => {
                             trackEvent('cta_start_building_clicked')
                             addToast('Redirecting to explore page...')
@@ -860,6 +861,9 @@ export default function LandingPage() {
               />
             </motion.div>
               </motion.div>
+              <p className="mt-6 text-center text-sm text-muted-foreground">
+                Compliance: HIPAA Safe Harbor de-ID, differential-privacy budgets, 21 CFR Part 11-style audit chains. See docs.
+              </p>
           </div>
       </section>
 

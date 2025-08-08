@@ -57,12 +57,12 @@ export function MicroTooltip({
             transition={{ duration: 0.2, ease: [0.22, 0.61, 0.36, 1] }}
             className={`absolute z-50 ${positionClasses[position]} pointer-events-none`}
           >
-            <div className="bg-white/80 border border-primary-500/20 shadow-elevation-2 rounded-xl px-3 py-2 backdrop-blur-sm">
-              <div className="text-xs font-medium text-foreground whitespace-nowrap">
+            <div className="bg-popover/90 border border-border shadow-elevation-2 rounded-xl px-3 py-2 backdrop-blur-sm">
+              <div className="text-xs font-medium text-popover-foreground whitespace-nowrap">
                 {content}
               </div>
               {/* Subtle arrow indicator */}
-              <div className={`absolute w-2 h-2 bg-white/80 border-l border-t border-primary-500/20 transform rotate-45 ${
+              <div className={`absolute w-2 h-2 bg-popover/90 border-l border-t border-border transform rotate-45 ${
                 position === "top" ? "top-full left-1/2 -translate-x-1/2 -translate-y-1/2" :
                 position === "bottom" ? "bottom-full left-1/2 -translate-x-1/2 translate-y-1/2" :
                 position === "left" ? "left-full top-1/2 -translate-y-1/2 -translate-x-1/2" :

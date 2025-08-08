@@ -2,7 +2,7 @@
 
 import React from 'react'
 import { motion, Variants, useReducedMotion } from 'framer-motion'
-import { Hash, FlaskConical, Users, ArrowRight, Zap, Sparkles } from 'lucide-react'
+import { Hash, FlaskConical, Users, ArrowRight, Zap, Sparkles, DollarSign, CalendarDays } from 'lucide-react'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { AnimatedCounter } from '@/components/ui/animated-counter'
@@ -86,7 +86,7 @@ const HeroViz = () => {
       {/* Grid background */}
       <motion.div className="absolute inset-0 z-0" initial={false} animate={!prefersReducedMotion ? { y: [0, -6, 0] } : undefined} transition={{ duration: 16, repeat: Infinity, ease: 'easeInOut' }}>
         <div className="w-full h-full" style={{ backgroundImage: 'radial-gradient(circle, hsl(var(--border)) 1px, transparent 1px)', backgroundSize: '20px 20px' }} />
-        <div className="absolute inset-0 z-1 bg-gradient-to-t from-background via-background to-transparent" />
+        <div className="absolute inset-0 z-[1] bg-gradient-to-t from-background via-background to-transparent" />
       </motion.div>
 
       {/* Pillar Cards */}
@@ -214,6 +214,51 @@ export function AnimatedHero() {
           </motion.div>
         </motion.div>
         
+        {/* Proof Progress Bar (mocked KPI widget) */}
+        <motion.div 
+          className="mt-10 w-full"
+          variants={staggerContainer}
+          initial="initial"
+          whileInView="animate"
+          viewport={{once: true}}
+        >
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 rounded-2xl border bg-card/70 p-3 shadow-elevation-1">
+            <div className="flex-1 flex items-center gap-2">
+              <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-muted border">
+                <DollarSign className="w-4 h-4 text-muted-foreground" />
+              </div>
+              <div className="text-sm">
+                <span className="text-muted-foreground">Cost / pt</span>
+                <div className="font-mono font-semibold">$
+                  <AnimatedCounter from={0} to={12.4} decimals={2} />
+                </div>
+              </div>
+            </div>
+            <div className="flex-1 flex items-center gap-2">
+              <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-muted border">
+                <CalendarDays className="w-4 h-4 text-muted-foreground" />
+              </div>
+              <div className="text-sm">
+                <span className="text-muted-foreground">Days to answer</span>
+                <div className="font-mono font-semibold">
+                  <AnimatedCounter from={0} to={4.2} decimals={1} />
+                </div>
+              </div>
+            </div>
+            <div className="flex-1 flex items-center gap-2">
+              <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-muted border">
+                <Users className="w-4 h-4 text-muted-foreground" />
+              </div>
+              <div className="text-sm">
+                <span className="text-muted-foreground">Diversity</span>
+                <div className="font-mono font-semibold">+
+                  <AnimatedCounter from={0} to={18} decimals={0} />%
+                </div>
+              </div>
+            </div>
+          </div>
+        </motion.div>
+
         {/* Stats */}
         <motion.div 
           className="mt-20 grid grid-cols-2 sm:grid-cols-4 gap-8 text-center"

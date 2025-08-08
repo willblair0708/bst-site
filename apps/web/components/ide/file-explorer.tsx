@@ -112,9 +112,11 @@ export function FileExplorer({ repoId, onOpen, selectedPath, refreshKey }: { rep
     setRecent((r) => [path, ...r.filter((p) => p !== path)].slice(0, 5))
   }
 
-  const onDragStart = (e: React.DragEvent, path: string) => {
-    const items = selectedSet.size ? Array.from(selectedSet) : [path]
-    e.dataTransfer.setData('application/json', JSON.stringify({ items }))
+  const onDragStart = (e: any, path: string) => {
+    try {
+      const items = selectedSet.size ? Array.from(selectedSet) : [path]
+      e.dataTransfer?.setData('application/json', JSON.stringify({ items }))
+    } catch {}
   }
   const onDragOverDir = (e: React.DragEvent, path: string) => { e.preventDefault(); setDropTarget(path) }
   const onDragLeaveDir = () => setDropTarget(null)

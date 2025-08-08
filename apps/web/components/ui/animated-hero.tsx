@@ -165,16 +165,14 @@ export function AnimatedHero() {
               variants={itemVariants}
               className="text-display font-display tracking-tight text-foreground"
             >
-              Turn every scientific claim
-              <br />
-              <span className="text-primary-500">into a runnable, citable artifact.</span>
+              Organize proof. Accelerate tools. Orchestrate agents.
             </motion.h1>
             
             <motion.p 
               variants={itemVariants}
               className="mt-6 text-lg leading-8 text-muted-foreground max-w-xl"
             >
-              Fork the dataset and protocol, reproduce the result, and mint an attested record—with agents that help, and provenance you can trust.
+              Estelion makes science versioned, reproducible, and AI-driven—from first sketch to published result.
             </motion.p>
             
             <motion.div 
@@ -187,21 +185,26 @@ export function AnimatedHero() {
                   className="group soft-ui bg-primary-500 hover:bg-primary-500/90 text-primary-foreground active:translate-y-px"
                   onClick={() => trackEvent('cta_start_building_clicked')}
                 >
-                  <FlaskConical className={`w-4 h-4 mr-2 ${!prefersReducedMotion && 'group-hover:animate-snap'}`} strokeWidth={2} aria-hidden="true" />
-                  Start Building
+                  Try the live demo
                   <ArrowRight className={`w-4 h-4 ml-2 ${!prefersReducedMotion && 'group-hover:translate-x-1'} transition-transform`} strokeWidth={2} aria-hidden="true" />
                 </Button>
               </Link>
               
-              <Link href="/docs" passHref>
+              <Link href="/dashboard" passHref>
                 <Button 
                   variant="outline" 
                   size="lg"
                   className="group soft-ui bg-background/50 hover:bg-muted"
                 >
-                  Read Docs
+                  Join early access
                 </Button>
               </Link>
+            </motion.div>
+
+            <motion.div variants={itemVariants} className="mt-6 text-sm text-muted-foreground space-y-1 max-w-xl text-left mx-auto lg:mx-0">
+              <div>Organize: Version control for data, protocols, analyses, and claims.</div>
+              <div>Accelerate: One-line access to science models and toolboxes.</div>
+              <div>Orchestrate: Coordinate agent teams to plan, run, and review experiments.</div>
             </motion.div>
           </div>
           

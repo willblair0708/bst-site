@@ -31,7 +31,7 @@ export function WorkspaceTabs({ repoId, onOpenFile, selectedPath }: { repoId: st
 
   return (
     <Tabs value={tab} onValueChange={setTab} className="h-full flex flex-col">
-      <TabsList className="relative grid grid-cols-4 rounded-xl m-2 h-10 bg-muted/50">
+      <TabsList className="sticky top-0 z-10 relative grid grid-cols-4 rounded-xl m-2 mt-2 mb-2 h-10 bg-muted/50 backdrop-blur supports-[backdrop-filter]:bg-muted/40">
         <TooltipProvider>
           {triggers.map(({ key, icon: Icon, label }) => (
             <Tooltip key={key}>
@@ -125,23 +125,42 @@ function RepoBranches({ repoId }: { repoId: string }) {
 function RepoSearch({ repoId, onOpenFile }: { repoId: string; onOpenFile: (p: string) => void }) {
   const [q, setQ] = React.useState("")
   const [results, setResults] = React.useState<any[]>([])
+  const [loading, setLoading] = React.useState(false)
+  const [debounceId, setDebounceId] = React.useState<any>(null)
   const search = React.useCallback(async (val: string) => {
+    if (!val) { setResults([]); return }
+    setLoading(true)
     const res = await fetch(`/api/repo/search?repo=${encodeURIComponent(repoId)}&q=${encodeURIComponent(val)}`)
-    const json = await res.json()
+    const json = await res.json().catch(() => ({}))
     setResults(json?.results || [])
+    setLoading(false)
   }, [repoId])
   return (
     <div className="p-2 space-y-2 h-full">
-      <Input value={q} onChange={(e) => { setQ(e.target.value); search(e.target.value) }} placeholder="Search in repo…" className="rounded-xl" />
+      <div className="relative">
+        <Input
+          value={q}
+          onChange={(e) => {
+            const val = e.target.value
+            setQ(val)
+            if (debounceId) clearTimeout(debounceId)
+            setDebounceId(setTimeout(() => search(val), 180))
+          }}
+          placeholder="Search in repo…"
+          className="rounded-xl pl-3 pr-10"
+        />
+        {loading && <motion.span className="absolute right-3 top-1/2 -translate-y-1/2 w-2 h-2 rounded-full bg-primary" animate={{ scale: [1, 1.3, 1] }} transition={{ repeat: Infinity, duration: 0.8 }} />}
+      </div>
       <ScrollArea className="h-[calc(100%-48px)]">
         <div className="space-y-1">
           {results.map((r, idx) => (
-            <button key={idx} className="w-full text-left px-2 py-1 rounded hover:bg-muted/50" onClick={() => onOpenFile(r.path)}>
-              <div className="text-sm">{r.path}</div>
-              {r.preview && <div className="text-xs text-muted-foreground truncate">{r.preview}</div>}
+            <button key={idx} className="w-full text-left px-2 py-2 rounded-xl border border-transparent hover:bg-muted/40 hover:border-border/80 transition-colors" onClick={() => onOpenFile(r.path)}>
+              <div className="text-[13px] font-medium truncate">{r.path}</div>
+              {r.preview && <div className="text-xs text-muted-foreground line-clamp-2">{r.preview}</div>}
             </button>
           ))}
-          {!results.length && <div className="text-xs text-muted-foreground p-2">Type to search files</div>}
+          {!results.length && !q && <div className="text-xs text-muted-foreground p-2">Type to search files</div>}
+          {!results.length && !!q && !loading && <div className="text-xs text-muted-foreground p-2">No results</div>}
         </div>
       </ScrollArea>
     </div>

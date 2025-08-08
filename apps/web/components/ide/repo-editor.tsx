@@ -57,7 +57,7 @@ export function RepoEditor({ repoId, path }: { repoId: string; path?: string }) 
       <div className="flex items-center justify-between p-2 border-b bg-background/70">
         <div className="flex items-center gap-2 text-sm">
           <FileText className="w-4 h-4" />
-          <div className="truncate max-w-[48vw] font-mono text-xs">{path || "Select a file"}</div>
+          <div className="truncate max-w-[48vw] font-mono text-xs">{path || "Open a file from the Files tab"}</div>
         </div>
         <div className="flex items-center gap-2">
           <Button size="sm" variant="outline" className="rounded-xl" onClick={save} disabled={!dirty || loading || !path}>

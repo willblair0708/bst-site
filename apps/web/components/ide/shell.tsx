@@ -3,7 +3,6 @@
 import React, { useMemo } from "react"
 import { motion, useReducedMotion } from "framer-motion"
 import { TerminalConsole } from "@/components/ide/terminal-console"
-import { ProtocolEditor } from "@/components/protocol-editor"
 import { DAGGraph } from "@/components/dag-graph"
 import EvidenceDrawer from "@/components/evidence-drawer"
 import { QuickActions } from "@/components/ide/quick-actions"
@@ -65,11 +64,7 @@ export function Shell({ repoId }: { repoId?: string }) {
               transition={{ duration: 0.4, ease: "easeOut" }}
               className="rounded-2xl bg-primary-100/60 border border-border shadow-elevation-2 overflow-hidden min-h-0 hover:animate-spark-glow"
             >
-              {selectedPath ? (
-                <RepoEditor repoId={repoId || 'demo'} path={selectedPath} />
-              ) : (
-                <ProtocolEditor />
-              )}
+              <RepoEditor repoId={repoId || 'demo'} path={selectedPath} />
             </motion.div>
 
             {/* Right rail: Evidence Drawer trigger + Graph view */}

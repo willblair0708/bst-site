@@ -17,7 +17,17 @@ export function AgentChat() {
   const [loading, setLoading] = React.useState(false)
   const [role, setRole] = React.useState<'Auto'|'Scholar'|'Analyst'|'Critic'>("Auto")
   const [attachments, setAttachments] = React.useState<string[]>([])
+  const [sessions, setSessions] = React.useState<{ id: string; name: string }[]>([{ id: 's1', name: 'Default Session' }])
+  const [activeSession, setActiveSession] = React.useState('s1')
+  const [sessionSearch, setSessionSearch] = React.useState('')
   const suggestions = ["/summarize", "/explain", "/search", "/bundle"]
+
+  const renameSession = (id: string) => {
+    const name = window.prompt('Rename session', sessions.find(s => s.id===id)?.name || '')?.trim()
+    if (!name) return
+    setSessions((ss) => ss.map((s) => s.id===id ? { ...s, name } : s))
+  }
+  const archiveSession = (id: string) => setSessions((ss) => ss.filter((s) => s.id !== id))
 
   const send = async () => {
     const text = input.trim()
@@ -57,6 +67,23 @@ export function AgentChat() {
         <div className="text-[10px] text-muted-foreground">Esc to cancel · Enter to send</div>
       </div>
 
+      {/* Session switcher */}
+      <div className="px-3 py-2 border-b bg-background/60">
+        <div className="flex items-center gap-2">
+          <Input value={sessionSearch} onChange={(e) => setSessionSearch(e.target.value)} placeholder="Search sessions…" className="h-8 rounded-lg" />
+          <Button size="sm" variant="secondary" className="rounded-xl" onClick={() => { const id = `s${Date.now()}`; setSessions((s) => [...s, { id, name: 'New Session' }]); setActiveSession(id) }}>New</Button>
+        </div>
+        <div className="mt-2 flex gap-2 overflow-x-auto">
+          {sessions.filter(s => s.name.toLowerCase().includes(sessionSearch.toLowerCase())).map((s) => (
+            <div key={s.id} className={`px-2 py-1 rounded-lg border text-xs shrink-0 ${activeSession===s.id?'bg-card':'bg-background/50'}`}>
+              <button onClick={() => setActiveSession(s.id)} title={s.name}>{s.name}</button>
+              <button className="ml-2 text-muted-foreground" title="Rename" onClick={() => renameSession(s.id)}>✎</button>
+              <button className="ml-1 text-muted-foreground" title="Archive" onClick={() => archiveSession(s.id)}>⟲</button>
+            </div>
+          ))}
+        </div>
+      </div>
+
       {/* Messages */}
       <ScrollArea className="flex-1">
         <div ref={listRef} className="p-3 space-y-2">
@@ -67,7 +94,13 @@ export function AgentChat() {
               animate={{ opacity: 1, y: 0 }}
               className={`max-w-[85%] rounded-2xl px-3 py-2 text-sm border ${m.role === 'user' ? 'ml-auto bg-primary-100/80 border-primary-100' : 'bg-card'} ${m.role === 'user' ? 'text-foreground' : 'text-foreground'}`}
             >
-              {m.content}
+              <div className="whitespace-pre-wrap">
+                {m.content}
+              </div>
+              <div className="mt-1 flex items-center gap-2 text-[10px] text-muted-foreground">
+                <button onClick={() => navigator.clipboard.writeText(m.content)}>Copy</button>
+                <button onClick={() => setInput(`> ${m.content}`)}>Quote</button>
+              </div>
             </motion.div>
           ))}
           {loading && (

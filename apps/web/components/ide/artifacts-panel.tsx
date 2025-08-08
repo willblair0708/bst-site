@@ -5,11 +5,11 @@ import { motion, AnimatePresence } from "framer-motion"
 import { Download, ExternalLink, FileSpreadsheet, GitBranch, Hash, FileText, FileJson } from "lucide-react"
 import Sparkline from "@/components/ui/sparkline"
 
-type Artifact = {
+ type Artifact = {
   name: string
   path: string
-  type: 'csv' | 'txt' | 'unknown'
-  preview?: string[][]
+  type: 'csv' | 'txt' | 'json' | 'unknown'
+  preview?: any
 }
 
 export function ArtifactsPanel({ artifacts }: { artifacts: Artifact[] }) {
@@ -38,14 +38,14 @@ export function ArtifactsPanel({ artifacts }: { artifacts: Artifact[] }) {
                 <button className="p-1 rounded-md hover:bg-muted/60" aria-label="Download"><Download className="w-4 h-4" /></button>
               </div>
             </div>
-            {a.type === 'csv' && a.preview && (
+            {a.type === 'csv' && Array.isArray(a.preview) && (
               <div className="overflow-auto rounded-lg border bg-card/40">
                 <table className="w-full text-xs">
                   <tbody>
-                    {a.preview.slice(0, 8).map((row, i) => (
+                    {a.preview.slice(0, 8).map((row: any[], i: number) => (
                       <tr key={i} className="border-t/50">
-                        {row.slice(0, 6).map((cell, j) => (
-                          <td key={j} className="px-2 py-1 whitespace-nowrap text-muted-foreground">{cell}</td>
+                        {row.slice(0, 6).map((cell: any, j: number) => (
+                          <td key={j} className="px-2 py-1 whitespace-nowrap text-muted-foreground">{String(cell)}</td>
                         ))}
                       </tr>
                     ))}
@@ -53,10 +53,10 @@ export function ArtifactsPanel({ artifacts }: { artifacts: Artifact[] }) {
                 </table>
               </div>
             )}
-            {a.type === 'txt' && a.preview && (
+            {a.type === 'txt' && typeof a.preview === 'string' && (
               <pre className="text-xs p-2 rounded-lg border bg-card/40 overflow-auto">{a.preview}</pre>
             )}
-            {a.type === 'json' && a.preview && Array.isArray(a.preview) && (
+            {a.type === 'json' && a.preview && (
               <pre className="text-xs p-2 rounded-lg border bg-card/40 overflow-auto">{JSON.stringify(a.preview, null, 2)}</pre>
             )}
             {(!a.preview || (a.type !== 'csv' && a.type !== 'txt' && a.type !== 'json')) && (

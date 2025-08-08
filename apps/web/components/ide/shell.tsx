@@ -146,6 +146,26 @@ export function Shell({ repoId }: { repoId?: string }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedPath])
 
+  // Quick switch open editor tabs Cmd/Ctrl+1..9
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if ((e.ctrlKey || e.metaKey) && /^[1-9]$/.test(e.key)) {
+        e.preventDefault()
+        const idx = parseInt(e.key, 10) - 1
+        const p = openFiles[idx]
+        if (p) setSelectedPath(p)
+      }
+    }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [openFiles])
+
+  const exportBundle = async () => {
+    try {
+      await fetch("/api/protocol", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ action: "export", repo: repoKey }) })
+    } catch {}
+  }
+
   const gridCols = `grid-cols-[${leftWidth}px_minmax(0,1fr)_${rightWidth}px]`
 
   return (
@@ -182,7 +202,7 @@ export function Shell({ repoId }: { repoId?: string }) {
                   <div className="text-[11px] text-muted-foreground">No file open</div>
                 )}
                 {openFiles.map((p) => (
-                  <button key={p} onClick={() => setSelectedPath(p)} className={`group flex items-center gap-2 px-2 py-1 rounded-lg border text-xs mr-1 ${selectedPath === p ? 'bg-card border-border' : 'bg-background/40 border-transparent hover:border-border'}`}>
+                  <button key={p} onClick={() => setSelectedPath(p)} title={p} className={`group flex items-center gap-2 px-2 py-1 rounded-lg border text-xs mr-1 ${selectedPath === p ? 'bg-card border-border' : 'bg-background/40 border-transparent hover:border-border'}`}>
                     <span className="relative truncate max-w-[22ch] font-mono">
                       <span>{p.split('/').pop()}</span>
                       {/* dirty dot via data attribute toggled on editor save/dirty */}
@@ -230,6 +250,7 @@ export function Shell({ repoId }: { repoId?: string }) {
                       </TabsTrigger>
                     </TabsList>
                     <Button size="sm" variant="outline" className="rounded-xl" onClick={runProtocol}>Run Protocol</Button>
+                    <Button size="sm" variant="secondary" className="rounded-xl ml-2" onClick={exportBundle}>Export Bundle</Button>
                   </div>
                 </motion.div>
 

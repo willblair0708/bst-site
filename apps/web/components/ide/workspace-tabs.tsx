@@ -142,14 +142,16 @@ function RepoSearch({ repoId, onOpenFile }: { repoId: string; onOpenFile: (p: st
   const [results, setResults] = React.useState<any[]>([])
   const [loading, setLoading] = React.useState(false)
   const [debounceId, setDebounceId] = React.useState<any>(null)
+  const [type, setType] = React.useState<'all'|'code'|'docs'|'data'>('all')
+  const [when, setWhen] = React.useState<'any'|'week'|'month'|'year'>('any')
   const search = React.useCallback(async (val: string) => {
     if (!val) { setResults([]); return }
     setLoading(true)
-    const res = await fetch(`/api/repo/search?repo=${encodeURIComponent(repoId)}&q=${encodeURIComponent(val)}`)
+    const res = await fetch(`/api/repo/search?repo=${encodeURIComponent(repoId)}&q=${encodeURIComponent(val)}&type=${type}&when=${when}`)
     const json = await res.json().catch(() => ({}))
     setResults(json?.results || [])
     setLoading(false)
-  }, [repoId])
+  }, [repoId, type, when])
   const highlight = (text: string) => {
     if (!q.trim()) return text
     const i = text.toLowerCase().indexOf(q.toLowerCase())
@@ -158,19 +160,34 @@ function RepoSearch({ repoId, onOpenFile }: { repoId: string; onOpenFile: (p: st
   }
   return (
     <div className="p-2 space-y-2 h-full">
-      <div className="relative">
-        <Input
-          value={q}
-          onChange={(e) => {
-            const val = e.target.value
-            setQ(val)
-            if (debounceId) clearTimeout(debounceId)
-            setDebounceId(setTimeout(() => search(val), 180))
-          }}
-          placeholder="Search in repo…"
-          className="rounded-xl pl-3 pr-10"
-        />
-        {loading && <motion.span className="absolute right-3 top-1/2 -translate-y-1/2 w-2 h-2 rounded-full bg-primary" animate={{ scale: [1, 1.3, 1] }} transition={{ repeat: Infinity, duration: 0.8 }} />}
+      <div className="flex items-center gap-2">
+        <div className="relative flex-1">
+          <Input
+            value={q}
+            onChange={(e) => {
+              const val = e.target.value
+              setQ(val)
+              if (debounceId) clearTimeout(debounceId)
+              setDebounceId(setTimeout(() => search(val), 180))
+            }}
+            placeholder="Search in repo…"
+            className="rounded-xl pl-3 pr-10"
+          />
+          {loading && <motion.span className="absolute right-3 top-1/2 -translate-y-1/2 w-2 h-2 rounded-full bg-primary" animate={{ scale: [1, 1.3, 1] }} transition={{ repeat: Infinity, duration: 0.8 }} />}
+        </div>
+        <select className="h-9 text-xs border rounded-lg px-2 bg-card" value={type} onChange={(e) => setType(e.target.value as any)}>
+          <option value="all">All</option>
+          <option value="code">Code</option>
+          <option value="docs">Docs</option>
+          <option value="data">Data</option>
+        </select>
+        <select className="h-9 text-xs border rounded-lg px-2 bg-card" value={when} onChange={(e) => setWhen(e.target.value as any)}>
+          <option value="any">Any time</option>
+          <option value="week">Last week</option>
+          <option value="month">Last month</option>
+          <option value="year">Last year</option>
+        </select>
+        <button className="h-9 text-xs border rounded-lg px-2 bg-card" onClick={() => { setQ(''); setResults([]) }}>Clear</button>
       </div>
       <ScrollArea className="h-[calc(100%-48px)]">
         <div className="space-y-1">

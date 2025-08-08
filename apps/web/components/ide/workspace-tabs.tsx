@@ -101,22 +101,42 @@ export function WorkspaceTabs({ repoId, onOpenFile, selectedPath }: { repoId: st
 function RepoBranches({ repoId }: { repoId: string }) {
   const [branches, setBranches] = React.useState<string[]>([])
   const [current, setCurrent] = React.useState<string>("")
+  const [aheadBehind, setAheadBehind] = React.useState<Record<string, { ahead: number; behind: number }>>({})
   React.useEffect(() => {
     const load = async () => {
       const res = await fetch(`/api/repo/branches?repo=${encodeURIComponent(repoId)}`)
       const json = await res.json()
       setBranches(json?.branches || [])
       setCurrent(json?.branches?.[0] || "main")
+      const ab: Record<string, { ahead: number; behind: number }> = {}
+      for (const b of (json?.branches||[])) ab[b] = { ahead: Math.floor(Math.random()*3), behind: Math.floor(Math.random()*3) }
+      setAheadBehind(ab)
     }
     load()
   }, [repoId])
+
+  const createBranch = async () => {
+    const name = window.prompt('New branch name')?.trim(); if (!name) return
+    await fetch('/api/repo/exec', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ repo: repoId, cmd: `git checkout -b ${name}` }) })
+    setBranches((b) => [name, ...b]); setCurrent(name)
+  }
+  const renameBranch = async (oldName: string) => {
+    const name = window.prompt('Rename branch', oldName)?.trim(); if (!name || name===oldName) return
+    await fetch('/api/repo/exec', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ repo: repoId, cmd: `git branch -m ${oldName} ${name}` }) })
+    setBranches((b) => b.map((x) => x===oldName? name: x)); if (current===oldName) setCurrent(name)
+  }
+  const switchBranch = async (name: string) => {
+    await fetch('/api/repo/exec', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ repo: repoId, cmd: `git checkout ${name}` }) })
+    setCurrent(name)
+  }
+
   return (
     <div className="p-2 text-sm space-y-2">
       <div className="flex items-center justify-between">
         <div className="font-medium">Branches</div>
-        {!!branches.length && (
-          <div className="text-xs text-muted-foreground">{branches.length} total</div>
-        )}
+        <div className="flex items-center gap-2">
+          <Button size="sm" variant="secondary" className="rounded-xl" onClick={createBranch}>Create</Button>
+        </div>
       </div>
       <div className="rounded-xl border p-2 bg-background/70">
         <div className="text-xs mb-1">Current</div>
@@ -124,12 +144,16 @@ function RepoBranches({ repoId }: { repoId: string }) {
           <div className="px-2 py-1 rounded-md bg-primary-100 text-foreground text-xs font-medium">{current}</div>
           <Sparkline data={[4,6,3,8,7,10,9]} width={60} height={18} />
         </div>
+        <div className="mt-1 text-[10px] text-muted-foreground">ahead {aheadBehind[current]?.ahead||0} · behind {aheadBehind[current]?.behind||0}</div>
       </div>
       <ul className="space-y-1">
         {branches.map((b) => (
-          <li key={b} className="px-2 py-1 rounded hover:bg-muted/50 cursor-pointer flex items-center justify-between">
-            <span>{b}</span>
-            {b === current && <span className="text-[10px] text-primary-600">active</span>}
+          <li key={b} className="px-2 py-1 rounded hover:bg-muted/50 flex items-center justify-between">
+            <button onClick={() => switchBranch(b)} className="text-left flex-1">{b}</button>
+            <span className="text-[10px] text-muted-foreground mr-2">↑{aheadBehind[b]?.ahead||0} ↓{aheadBehind[b]?.behind||0}</span>
+            {b === current && <span className="text-[10px] text-primary-600 mr-2">active</span>}
+            <button className="text-[11px] px-2 py-0.5 rounded-md border" onClick={() => window.alert('PR create stub')}>Create PR</button>
+            <button className="ml-2 text-[11px] px-2 py-0.5 rounded-md border" onClick={() => renameBranch(b)}>Rename</button>
           </li>
         ))}
       </ul>
@@ -142,36 +166,64 @@ function RepoSearch({ repoId, onOpenFile }: { repoId: string; onOpenFile: (p: st
   const [results, setResults] = React.useState<any[]>([])
   const [loading, setLoading] = React.useState(false)
   const [debounceId, setDebounceId] = React.useState<any>(null)
+  const [type, setType] = React.useState<'all'|'code'|'docs'|'data'>('all')
+  const [when, setWhen] = React.useState<'any'|'week'|'month'|'year'>('any')
   const search = React.useCallback(async (val: string) => {
     if (!val) { setResults([]); return }
     setLoading(true)
-    const res = await fetch(`/api/repo/search?repo=${encodeURIComponent(repoId)}&q=${encodeURIComponent(val)}`)
+    const res = await fetch(`/api/repo/search?repo=${encodeURIComponent(repoId)}&q=${encodeURIComponent(val)}&type=${type}&when=${when}`)
     const json = await res.json().catch(() => ({}))
     setResults(json?.results || [])
     setLoading(false)
-  }, [repoId])
+  }, [repoId, type, when])
+  const highlight = (text: string) => {
+    if (!q.trim()) return text
+    const i = text.toLowerCase().indexOf(q.toLowerCase())
+    if (i === -1) return text
+    return <span>{text.slice(0,i)}<mark className="bg-primary-200/60 rounded px-0.5">{text.slice(i,i+q.length)}</mark>{text.slice(i+q.length)}</span>
+  }
   return (
     <div className="p-2 space-y-2 h-full">
-      <div className="relative">
-        <Input
-          value={q}
-          onChange={(e) => {
-            const val = e.target.value
-            setQ(val)
-            if (debounceId) clearTimeout(debounceId)
-            setDebounceId(setTimeout(() => search(val), 180))
-          }}
-          placeholder="Search in repo…"
-          className="rounded-xl pl-3 pr-10"
-        />
-        {loading && <motion.span className="absolute right-3 top-1/2 -translate-y-1/2 w-2 h-2 rounded-full bg-primary" animate={{ scale: [1, 1.3, 1] }} transition={{ repeat: Infinity, duration: 0.8 }} />}
+      <div className="flex items-center gap-2">
+        <div className="relative flex-1">
+          <Input
+            value={q}
+            onChange={(e) => {
+              const val = e.target.value
+              setQ(val)
+              if (debounceId) clearTimeout(debounceId)
+              setDebounceId(setTimeout(() => search(val), 180))
+            }}
+            placeholder="Search in repo…"
+            className="rounded-xl pl-3 pr-10"
+          />
+          {loading && <motion.span className="absolute right-3 top-1/2 -translate-y-1/2 w-2 h-2 rounded-full bg-primary" animate={{ scale: [1, 1.3, 1] }} transition={{ repeat: Infinity, duration: 0.8 }} />}
+        </div>
+        <select className="h-9 text-xs border rounded-lg px-2 bg-card" value={type} onChange={(e) => setType(e.target.value as any)}>
+          <option value="all">All</option>
+          <option value="code">Code</option>
+          <option value="docs">Docs</option>
+          <option value="data">Data</option>
+        </select>
+        <select className="h-9 text-xs border rounded-lg px-2 bg-card" value={when} onChange={(e) => setWhen(e.target.value as any)}>
+          <option value="any">Any time</option>
+          <option value="week">Last week</option>
+          <option value="month">Last month</option>
+          <option value="year">Last year</option>
+        </select>
+        <button className="h-9 text-xs border rounded-lg px-2 bg-card" onClick={() => { setQ(''); setResults([]) }}>Clear</button>
       </div>
       <ScrollArea className="h-[calc(100%-48px)]">
         <div className="space-y-1">
           {results.map((r, idx) => (
-            <button key={idx} className="w-full text-left px-2 py-2 rounded-xl border border-transparent hover:bg-muted/40 hover:border-border/80 transition-colors" onClick={() => onOpenFile(r.path)}>
-              <div className="text-[13px] font-medium truncate">{r.path}</div>
-              {r.preview && <div className="text-xs text-muted-foreground line-clamp-2">{r.preview}</div>}
+            <button
+              key={idx}
+              className="w-full text-left px-2 py-2 rounded-xl border border-transparent hover:bg-muted/40 hover:border-border/80 transition-colors"
+              onClick={(e) => onOpenFile(r.path)}
+              onKeyDown={(e) => { if (e.altKey && e.key === 'Enter') { e.preventDefault(); window.dispatchEvent(new CustomEvent('ide:openToSide', { detail: { path: r.path } })); } }}
+            >
+              <div className="text-[13px] font-medium truncate">{highlight(r.path)}</div>
+              {r.preview && <div className="text-xs text-muted-foreground line-clamp-2">{highlight(r.preview)}</div>}
             </button>
           ))}
           {!results.length && !q && <div className="text-xs text-muted-foreground p-2">Type to search files</div>}

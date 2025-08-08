@@ -2,7 +2,6 @@
  * Motion Tokens for Pastel-Bento × Soft-UI 2.0 Theme
  * Standardized animation values to avoid magic numbers in components
  */
-
 export const MOTION = {
   // Transparent Bento - Three Layer Motion System
   
@@ -92,8 +91,8 @@ export const VARIANTS = {
 
 // Preset easing functions
 export const EASING = {
-  runix: "cubic-bezier(0.22, 0.61, 0.36, 1)",
-  spring: "cubic-bezier(0.68, -0.55, 0.265, 1.55)",
-  smooth: "cubic-bezier(0.25, 0.46, 0.45, 0.94)",
-  swift: "cubic-bezier(0.55, 0, 0.1, 1)"
+  runix: [0.22, 0.61, 0.36, 1] as const,
+  spring: [0.68, -0.55, 0.265, 1.55] as const,
+  smooth: [0.25, 0.46, 0.45, 0.94] as const,
+  swift: [0.55, 0, 0.1, 1] as const,
 } as const;

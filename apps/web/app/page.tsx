@@ -4,7 +4,7 @@ import { GitBranch, CheckCircle2, Star, GitFork, Activity, Globe, Lock, ArrowRig
 import Link from "next/link"
 import Image from "next/image"
 import { AnimatedHero } from "@/components/ui/animated-hero"
-import { motion } from "framer-motion"
+import { motion, useReducedMotion } from "framer-motion"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { ModelCard } from "@/components/ui/model-card"
@@ -17,7 +17,7 @@ import { HashChip } from "@/components/ui/hash-chip"
 import { VerifyButton } from "@/components/ui/verify-button"
 import React, { Suspense, useState, useEffect } from "react"
 import { trackEvent, trackPageView } from "@/lib/analytics"
-import { MOTION } from "@/lib/motion/tokens"
+import { MOTION, EASING } from "@/lib/motion/tokens"
 
 // Three Pillars - Transparent Bento (Strict Color Separation)
 const PILLARS = {
@@ -181,6 +181,7 @@ const staggerContainer = {
 export default function LandingPage() {
   const { addToast } = useToast()
   const [isLoading, setIsLoading] = useState(false)
+  const prefersReducedMotion = useReducedMotion()
   
   useEffect(() => {
     trackPageView('landing_page')
@@ -189,7 +190,24 @@ export default function LandingPage() {
 
 
   return (
-    <div className="relative bg-background text-foreground antialiased">
+    <div className="relative bg-background text-foreground antialiased overflow-hidden">
+      {/* Subtle decorative background accents (respect reduced motion) */}
+      {!prefersReducedMotion && (
+        <>
+          <motion.div
+            aria-hidden
+            className="pointer-events-none absolute -top-40 -left-24 h-[38rem] w-[38rem] rounded-full bg-gradient-to-br from-primary-100/60 via-accent-100/40 to-transparent blur-3xl"
+            animate={{ y: [0, 12, 0], opacity: [0.6, 0.7, 0.6] }}
+            transition={{ duration: 20, repeat: Infinity, ease: "easeInOut" }}
+          />
+          <motion.div
+            aria-hidden
+            className="pointer-events-none absolute -bottom-32 -right-24 h-[40rem] w-[40rem] rounded-full bg-gradient-to-tr from-accent-100/50 via-primary-100/30 to-transparent blur-3xl"
+            animate={{ y: [0, -10, 0], opacity: [0.5, 0.65, 0.5] }}
+            transition={{ duration: 22, repeat: Infinity, ease: "easeInOut", delay: 2 }}
+          />
+        </>
+      )}
       {/* Hero Section - Astra-Lite Story Layer */}
       <header className="relative">
         <div className="relative mx-4 mt-4 rounded-3xl border border-black/5 bg-primary-100/40 shadow-elevation-2 lg:mx-8">
@@ -207,7 +225,7 @@ export default function LandingPage() {
             whileInView="animate"
             variants={fadeInUp}
             viewport={{ once: true }}
-            transition={{ duration: 0.6, ease: "easeOut" }}
+            transition={{ duration: 0.6, ease: EASING.smooth as any }}
           >
             <motion.div whileHover={{ scale: 1.05 }} className="inline-block mb-4">
               <Badge variant="outline" className="border-accent-500/30 bg-accent-100 text-accent-500 rounded-full px-4 py-1.5">
@@ -310,8 +328,8 @@ export default function LandingPage() {
                 <div key={repo.name} className="lg:col-span-4">
                     <motion.div
                       variants={fadeInUp}
-                      transition={{ duration: 0.6 }}
-                      whileHover={MOTION.bento_hover}
+                      transition={{ duration: 0.6, ease: EASING.smooth as any }}
+                      whileHover={!prefersReducedMotion ? MOTION.bento_hover : undefined}
                       className={`group relative flex h-full flex-col overflow-hidden rounded-3xl border bg-card shadow-elevation-1 transition-shadow hover:shadow-elevation-2`}
                     >
                 {/* Top-right micro status pill: verified + visibility */}
@@ -495,6 +513,7 @@ export default function LandingPage() {
               <motion.div
                 variants={fadeInUp}
                 className="rounded-3xl border bg-card p-6 shadow-elevation-1"
+                whileHover={!prefersReducedMotion ? { y: -2, scale: 1.01, transition: { duration: 0.2, ease: EASING.runix as any } } : undefined}
               >
                 <div className="flex items-start gap-4">
                   <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-muted">
@@ -529,6 +548,7 @@ export default function LandingPage() {
               <motion.div
                 variants={fadeInUp}
                 className="rounded-3xl border bg-card p-6 shadow-elevation-1"
+                whileHover={!prefersReducedMotion ? { y: -2, scale: 1.01, transition: { duration: 0.2, ease: EASING.runix as any } } : undefined}
               >
                 <div className="flex items-start gap-4">
                   <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-viz-purple-500/10 shadow-soft">
@@ -563,6 +583,7 @@ export default function LandingPage() {
               <motion.div
                 variants={fadeInUp}
                 className="rounded-3xl border bg-card p-6 shadow-elevation-1 lg:col-span-2"
+                whileHover={!prefersReducedMotion ? { y: -2, scale: 1.01, transition: { duration: 0.2, ease: EASING.runix as any } } : undefined}
               >
                 <div className="flex items-start gap-4">
                   <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-viz-purple-500/10 shadow-soft">
@@ -676,10 +697,13 @@ export default function LandingPage() {
                         whileInView="animate"
                         variants={fadeInUp}
                         viewport={{ once: true }}
-                        transition={{ duration: 0.5, ease: "easeOut" }}
-                        className={`group relative flex h-full flex-col items-center justify-start overflow-hidden rounded-3xl border bg-card p-8 text-center shadow-elevation-1 transition-shadow hover:shadow-elevation-2`}
+                        transition={{ duration: 0.5, ease: EASING.smooth as any }}
+                        className={`group relative flex h-full flex-col items-center justify-start overflow-hidden rounded-3xl border bg-card p-8 text-center shadow-elevation-1 transition-all`}
+                        whileHover={!prefersReducedMotion ? { y: -2, scale: 1.01 } : undefined}
                       >
-                        <div className="absolute inset-0 pointer-events-none bg-[radial-gradient(120%_60%_at_50%_-10%,rgba(255,255,255,0.7),transparent_60%)]" />
+                        {!prefersReducedMotion && (
+                          <div className="absolute inset-0 pointer-events-none bg-[radial-gradient(120%_60%_at_50%_-10%,rgba(255,255,255,0.6),transparent_60%)]" />
+                        )}
                         <div className="relative z-10 flex flex-col items-center gap-y-4">
                           <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-muted border">
                             <Icon className={`h-7 w-7 ${feature.text}`} aria-hidden="true" strokeWidth={2} />

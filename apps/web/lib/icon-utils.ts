@@ -34,9 +34,9 @@ export function getPillarColor(pillar: string): { bg: string; text: string; bord
       }
     case 'HUMAN_AI_COLLAB':
       return {
-        bg: 'bg-viz-purple-500/10 hover:bg-viz-purple-500/20',
-        text: 'text-viz-purple-500',
-        border: 'border-viz-purple-500/20'
+        bg: 'bg-accent/10 hover:bg-accent/20',
+        text: 'text-accent',
+        border: 'border-accent/20'
       }
     default:
       return {

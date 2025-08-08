@@ -370,7 +370,7 @@ export default function ModelPage({ params }: ModelPageProps) {
       animate={{ opacity: 1 }}
       transition={{ duration: 0.6 }}
     >
-      <div className="max-w-7xl mx-auto px-6 py-12">
+      <div className="w-full px-4 sm:px-6 lg:px-10 py-12">
         {/* Breadcrumb / Back link */}
         <div className="mb-6">
           <Link href="/models" className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 rounded">
@@ -386,7 +386,7 @@ export default function ModelPage({ params }: ModelPageProps) {
           transition={{ duration: 0.8, delay: 0.1 }}
         >
           {/* Hero Header - Astra-Soft Design */}
-          <div className="rounded-3xl border bg-card p-6 lg:p-8 mb-10 shadow-elevation-1">
+          <div className="rounded-3xl border bg-card/90 backdrop-blur supports-[backdrop-filter]:bg-card/80 p-6 lg:p-8 mb-10 shadow-elevation-1">
             <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-8">
               <div className="flex items-start gap-6 flex-1">
                 <div className="relative">

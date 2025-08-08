@@ -22,6 +22,7 @@ try:
     from app.routes.repo import router as repo_router
     from app.routes.streams import router as streams_router
     from app.routes.workflows import router as workflows_router
+    from app.services.models import router as models_router
 except Exception:  # pragma: no cover - allow running as module
     from .routes.tasks import router as tasks_router  # type: ignore
     from .routes.agents import router as agents_router  # type: ignore
@@ -32,6 +33,7 @@ except Exception:  # pragma: no cover - allow running as module
     from .routes.repo import router as repo_router  # type: ignore
     from .routes.streams import router as streams_router  # type: ignore
     from .routes.workflows import router as workflows_router  # type: ignore
+    from .services.models import router as models_router  # type: ignore
 
 # Load environment variables from multiple potential .env locations
 load_dotenv()  # current working directory
@@ -200,6 +202,7 @@ app.include_router(agents_router, prefix="")
 app.include_router(rag_router, prefix="/services")
 app.include_router(chem_router, prefix="/services")
 app.include_router(docs_router, prefix="/services")
+app.include_router(models_router, prefix="/services")
 app.include_router(evidence_router, prefix="")
 app.include_router(streams_router, prefix="")
 app.include_router(workflows_router, prefix="")

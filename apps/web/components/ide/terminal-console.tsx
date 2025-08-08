@@ -10,6 +10,7 @@ export function TerminalConsole({ repoId = 'demo' }: { repoId?: string }) {
   ])
   const [input, setInput] = useState("")
   const viewRef = useRef<HTMLDivElement>(null)
+  const [cwd, setCwd] = useState<string>(".")
 
   useEffect(() => {
     viewRef.current?.scrollTo({ top: viewRef.current.scrollHeight })
@@ -23,7 +24,9 @@ export function TerminalConsole({ repoId = 'demo' }: { repoId?: string }) {
     "echo <text> — print",
     "review <topic> — agentic referenced review",
     "bundle save — persist current protocol",
-    "ls | cat <file> | head <file> | tail <file> | wc <file> — repo shell",
+    "ls | cat <file> | head <file> | tail <file> | wc <file> | mkdir <dir> | touch <file> — repo shell",
+    "clear — clear screen",
+    "cd <dir> — change directory (within repo)",
   ]
 
   const handle = useCallback(async () => {
@@ -38,12 +41,32 @@ export function TerminalConsole({ repoId = 'demo' }: { repoId?: string }) {
         helpText.forEach((t) => append(t))
         return
       }
+      if (name === "clear") {
+        setLines([])
+        return
+      }
       if (name === "echo") {
         append(rest.join(" "))
         return
       }
-      if (["ls","cat","head","tail","wc","pwd"].includes(name)) {
-        const res = await fetch('/api/repo/exec', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ repo: repoId, cmd }) })
+      if (name === "cd") {
+        const target = rest[0] || "."
+        // deny absolute/parent
+        if (target.startsWith('/') || target.includes('..')) {
+          append('Invalid path', 'err'); return
+        }
+        // test by running 'pwd' in that cwd
+        const test = await fetch('/api/repo/exec', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ repo: repoId, cmd: 'pwd', cwd: target }) })
+        if (test.ok) {
+          setCwd(target)
+          append(`cwd: ${target}`)
+        } else {
+          append('Directory not accessible', 'err')
+        }
+        return
+      }
+      if (["ls","cat","head","tail","wc","pwd","mkdir","touch"].includes(name)) {
+        const res = await fetch('/api/repo/exec', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ repo: repoId, cmd, cwd }) })
         const json = await res.json()
         if (json.stdout) append(json.stdout)
         if (json.stderr) append(json.stderr, 'err')
@@ -86,7 +109,7 @@ export function TerminalConsole({ repoId = 'demo' }: { repoId?: string }) {
           value={input}
           onChange={(e) => setInput(e.target.value)}
           onKeyDown={(e) => { if (e.key === 'Enter') handle() }}
-          placeholder="help | review EGFR resistance | bundle save"
+          placeholder={`(${cwd}) help | ls | cd data | python3 run_demo.py`}
           className="w-full bg-transparent outline-none font-mono text-[12px]"
         />
       </div>

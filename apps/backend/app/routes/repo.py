@@ -145,7 +145,7 @@ class ExecRequest(BaseModel):
     cwd: Optional[str] = None  # relative to repo root
 
 
-ALLOW_CMDS = {"ls", "cat", "head", "tail", "wc", "pwd", "echo", "python", "python3"}
+ALLOW_CMDS = {"ls", "cat", "head", "tail", "wc", "pwd", "echo", "python", "python3", "mkdir", "touch"}
 
 
 @router.post('/repo/exec')

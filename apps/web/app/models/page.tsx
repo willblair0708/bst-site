@@ -107,21 +107,31 @@ export default function ModelsPage() {
 
   return (
     <div className="min-h-screen bg-background">
-      <div className="mx-auto max-w-7xl px-6 lg:px-8 py-10">
-        {/* Header */}
+      <div className="w-full px-4 sm:px-6 lg:px-10 py-10">
+        {/* Hero Pastel Tile */}
         <div className="mb-8">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border bg-muted text-xs font-semibold text-muted-foreground mb-3">
-            Models
-          </div>
-          <div className="flex items-center gap-3">
-            <div className="p-2 bg-primary-100 rounded-lg">
-              <Brain className="h-6 w-6 text-primary-600" />
+          <div className="rounded-2xl bg-accent-100 border border-accent-100/60 shadow-elevation-2 overflow-hidden">
+            <div className="relative p-6 sm:p-8 grid grid-cols-1 md:grid-cols-[1fr_auto] gap-6">
+              <div>
+                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-accent-200/70 bg-white/60 text-xs font-semibold text-foreground/80">
+                  <span className="text-lg">🛠️</span>
+                  <span>Composable Models</span>
+                </div>
+                <h1 className="mt-3 text-4xl font-display font-light tracking-tight text-foreground">
+                  Scientific Models
+                </h1>
+                <p className="text-base lg:text-lg text-foreground/80 mt-2">
+                  Discover verified AI models for scientific research
+                </p>
+              </div>
+              <div className="flex items-center md:justify-end gap-2">
+                <Button variant="outline" className="rounded-xl">
+                  <Download className="h-4 w-4 mr-2" />
+                  Export List
+                </Button>
+              </div>
             </div>
-            <h1 className="text-3xl font-display font-semibold text-foreground">Scientific Models</h1>
           </div>
-          <p className="text-muted-foreground text-lg mt-2">
-            Discover verified AI models for scientific research
-          </p>
         </div>
 
         {/* Search and Filter */}
@@ -132,13 +142,13 @@ export default function ModelsPage() {
               placeholder="Search models..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-10 h-12 text-base"
+              className="pl-10 h-12 text-base rounded-xl border-muted/60 shadow-elevation-1 focus-visible:ring-primary-500"
             />
           </div>
 
           <div className="flex items-center gap-4">
             <Select value={selectedCategory} onValueChange={setSelectedCategory}>
-              <SelectTrigger className="w-48">
+              <SelectTrigger className="w-48 rounded-xl">
                 <SelectValue placeholder="Category" />
               </SelectTrigger>
               <SelectContent>
@@ -149,7 +159,7 @@ export default function ModelsPage() {
             </Select>
 
             <Select value={selectedFramework} onValueChange={setSelectedFramework}>
-              <SelectTrigger className="w-48">
+              <SelectTrigger className="w-48 rounded-xl">
                 <SelectValue placeholder="Framework" />
               </SelectTrigger>
               <SelectContent>
@@ -160,7 +170,7 @@ export default function ModelsPage() {
             </Select>
 
             <Select value={sortBy} onValueChange={(v) => setSortBy(v as any)}>
-              <SelectTrigger className="w-40">
+              <SelectTrigger className="w-40 rounded-xl">
                 <SelectValue placeholder="Sort" />
               </SelectTrigger>
               <SelectContent>
@@ -175,7 +185,7 @@ export default function ModelsPage() {
               variant="outline"
               size="sm"
               onClick={() => setShowFilters(!showFilters)}
-              className="ml-auto"
+              className="ml-auto rounded-xl"
             >
               <Filter className="h-4 w-4 mr-2" />
               Filters
@@ -189,12 +199,12 @@ export default function ModelsPage() {
             {filteredModels.length} models found
           </p>
           <div className="flex gap-2 items-center">
-            <Badge variant="success">
+            <Badge variant="success" className="rounded-xl">
               <Verified className="h-3 w-3 mr-1" />
               {models.filter(m => m.verified).length} Verified
             </Badge>
             {sortBy !== 'relevance' && (
-              <Badge variant="outline" className="text-xs">Sorted by {sortBy}</Badge>
+              <Badge variant="outline" className="text-xs rounded-xl">Sorted by {sortBy}</Badge>
             )}
           </div>
         </div>
@@ -202,13 +212,13 @@ export default function ModelsPage() {
         {/* Models Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {filteredModels.map((model) => (
-            <div key={model.id} className="group rounded-3xl border bg-card shadow-elevation-1 transition-all hover:shadow-elevation-2 hover:border-primary-200/60">
+            <div key={model.id} className="group rounded-3xl border bg-card/90 backdrop-blur supports-[backdrop-filter]:bg-card/80 shadow-elevation-1 transition-all hover:shadow-elevation-2 hover:border-accent-100/70">
               <div className="p-5">
                 {/* Header */}
                 <div className="flex items-start justify-between mb-2">
                   <div className="flex items-center gap-3 min-w-0">
-                    <div className="h-9 w-9 rounded-lg bg-muted flex items-center justify-center">
-                      <Bot className="h-4 w-4 text-muted-foreground" />
+                    <div className="h-9 w-9 rounded-xl bg-accent-100 border border-accent-100/60 flex items-center justify-center">
+                      <Bot className="h-4 w-4 text-foreground/80" />
                     </div>
                     <div className="min-w-0">
                       <Link href={`/models/${model.id}`} className="truncate font-semibold text-foreground hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 rounded">
@@ -246,7 +256,7 @@ export default function ModelsPage() {
                     </span>
                   </div>
                   <Link href={`/models/${model.id}`} className="focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 rounded" aria-label={`View ${model.name}`}>
-                    <Button size="sm" variant="outline" className="h-8 px-3 text-xs rounded-lg" role="button">
+                    <Button size="sm" variant="outline" className="h-8 px-3 text-xs rounded-xl" role="button">
                       View
                     </Button>
                   </Link>

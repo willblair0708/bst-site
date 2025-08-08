@@ -143,7 +143,7 @@ const ChatPage = () => {
     ),
     ul: (props: any) => <ul className="list-disc ml-5 space-y-1" {...props} />,
     ol: (props: any) => <ol className="list-decimal ml-5 space-y-1" {...props} />,
-    blockquote: (props: any) => <blockquote className="border-l-2 pl-3 text-muted-foreground" {...props} />,
+    blockquote: (props: any) => <blockquote className="border-l-2 pl-3 text-gray-500" {...props} />,
     table: (props: any) => <table className="w-full text-sm border rounded-md overflow-hidden" {...props} />,
     th: (props: any) => <th className="border-b bg-muted/70 px-2 py-1 text-left" {...props} />,
     td: (props: any) => <td className="border-b px-2 py-1 align-top" {...props} />,
@@ -440,7 +440,7 @@ const ChatPage = () => {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.3, staggerChildren: 0.1 }}
-      className="w-72 flex-col bg-background/60 backdrop-blur-xl p-4 hidden lg:flex border-r border-border/20 overflow-hidden"
+      className="w-72 flex-col bg-gray-100 p-4 hidden lg:flex border-r border-gray-200 overflow-hidden"
     >
       {/* Header */}
       <motion.div 
@@ -450,15 +450,15 @@ const ChatPage = () => {
         className="flex items-center gap-3 mb-6 px-2"
       >
         <motion.div 
-          className="w-8 h-8 rounded-xl bg-foreground/5 flex items-center justify-center"
+          className="w-8 h-8 rounded-xl bg-gray-200 flex items-center justify-center"
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
         >
-          <Hash className="w-4 h-4 text-foreground" />
+          <Hash className="w-4 h-4 text-gray-600" />
         </motion.div>
         <div className="flex flex-col">
-          <span className="font-semibold text-foreground">Runix</span>
-          <span className="text-xs text-muted-foreground">Assistant</span>
+          <span className="font-semibold text-gray-800">Runix</span>
+          <span className="text-xs text-gray-500">Assistant</span>
         </div>
         <div className="ml-auto">
           <ThemeToggle />
@@ -477,7 +477,7 @@ const ChatPage = () => {
           whileTap={{ scale: 0.98 }}
         >
           <Button 
-            className="w-full h-10 rounded-xl bg-foreground text-background hover:bg-foreground/90 transition-all font-medium group" 
+            className="w-full h-10 rounded-xl bg-gray-800 text-white hover:bg-gray-700 transition-all font-medium group" 
             onClick={createSession}
           >
           <Plus className="w-4 h-4 mr-2" />
@@ -492,7 +492,7 @@ const ChatPage = () => {
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.2, delay: 0.3 }}
-          className="text-xs font-medium text-muted-foreground mb-3 px-2"
+          className="text-xs font-medium text-gray-500 mb-3 px-2"
         >
           Recent
         </motion.h3>
@@ -512,8 +512,8 @@ const ChatPage = () => {
                   className={cn(
                     "group py-2.5 px-3 rounded-lg text-sm cursor-pointer flex items-center gap-2 transition-all",
                     activeSessionId === s.id 
-                      ? "bg-foreground/5 text-foreground" 
-                      : "text-muted-foreground hover:bg-foreground/5 hover:text-foreground"
+                      ? "bg-gray-200 text-gray-800" 
+                      : "text-gray-600 hover:bg-gray-50 hover:text-gray-800"
                   )}
                   onClick={() => { setActiveSessionId(s.id); setCurrentAgent(s.agent); }}
                   whileHover={{ x: 2 }}
@@ -521,13 +521,13 @@ const ChatPage = () => {
                 >
                   <div className={cn(
                     "w-1.5 h-1.5 rounded-full shrink-0 transition-colors",
-                    activeSessionId === s.id ? "bg-foreground" : "bg-transparent"
+                    activeSessionId === s.id ? "bg-gray-600" : "bg-transparent"
                   )} />
                   
                 {editingSessionId === s.id ? (
                   <input
                     autoFocus
-                      className="flex-1 bg-transparent outline-none border border-border/50 rounded px-2 py-1 text-foreground text-xs"
+                      className="flex-1 bg-transparent outline-none border border-gray-200 rounded px-2 py-1 text-gray-800 text-xs"
                     value={editingTitle}
                     onChange={(e) => setEditingTitle(e.target.value)}
                     onBlur={() => { renameSession(s.id, editingTitle.trim() || s.title); setEditingSessionId(null); }}
@@ -563,7 +563,7 @@ const ChatPage = () => {
         initial={{ opacity: 0, y: 8 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.2, delay: 0.5 }}
-        className="mt-auto space-y-2 pt-4 border-t border-border/20"
+        className="mt-auto space-y-2 pt-4 border-t border-gray-200"
       >
         <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
           <Button 
@@ -584,10 +584,10 @@ const ChatPage = () => {
   ), [sessions, activeSessionId, editingSessionId, editingTitle, showInspector, currentAgent]);
 
   return (
-    <div className="flex h-screen w-full bg-background text-foreground">
+    <div className="flex h-screen w-full bg-white text-gray-800">
       {Sidebar}
       
-      <main className="flex-1 flex flex-col bg-background">
+      <main className="flex-1 flex flex-col bg-white">
         {/* Top bar removed per design */}
 
         {/* Main Content with optional Inspector panel */}
@@ -609,7 +609,7 @@ const ChatPage = () => {
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ duration: 0.2, delay: 0.1 }}
                     >
-                      <h1 className="text-2xl font-medium text-foreground mb-2">
+                      <h1 className="text-2xl font-medium text-gray-800 mb-2">
                         What can I help you with?
                       </h1>
                     </motion.div>
@@ -620,12 +620,12 @@ const ChatPage = () => {
                       transition={{ duration: 0.2, delay: 0.2 }}
                       className="relative"
                     >
-                      <div className="bg-background border border-border/50 rounded-2xl p-3 focus-within:border-border transition-all">
+                      <div className="bg-white border border-gray-200 rounded-2xl p-3 focus-within:border-gray-300 transition-all shadow-sm">
                         <div className="flex items-end gap-3">
                           <Textarea
                             ref={composerRef as any}
                             placeholder="Ask me anything..."
-                            className="flex-1 bg-transparent border-0 px-2 py-2 text-base resize-none focus:outline-none min-h-[44px] max-h-[160px] placeholder:text-muted-foreground"
+                            className="flex-1 bg-transparent border-0 px-2 py-2 text-base resize-none focus:outline-none min-h-[44px] max-h-[160px] placeholder:text-gray-400"
                             value={inputValue}
                             onChange={handleInputChange}
                             onKeyDown={handleKeyDown}
@@ -651,8 +651,8 @@ const ChatPage = () => {
                                 className={cn(
                                   "rounded-xl h-10 w-10 transition-all",
                                   inputValue.trim() 
-                                    ? "bg-foreground text-background hover:bg-foreground/90" 
-                                    : "bg-muted text-muted-foreground cursor-not-allowed"
+                                    ? "bg-gray-800 text-white hover:bg-gray-700" 
+                                    : "bg-gray-100 text-gray-400 cursor-not-allowed"
                                 )}
                               >
                                 <ArrowUp className="w-4 h-4" />
@@ -711,7 +711,7 @@ const ChatPage = () => {
                                       whileTap={{ scale: 0.9 }}
                                       title="Copy message"
                                     >
-                                      <Copy className="w-3 h-3 text-muted-foreground" />
+                                      <Copy className="w-3 h-3 text-gray-500" />
                                     </motion.button>
                                   </div>
                                 </motion.div>
@@ -753,7 +753,7 @@ const ChatPage = () => {
                                       whileTap={{ scale: 0.9 }}
                                       title="Copy message"
                                     >
-                                      <Copy className="w-3 h-3 text-muted-foreground" />
+                                      <Copy className="w-3 h-3 text-gray-500" />
                                     </motion.button>
                                     <motion.button 
                                       className="p-1.5 rounded-lg bg-background/80 backdrop-blur-sm border border-border/50 hover:bg-background transition-colors shadow-sm"
@@ -762,7 +762,7 @@ const ChatPage = () => {
                                       whileTap={{ scale: 0.9 }}
                                       title="Regenerate response"
                                     >
-                                      <RotateCcw className="w-3 h-3 text-muted-foreground" />
+                                      <RotateCcw className="w-3 h-3 text-gray-500" />
                                     </motion.button>
                                   </div>
                                 </div>
@@ -783,15 +783,15 @@ const ChatPage = () => {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.3, ease: "easeOut" }}
-                className="sticky bottom-0 inset-x-0 border-t border-border/20 bg-background/90 backdrop-blur-xl"
+                className="sticky bottom-0 inset-x-0 border-t border-gray-200 bg-white"
               >
                 <div className="mx-auto w-full max-w-3xl px-6 py-4">
-                  <div className="bg-background border border-border/50 rounded-2xl p-3 focus-within:border-border transition-all">
+                  <div className="bg-white border border-gray-200 rounded-2xl p-3 focus-within:border-gray-300 transition-all shadow-sm">
                     <div className="flex items-end gap-3">
                       <Textarea
                         ref={composerRef as any}
                         placeholder="Continue the conversation..."
-                        className="flex-1 bg-transparent border-0 px-2 py-2 text-base resize-none focus:outline-none min-h-[44px] max-h-[160px] placeholder:text-muted-foreground"
+                        className="flex-1 bg-transparent border-0 px-2 py-2 text-base resize-none focus:outline-none min-h-[44px] max-h-[160px] placeholder:text-gray-400"
                         value={inputValue}
                         onChange={handleInputChange}
                         onKeyDown={handleKeyDown}
@@ -817,8 +817,8 @@ const ChatPage = () => {
                             className={cn(
                               "rounded-xl h-10 w-10 transition-all",
                               inputValue.trim() 
-                                ? "bg-foreground text-background hover:bg-foreground/90" 
-                                : "bg-muted text-muted-foreground cursor-not-allowed"
+                                ? "bg-gray-800 text-white hover:bg-gray-700" 
+                                : "bg-gray-100 text-gray-400 cursor-not-allowed"
                             )}
                           >
                             <ArrowUp className="w-4 h-4" />

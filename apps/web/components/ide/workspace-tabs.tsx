@@ -3,7 +3,7 @@
 import React from "react"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { FileExplorer } from "@/components/ide/file-explorer"
-import { Search, GitBranch, Bot, Files } from "lucide-react"
+import { Search, GitBranch, Bot, Files, MoreHorizontal, X, Plus, CheckCircle2 } from "lucide-react"
 import { Input } from "@/components/ui/input"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { motion, AnimatePresence } from "framer-motion"
@@ -88,34 +88,8 @@ export function WorkspaceTabs({ repoId, onOpenFile, selectedPath }: { repoId: st
       <AnimatePresence mode="wait">
         {tab === 'agents' && (
           <TabsContent value="agents" className="flex-1 overflow-hidden" forceMount>
-            <motion.div initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -6 }} className="p-2 space-y-3">
-              <div className="flex items-center justify-between">
-                <div className="text-sm font-medium">Co-pilots</div>
-                <div className="flex gap-2 text-[10px] text-muted-foreground">
-                  <Badge variant="secondary">Scout</Badge>
-                  <Badge variant="secondary">Scholar</Badge>
-                  <Badge variant="secondary">Analyst</Badge>
-                  <Badge variant="secondary">Critic</Badge>
-                </div>
-              </div>
-
-              <div className="rounded-2xl border bg-background/70 p-2 space-y-2">
-                <div className="flex items-center justify-between">
-                  <div className="text-sm font-medium">ESM‑2 Embeddings</div>
-                  <div className="text-[10px] text-muted-foreground">HF Inference</div>
-                </div>
-                <ESM2Widget />
-              </div>
-
-              <div className="rounded-2xl border bg-background/70 p-2">
-                <div className="text-sm font-medium mb-1">Quick actions</div>
-                <div className="grid grid-cols-2 gap-2 text-sm">
-                  <Button variant="outline" className="rounded-xl">Literature scan</Button>
-                  <Button variant="outline" className="rounded-xl">Summarize protocol</Button>
-                  <Button variant="outline" className="rounded-xl">Generate notebook</Button>
-                  <Button variant="outline" className="rounded-xl">Run checks</Button>
-                </div>
-              </div>
+            <motion.div initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -6 }} className="p-2">
+              <AgentsPanel />
             </motion.div>
           </TabsContent>
         )}
@@ -249,6 +223,52 @@ function ESM2Widget() {
         )}
       </div>
       {error && <div className="text-xs text-destructive">{error}</div>}
+    </div>
+  )
+}
+
+function AgentsPanel() {
+  const items = [
+    { title: 'Designing a …', when: 'Now', gain: +1520, cost: -105 },
+    { title: 'Enhance dashboard', when: '1m', gain: 0, cost: 0 },
+  ]
+
+  return (
+    <div className="space-y-3">
+      <div className="flex items-center gap-2">
+        <div className="flex-1">
+          <Input placeholder="Search Agents (⌘K)" className="rounded-xl" />
+        </div>
+        <Button variant="secondary" className="rounded-xl">
+          <Plus className="w-4 h-4 mr-1" /> New Agent
+        </Button>
+      </div>
+
+      <div className="text-xs text-muted-foreground px-1">On This Computer {items.length}</div>
+      <div className="space-y-2">
+        {items.map((it, i) => (
+          <div key={i} className="rounded-2xl border bg-background/70 px-3 py-2 flex items-center justify-between">
+            <div className="flex items-center gap-2 min-w-0">
+              <CheckCircle2 className="w-4 h-4 text-emerald-500" />
+              <div className="truncate text-sm font-medium">{it.title}</div>
+            </div>
+            <div className="flex items-center gap-3 text-[11px]">
+              <span className="text-emerald-500 font-mono">{it.gain ? `+${it.gain}` : ''}</span>
+              <span className="text-rose-500 font-mono">{it.cost ? `${it.cost}` : ''}</span>
+              <span className="text-muted-foreground">{it.when}</span>
+              <button className="p-1 rounded-md hover:bg-muted/60" aria-label="More"><MoreHorizontal className="w-4 h-4" /></button>
+              <button className="p-1 rounded-md hover:bg-muted/60" aria-label="Close"><X className="w-4 h-4" /></button>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <div className="flex items-center justify-between px-1 pt-1 text-xs text-muted-foreground">
+        <div>In Background 0</div>
+        <button className="p-1 rounded-md hover:bg-muted/60" aria-label="Add background"><Plus className="w-4 h-4" /></button>
+      </div>
+
+      <div className="px-1 text-xs text-muted-foreground">Archive 1</div>
     </div>
   )
 }

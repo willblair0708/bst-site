@@ -4,14 +4,15 @@ import React, { useMemo } from "react"
 import { motion, useReducedMotion } from "framer-motion"
 import { TerminalConsole } from "@/components/ide/terminal-console"
 import { DAGGraph } from "@/components/dag-graph"
-import EvidenceDrawer from "@/components/evidence-drawer"
 import { QuickActions } from "@/components/ide/quick-actions"
 import { Button } from "@/components/ui/button"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Layers, PanelRight } from "lucide-react"
 import { WorkspaceTabs } from "@/components/ide/workspace-tabs"
 import { RepoEditor } from "@/components/ide/repo-editor"
+import { AgentChat } from "@/components/ide/agent-chat"
 import { ArtifactsPanel } from "@/components/ide/artifacts-panel"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 
 export function Shell({ repoId }: { repoId?: string }) {
   const jobs = useMemo(() => [
@@ -67,32 +68,37 @@ export function Shell({ repoId }: { repoId?: string }) {
               <RepoEditor repoId={repoId || 'demo'} path={selectedPath} />
             </motion.div>
 
-            {/* Right rail: Evidence Drawer trigger + Graph view */}
+            {/* Right rail: Agents / Evidence tabs */}
             <motion.div
               initial={prefersReducedMotion ? false : { opacity: 0, y: 12 }}
               animate={prefersReducedMotion ? {} : { opacity: 1, y: 0 }}
               transition={{ duration: 0.4, ease: "easeOut", delay: 0.05 }}
               className="flex flex-col min-h-0 overflow-hidden"
             >
-              <motion.div className="rounded-2xl bg-card border border-border shadow-elevation-1 p-2 mb-2 hover:animate-spark-glow">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <Layers className="w-4 h-4 text-viz-purple-500" />
-                    <span className="text-sm font-medium">Evidence</span>
-                  </div>
-                  <div className="flex items-center gap-2">
+              <Tabs defaultValue="agents" className="flex-1 flex flex-col min-h-0">
+                <motion.div className="rounded-2xl bg-card border border-border shadow-elevation-1 p-2 mb-2 hover:animate-spark-glow">
+                  <div className="flex items-center justify-between">
+                    <TabsList className="h-8 rounded-lg">
+                      <TabsTrigger value="agents" className="px-3">Agents</TabsTrigger>
+                      <TabsTrigger value="evidence" className="px-3">
+                        <div className="flex items-center gap-1"><Layers className="w-4 h-4 text-viz-purple-500" /><span>Evidence</span></div>
+                      </TabsTrigger>
+                    </TabsList>
                     <Button size="sm" variant="outline" className="rounded-xl" onClick={runProtocol}>Run Protocol</Button>
-                    <EvidenceDrawer
-                      jobs={jobs}
-                      trigger={<Button size="sm" variant="outline" className="rounded-xl">Open</Button>}
-                    />
                   </div>
-                </div>
-              </motion.div>
+                </motion.div>
 
-              <ScrollArea className="rounded-2xl bg-card border border-border shadow-elevation-1 p-2 flex-1">
-                <ArtifactsPanel artifacts={artifacts as any} />
-              </ScrollArea>
+                <TabsContent value="agents" className="flex-1 min-h-0 overflow-hidden">
+                  <ScrollArea className="rounded-2xl bg-card border border-border shadow-elevation-1 flex-1">
+                    <AgentChat />
+                  </ScrollArea>
+                </TabsContent>
+                <TabsContent value="evidence" className="flex-1 min-h-0 overflow-hidden">
+                  <ScrollArea className="rounded-2xl bg-card border border-border shadow-elevation-1 p-2 flex-1">
+                    <ArtifactsPanel artifacts={artifacts as any} />
+                  </ScrollArea>
+                </TabsContent>
+              </Tabs>
               {/* floating quick actions */}
               <div className="absolute right-2 bottom-2">
                 <QuickActions />

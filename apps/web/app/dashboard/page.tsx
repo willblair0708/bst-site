@@ -207,32 +207,38 @@ export default function DashboardPage() {
       initial="hidden"
       animate="visible"
     >
-      <div className="mx-auto max-w-7xl px-6 lg:px-8 py-10">
-        {/* Header */}
+      <div className="w-full px-4 sm:px-6 lg:px-10 py-10">
+        {/* Hero Pastel Tile */}
         <motion.div
-          className="flex flex-col md:flex-row justify-between items-start mb-10"
+          className="mb-10 rounded-2xl bg-primary-100 shadow-elevation-2 border border-primary-100/60 overflow-hidden"
           variants={itemVariants}
+          whileHover={{ y: -1 }}
+          transition={{ duration: 0.2 }}
         >
-          <div>
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border bg-muted text-xs font-semibold text-muted-foreground mb-3">
-              Dashboard
+          <div aria-hidden className="pointer-events-none absolute inset-x-0 h-20 bg-gradient-to-b from-primary-100/50 via-accent-100/20 to-transparent" />
+          <div className="relative grid grid-cols-1 md:grid-cols-[1fr_auto] gap-6 p-6 sm:p-8">
+            <div>
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-primary-200/70 bg-white/50 text-xs font-semibold text-primary-700/90">
+                <span className="text-lg">🗂️</span>
+                <span>Dashboard</span>
+              </div>
+              <h1 className="mt-3 text-4xl lg:text-5xl font-display font-light tracking-tight text-foreground">
+                Welcome back, Will
+              </h1>
+              <p className="text-base lg:text-lg text-muted-foreground mt-2">
+                Every claim runnable. Every result verifiable.
+              </p>
             </div>
-            <h1 className="text-4xl font-display font-light text-foreground">
-              Welcome back, Will
-            </h1>
-            <p className="text-lg text-muted-foreground mt-2">
-              Here's a look at your research landscape today.
-            </p>
-          </div>
-          <div className="flex items-center space-x-2 mt-4 md:mt-0">
-            <Button variant="outline">
-              <Search className="w-4 h-4 mr-2" />
-              Search Repositories
-            </Button>
-            <Button>
-              <Plus className="w-4 h-4 mr-2" />
-              New Repository
-            </Button>
+            <div className="flex items-center md:justify-end gap-2">
+              <Button variant="outline" className="rounded-xl">
+                <Search className="w-4 h-4 mr-2" />
+                Search Repositories
+              </Button>
+              <Button className="rounded-xl">
+                <Plus className="w-4 h-4 mr-2" />
+                Run & Verify
+              </Button>
+            </div>
           </div>
         </motion.div>
     
@@ -242,15 +248,26 @@ export default function DashboardPage() {
           <motion.div className="lg:col-span-2 space-y-8" variants={itemVariants}>
             {/* Stat Cards */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                {stats.map((stat, index) => (
-                    <AnimatedStatCard
+              {stats.map((stat, index) => {
+                const pastelBg = stat.changeType === "alert"
+                  ? "bg-error-100 border-error-100/60"
+                  : stat.changeType === "increase"
+                  ? "bg-accent-100 border-accent-100/60"
+                  : "bg-primary-100 border-primary-100/60"
+                return (
+                  <div
                     key={index}
-                    label={stat.label}
-                    value={stat.value}
-                    growth={stat.change}
-                    index={index}
+                    className={`rounded-2xl p-4 shadow-elevation-1 border ${pastelBg}`}
+                  >
+                    <AnimatedStatCard
+                      label={stat.label}
+                      value={stat.value}
+                      growth={stat.change}
+                      index={index}
                     />
-                ))}
+                  </div>
+                )
+              })}
             </div>
             
             {/* Active Repositories */}
@@ -272,7 +289,7 @@ export default function DashboardPage() {
               icon={GitBranch}
               action={{ label: "View Full History", href: "/history" }}
             >
-              <ul className="space-y-4 relative pl-4 border-l border-border">
+              <ul className="space-y-4 relative pl-4 border-l border-border/70">
                 {activity.map((item, index) => (
                   <ActivityItem key={index} item={item} />
                 ))}
@@ -337,34 +354,34 @@ export default function DashboardPage() {
 
 // Sub-components
 const DashboardCard = ({ title, icon: Icon, action, children }: { title: string, icon: React.ElementType, action: {label: string, href: string} | null, children: React.ReactNode }) => (
-    <motion.div
-      className="bg-card border border-border rounded-3xl shadow-elevation-1"
-      variants={itemVariants}
-      whileHover={{ y: -2 }}
-      transition={{ duration: 0.2 }}
-    >
-      <div className="p-5 border-b border-border flex items-center justify-between rounded-t-3xl">
-        <div className="flex items-center gap-3">
-          <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-muted">
-            <Icon className="w-4 h-4 text-muted-foreground" />
-          </div>
-          <h2 className="text-base font-semibold text-foreground">{title}</h2>
+  <motion.div
+    className="bg-card/90 backdrop-blur supports-[backdrop-filter]:bg-card/80 border border-border rounded-3xl shadow-elevation-1"
+    variants={itemVariants}
+    whileHover={{ y: -2 }}
+    transition={{ duration: 0.2 }}
+  >
+    <div className="p-5 border-b border-border/70 flex items-center justify-between rounded-t-3xl">
+      <div className="flex items-center gap-3">
+        <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-muted/50">
+          <Icon className="w-4 h-4 text-muted-foreground" />
         </div>
-        {action && (
-          <Button variant="outline" size="sm" asChild className="rounded-xl">
-            <Link href={action.href} className="focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 rounded-xl">{action.label}</Link>
-          </Button>
-        )}
+        <h2 className="text-base font-semibold text-foreground">{title}</h2>
       </div>
-      <div className="p-5">{children}</div>
-    </motion.div>
+      {action && (
+        <Button variant="outline" size="sm" asChild className="rounded-xl">
+          <Link href={action.href} className="focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 rounded-xl">{action.label}</Link>
+        </Button>
+      )}
+    </div>
+    <div className="p-5">{children}</div>
+  </motion.div>
 );
 
 const RepositoryCard = ({ repository }: { repository: Trial }) => {
   const progress = Math.min(100, Math.round((repository.patientEnrollment / repository.totalPatients) * 100))
   const statusVariant = repository.status === "Active" ? "success" : repository.status === "Enrolling" ? "outline" : "secondary"
   return (
-    <div className="p-4 rounded-2xl border bg-background/50">
+    <div className="p-4 rounded-2xl border border-border bg-background/60 shadow-elevation-1 transition-shadow hover:shadow-elevation-2">
       <div className="flex justify-between items-start">
         <div>
           <div className="flex items-center gap-3 mb-2">
@@ -382,8 +399,8 @@ const RepositoryCard = ({ repository }: { repository: Trial }) => {
           <p className="text-xs text-muted-foreground">Patients</p>
         </div>
       </div>
-      <div className="mt-3 h-2 w-full rounded-full bg-muted">
-        <div className="h-2 rounded-full bg-primary-500" style={{ width: `${progress}%` }} />
+      <div className="mt-3 h-2.5 w-full rounded-full bg-muted">
+        <div className="h-2.5 rounded-full bg-primary-500" style={{ width: `${progress}%` }} />
       </div>
       <div className="mt-3 flex items-center justify-between text-xs text-muted-foreground">
         <div className="flex items-center gap-2">

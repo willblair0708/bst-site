@@ -3,7 +3,7 @@
 import React, { useMemo } from "react"
 import { motion, useReducedMotion } from "framer-motion"
 import { Sidebar } from "@/components/ide/sidebar"
-import { AgentConsole } from "@/components/ide/agent-console"
+import { TerminalConsole } from "@/components/ide/terminal-console"
 import { ProtocolEditor } from "@/components/protocol-editor"
 import { DAGGraph } from "@/components/dag-graph"
 import EvidenceDrawer from "@/components/evidence-drawer"
@@ -34,7 +34,7 @@ export function Shell({ repoId }: { repoId?: string }) {
   const prefersReducedMotion = useReducedMotion()
 
   return (
-    <div className="flex h-[calc(100vh-80px)] overflow-hidden">{/* subtract site header (h-20) */}
+    <div className="flex h-full overflow-hidden">
       {/* Left rail */}
       <Sidebar />
 
@@ -61,7 +61,10 @@ export function Shell({ repoId }: { repoId?: string }) {
               transition={{ duration: 0.4, ease: "easeOut", delay: 0.05 }}
               className="flex flex-col min-h-0 overflow-hidden"
             >
-              <div className="rounded-2xl bg-card border border-border shadow-elevation-1 p-2 mb-2 hover:animate-spark-glow">
+              <motion.div
+                whileHover={prefersReducedMotion ? undefined : { scale: 1.005 }}
+                className="rounded-2xl bg-card border border-border shadow-elevation-1 p-2 mb-2 hover:animate-spark-glow"
+              >
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
                     <Layers className="w-4 h-4 text-viz-purple-500" />
@@ -72,7 +75,7 @@ export function Shell({ repoId }: { repoId?: string }) {
                     trigger={<Button size="sm" variant="outline" className="rounded-xl">Open</Button>}
                   />
                 </div>
-              </div>
+              </motion.div>
 
               <ScrollArea className="rounded-2xl bg-card border border-border shadow-elevation-1 p-2 flex-1">
                 <DAGGraph nodes={[]} height={260} className="h-full" />
@@ -91,7 +94,7 @@ export function Shell({ repoId }: { repoId?: string }) {
             transition={{ duration: 0.3, ease: "easeOut", delay: 0.08 }}
             className="rounded-2xl bg-collaboration-100/70 border border-border shadow-elevation-2 overflow-hidden hover:animate-spark-glow"
           >
-            <AgentConsole />
+            <TerminalConsole />
           </motion.div>
         </div>
       </div>

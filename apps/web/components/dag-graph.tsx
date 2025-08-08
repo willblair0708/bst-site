@@ -254,7 +254,7 @@ export function DAGGraph({ nodes = mockNodes, onNodeClick, onRunPipeline, classN
                   onMouseLeave={() => setHoveredNode(null)}
                   onClick={() => onNodeClick?.(node)}
                 >
-                  <motion.div
+                   <motion.div
                     initial={{ opacity: 0, scale: 0.8, y: 20 }}
                     animate={{
                       opacity: 1, 
@@ -268,6 +268,7 @@ export function DAGGraph({ nodes = mockNodes, onNodeClick, onRunPipeline, classN
                     whileHover={{ 
                       scale: 1.05, 
                       y: -2,
+                      boxShadow: "0 12px 32px rgba(4,54,255,0.12)",
                       transition: { duration: 0.2 }
                     }}
                     transition={{

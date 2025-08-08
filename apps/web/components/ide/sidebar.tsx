@@ -113,7 +113,11 @@ export function Sidebar() {
             <div className="space-y-1">
               {group.items.map((item) => (
                 <Link key={item.label} href={item.href} className="block">
-                  <div className={`flex items-center gap-2 ${collapsed ? "justify-center" : "px-2"} py-2 rounded-xl hover:bg-muted/50 transition-colors`}>
+                  <motion.div
+                    whileHover={prefersReducedMotion ? undefined : { x: 2, scale: 1.01 }}
+                    transition={{ duration: 0.15 }}
+                    className={`flex items-center gap-2 ${collapsed ? "justify-center" : "px-2"} py-2 rounded-xl hover:bg-muted/50`}
+                  >
                     <item.icon className="w-4 h-4 text-muted-foreground" />
                     <AnimatePresence initial={false}>
                       {!collapsed && (
@@ -129,7 +133,7 @@ export function Sidebar() {
                         </motion.span>
                       )}
                     </AnimatePresence>
-                  </div>
+                  </motion.div>
                 </Link>
               ))}
             </div>

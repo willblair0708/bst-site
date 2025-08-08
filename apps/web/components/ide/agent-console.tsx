@@ -69,7 +69,7 @@ export function AgentConsole() {
   }
 
   return (
-    <div className="flex flex-col h-40">
+    <div className="flex flex-col h-32">
       <div className="flex items-center gap-2 p-2 border-b bg-background/80 rounded-t-2xl">
         <Badge variant="purple" className="rounded-xl">Agent Console</Badge>
         <div className="ml-auto flex items-center gap-2">

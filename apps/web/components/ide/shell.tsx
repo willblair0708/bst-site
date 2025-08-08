@@ -63,7 +63,6 @@ export function Shell({ repoId }: { repoId?: string }) {
               initial={prefersReducedMotion ? false : { opacity: 0, y: 12 }}
               animate={prefersReducedMotion ? {} : { opacity: 1, y: 0 }}
               transition={{ duration: 0.4, ease: "easeOut" }}
-              whileHover={prefersReducedMotion ? undefined : { scale: 1.002 }}
               className="rounded-2xl bg-primary-100/60 border border-border shadow-elevation-2 overflow-hidden min-h-0 hover:animate-spark-glow"
             >
               {selectedPath ? (
@@ -80,10 +79,7 @@ export function Shell({ repoId }: { repoId?: string }) {
               transition={{ duration: 0.4, ease: "easeOut", delay: 0.05 }}
               className="flex flex-col min-h-0 overflow-hidden"
             >
-              <motion.div
-                whileHover={prefersReducedMotion ? undefined : { scale: 1.005 }}
-                className="rounded-2xl bg-card border border-border shadow-elevation-1 p-2 mb-2 hover:animate-spark-glow"
-              >
+              <motion.div className="rounded-2xl bg-card border border-border shadow-elevation-1 p-2 mb-2 hover:animate-spark-glow">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
                     <Layers className="w-4 h-4 text-viz-purple-500" />

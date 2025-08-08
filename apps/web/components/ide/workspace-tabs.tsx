@@ -9,6 +9,9 @@ import { ScrollArea } from "@/components/ui/scroll-area"
 import { motion, AnimatePresence } from "framer-motion"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 import Sparkline from "@/components/ui/sparkline"
+import { Button } from "@/components/ui/button"
+import { Textarea } from "@/components/ui/textarea"
+import { Badge } from "@/components/ui/badge"
 
 export function WorkspaceTabs({ repoId, onOpenFile, selectedPath }: { repoId: string; onOpenFile: (p: string) => void; selectedPath?: string }) {
   const [tab, setTab] = React.useState("files")
@@ -85,14 +88,34 @@ export function WorkspaceTabs({ repoId, onOpenFile, selectedPath }: { repoId: st
       <AnimatePresence mode="wait">
         {tab === 'agents' && (
           <TabsContent value="agents" className="flex-1 overflow-hidden" forceMount>
-            <motion.div initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -6 }} className="p-2 text-sm space-y-2">
-              <div className="font-medium">Quick agents</div>
-              <ul className="list-disc pl-5 space-y-1 text-muted-foreground">
-                <li>Scout: search literature on topic</li>
-                <li>Scholar: write referenced section</li>
-                <li>Analyst: generate notebook and run</li>
-                <li>Critic: check contradictions</li>
-              </ul>
+            <motion.div initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -6 }} className="p-2 space-y-3">
+              <div className="flex items-center justify-between">
+                <div className="text-sm font-medium">Co-pilots</div>
+                <div className="flex gap-2 text-[10px] text-muted-foreground">
+                  <Badge variant="secondary">Scout</Badge>
+                  <Badge variant="secondary">Scholar</Badge>
+                  <Badge variant="secondary">Analyst</Badge>
+                  <Badge variant="secondary">Critic</Badge>
+                </div>
+              </div>
+
+              <div className="rounded-2xl border bg-background/70 p-2 space-y-2">
+                <div className="flex items-center justify-between">
+                  <div className="text-sm font-medium">ESM‑2 Embeddings</div>
+                  <div className="text-[10px] text-muted-foreground">HF Inference</div>
+                </div>
+                <ESM2Widget />
+              </div>
+
+              <div className="rounded-2xl border bg-background/70 p-2">
+                <div className="text-sm font-medium mb-1">Quick actions</div>
+                <div className="grid grid-cols-2 gap-2 text-sm">
+                  <Button variant="outline" className="rounded-xl">Literature scan</Button>
+                  <Button variant="outline" className="rounded-xl">Summarize protocol</Button>
+                  <Button variant="outline" className="rounded-xl">Generate notebook</Button>
+                  <Button variant="outline" className="rounded-xl">Run checks</Button>
+                </div>
+              </div>
             </motion.div>
           </TabsContent>
         )}
@@ -181,6 +204,51 @@ function RepoSearch({ repoId, onOpenFile }: { repoId: string; onOpenFile: (p: st
           {!results.length && !!q && !loading && <div className="text-xs text-muted-foreground p-2">No results</div>}
         </div>
       </ScrollArea>
+    </div>
+  )
+}
+
+function ESM2Widget() {
+  const [sequence, setSequence] = React.useState("")
+  const [loading, setLoading] = React.useState(false)
+  const [error, setError] = React.useState<string | null>(null)
+  const [meanEmbedding, setMeanEmbedding] = React.useState<number[] | null>(null)
+
+  const run = async () => {
+    setLoading(true)
+    setError(null)
+    setMeanEmbedding(null)
+    try {
+      const res = await fetch('/api/models/esm2/embeddings', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ sequence }),
+      })
+      const json = await res.json()
+      if (!res.ok) throw new Error(json?.detail || 'Failed to compute embeddings')
+      setMeanEmbedding(json?.mean_embedding || json?.meanEmbedding || [])
+    } catch (e: any) {
+      setError(e.message || 'Error')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  return (
+    <div className="space-y-2">
+      <Textarea rows={4} value={sequence} onChange={(e) => setSequence(e.target.value)} placeholder="Paste protein sequence (FASTA letters)…" className="rounded-xl" />
+      <div className="flex items-center justify-between">
+        <Button size="sm" className="rounded-xl" onClick={run} disabled={loading || !sequence.trim()}>
+          {loading ? 'Computing…' : 'Compute'}
+        </Button>
+        {meanEmbedding && meanEmbedding.length > 0 && (
+          <div className="flex items-center gap-2">
+            <div className="text-[10px] text-muted-foreground">dim {meanEmbedding.length}</div>
+            <Sparkline data={meanEmbedding.slice(0, 40)} width={80} height={20} />
+          </div>
+        )}
+      </div>
+      {error && <div className="text-xs text-destructive">{error}</div>}
     </div>
   )
 }

@@ -159,7 +159,7 @@ export function FileExplorer({ repoId, onOpen, selectedPath, refreshKey }: { rep
               <button className={`ml-auto p-1 rounded hover:bg-muted/40 ${isPinned(n.path)?'text-amber-500':''}`} onClick={(e) => { e.stopPropagation(); togglePin(n.path) }} aria-label="Pin"><Star className="w-3.5 h-3.5" /></button>
             </motion.div>
           ) : (
-            <motion.button
+            <motion.div
               layout
               whileHover={{ x: 2, scale: 1.01 }}
               whileTap={{ scale: 0.99 }}
@@ -173,13 +173,14 @@ export function FileExplorer({ repoId, onOpen, selectedPath, refreshKey }: { rep
               role="treeitem"
               title={n.path}
               style={{ paddingLeft: depth * 10 }}
+              tabIndex={-1}
             >
               <span className={`absolute left-0 top-1/2 -translate-y-1/2 w-1 h-4 rounded-r ${selectedPath === n.path ? 'bg-primary-500' : 'bg-transparent'}`} />
               <FileText className={`w-3.5 h-3.5 ${selectedPath === n.path ? 'text-primary-600' : ''}`} />
               <span className={`text-sm truncate ${selectedPath === n.path ? 'text-foreground' : ''}`}>{highlight(n.name)}</span>
               <span className="ml-auto text-[10px] text-muted-foreground font-mono">{n.name.split('.').pop()?.toUpperCase()}</span>
               <button className={`p-1 rounded hover:bg-muted/40 ${isPinned(n.path)?'text-amber-500':''}`} onClick={(e) => { e.stopPropagation(); togglePin(n.path) }} aria-label="Pin"><Star className="w-3.5 h-3.5" /></button>
-            </motion.button>
+            </motion.div>
           )}
           {n.children && open[n.path] && (
             <div className="pl-4">{render(n.children, depth + 1)}</div>
@@ -193,7 +194,7 @@ export function FileExplorer({ repoId, onOpen, selectedPath, refreshKey }: { rep
   const onKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
     const root = containerRef.current
     if (!root) return
-    const items = Array.from(root.querySelectorAll<HTMLButtonElement>('button[data-file-item="true"]'))
+    const items = Array.from(root.querySelectorAll<HTMLElement>('[data-file-item="true"]'))
     const index = items.findIndex((el) => el === document.activeElement)
     if (e.key === 'ArrowDown') {
       e.preventDefault()
@@ -203,10 +204,10 @@ export function FileExplorer({ repoId, onOpen, selectedPath, refreshKey }: { rep
       e.preventDefault()
       const prev = items[Math.max(index - 1, 0)] || items[items.length - 1]
       prev?.focus()
-    } else if (e.key === 'Enter' && (document.activeElement as HTMLButtonElement)?.dataset?.fileItem === 'true') {
-      ;(document.activeElement as HTMLButtonElement)?.click()
-    } else if (e.key === 'Backspace' && (document.activeElement as HTMLButtonElement)?.dataset?.fileItem === 'true') {
-      const p = (document.activeElement as HTMLButtonElement).title
+    } else if (e.key === 'Enter' && (document.activeElement as HTMLElement)?.dataset?.fileItem === 'true') {
+      ;(document.activeElement as HTMLElement)?.click()
+    } else if (e.key === 'Backspace' && (document.activeElement as HTMLElement)?.dataset?.fileItem === 'true') {
+      const p = (document.activeElement as HTMLElement).getAttribute('title') || ''
       if (p) removePath(p)
     } else if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'r') {
       e.preventDefault(); load()
@@ -247,8 +248,8 @@ export function FileExplorer({ repoId, onOpen, selectedPath, refreshKey }: { rep
       setOpen((s) => ({ ...s, ...next }))
       // focus the file if exists, after layout
       setTimeout(() => {
-        const btn = containerRef.current?.querySelector(`button[title="${CSS.escape(path)}"]`) as HTMLButtonElement | null
-        btn?.focus()
+        const item = containerRef.current?.querySelector(`[data-file-item="true"][title="${CSS.escape(path)}"]`) as HTMLElement | null
+        item?.focus()
       }, 50)
     }
     window.addEventListener('ide:reveal' as any, onReveal)

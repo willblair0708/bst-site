@@ -4,13 +4,16 @@ import { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
 import {
-  Plus, 
+  Plus,
   ArrowUp,
+  ArrowDown,
   Hash,
   Sparkles,
   RotateCcw,
   Square,
   Globe,
+  Bot,
+  User,
 } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
@@ -39,6 +42,10 @@ const ChatPage = () => {
   const [apiKey, setApiKey] = useState<string>("");
   const [inputValue, setInputValue] = useState("");
   const [isAiTyping, setIsAiTyping] = useState(false);
+  const listRef = useRef<HTMLDivElement | null>(null);
+  const endRef = useRef<HTMLDivElement | null>(null);
+  const [atBottom, setAtBottom] = useState(true);
+  const [showInspector, setShowInspector] = useState(false);
   type TraceEvent = { ts: number; type: string; detail?: string };
   type ToolTrace = { tool: string; t_ms?: number; args?: Record<string, any>; phase?: string };
   const [events, setEvents] = useState<TraceEvent[]>([]);
@@ -54,6 +61,44 @@ const ChatPage = () => {
   const [lastTaskId, setLastTaskId] = useState<string | null>(null);
   const [evidence, setEvidence] = useState<Array<any>>([]);
   
+  // Modern markdown rendering styles
+  const markdownComponents: any = {
+    a: (props: any) => (
+      <a {...props} target="_blank" rel="noreferrer" className="underline underline-offset-2 text-primary hover:text-primary/80" />
+    ),
+    pre: ({ children }: any) => (
+      <pre className="mt-2 mb-2 rounded-lg border bg-muted/60 p-3 overflow-auto text-[12px] leading-relaxed">
+        {children}
+      </pre>
+    ),
+    code: ({ inline, children, ...rest }: any) => (
+      inline ? (
+        <code className="px-1.5 py-0.5 rounded bg-muted/50 border text-[12px]" {...rest}>{children}</code>
+      ) : (
+        <code {...rest}>{children}</code>
+      )
+    ),
+    ul: (props: any) => <ul className="list-disc ml-5 space-y-1" {...props} />,
+    ol: (props: any) => <ol className="list-decimal ml-5 space-y-1" {...props} />,
+    blockquote: (props: any) => <blockquote className="border-l-2 pl-3 text-muted-foreground" {...props} />,
+    table: (props: any) => <table className="w-full text-sm border rounded-md overflow-hidden" {...props} />,
+    th: (props: any) => <th className="border-b bg-muted/70 px-2 py-1 text-left" {...props} />,
+    td: (props: any) => <td className="border-b px-2 py-1 align-top" {...props} />,
+  };
+
+  // Auto-scroll behavior
+  useEffect(() => {
+    if (atBottom) {
+      endRef.current?.scrollIntoView({ behavior: "smooth" });
+    }
+  }, [messages.length, isAiTyping]);
+
+  const handleScroll = () => {
+    const el = listRef.current;
+    if (!el) return;
+    const threshold = 48;
+    setAtBottom(el.scrollHeight - el.scrollTop - el.clientHeight < threshold);
+  };
 
   // Load sessions and API key
   useEffect(() => {
@@ -305,10 +350,10 @@ const ChatPage = () => {
     }
   };
 
-  const MAX_SESSIONS = 6;
-  const MAX_MESSAGES = 6;
-  const MAX_EVENTS = 6;
-  const MAX_TOOLS = 4;
+  const MAX_SESSIONS = 12;
+  const MAX_MESSAGES = 500; // show long history
+  const MAX_EVENTS = 24;
+  const MAX_TOOLS = 12;
 
   const Sidebar = () => (
     <aside className="w-80 flex-col bg-muted/20 p-4 hidden lg:flex border-r overflow-hidden">
@@ -369,9 +414,19 @@ const ChatPage = () => {
       <Sidebar />
       
       <main className="flex-1 flex flex-col bg-background">
-        
-        {/* Main Content with Inspector panel */}
-        <div className="flex-1 grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_340px] overflow-hidden">
+        {/* Top bar */}
+        <div className="h-12 border-b bg-background/70 backdrop-blur px-3 sm:px-4 flex items-center gap-2">
+          <div className="text-sm font-medium">Runix Chat</div>
+          <span className="text-[10px] text-muted-foreground">Director mode</span>
+          <div className="ml-auto flex items-center gap-2">
+            <Button size="sm" variant="outline" className="rounded" onClick={createSession}><Plus className="w-3.5 h-3.5 mr-1"/>New</Button>
+            <button className="text-xs px-2 py-1 rounded border hover:bg-muted/60" onClick={() => setShowInspector(v => !v)}>{showInspector ? 'Hide' : 'Show'} inspector</button>
+            <ThemeToggle />
+          </div>
+        </div>
+
+        {/* Main Content with optional Inspector panel */}
+        <div className={cn("flex-1 grid grid-cols-1 overflow-hidden", showInspector ? "lg:grid-cols-[minmax(0,1fr)_340px]" : "lg:grid-cols-1")}>
           <section className="flex flex-col border-r bg-gradient-to-b from-background to-muted/20 overflow-hidden">
             <div className="flex-1 overflow-hidden">
               {messages.length === 0 ? (
@@ -402,21 +457,26 @@ const ChatPage = () => {
                 </div>
               ) : (
                 <div className="h-full overflow-hidden">
-                  <div className="max-w-2xl mx-auto px-6 py-8 space-y-6 overflow-hidden">
+                  <div ref={listRef} onScroll={handleScroll} className="h-full max-w-2xl mx-auto px-6 py-8 space-y-6 overflow-auto">
                     {messages.slice(-MAX_MESSAGES).map((message, index) => {
                       const isUser = message.author === 'User';
                       return (
                         <motion.div
                           key={message.id}
-                          className={cn("group/message relative flex", isUser ? "justify-end" : "justify-start")}
+                          className={cn("group/message relative flex items-start gap-3", isUser ? "justify-end" : "justify-start")}
                           variants={fadeInUp}
                           initial="initial"
                           animate="animate"
                           transition={{ delay: index * 0.05, duration: 0.35 }}
                         >
+                          {!isUser && (
+                            <div className="shrink-0 w-8 h-8 rounded-full border bg-primary-100/50 flex items-center justify-center">
+                              <Bot className="w-4 h-4" />
+                            </div>
+                          )}
                           <Card className={cn("max-w-[68ch] rounded-2xl text-sm", isUser ? "bg-foreground text-background" : "bg-card/60")} variant={isUser ? undefined : "glass" as any}>
                             <CardContent className="px-4 py-3">
-                              <ReactMarkdown remarkPlugins={[remarkGfm]}>{message.content}</ReactMarkdown>
+                              <ReactMarkdown remarkPlugins={[remarkGfm]} components={markdownComponents}>{message.content}</ReactMarkdown>
                               {!isUser && extractLinks(message.content).length > 0 && (
                                 <div className="mt-3 flex flex-wrap gap-2">
                                   {extractLinks(message.content).map((l, i) => (
@@ -438,6 +498,11 @@ const ChatPage = () => {
                               </div>
                             </CardContent>
                           </Card>
+                          {isUser && (
+                            <div className="shrink-0 w-8 h-8 rounded-full border bg-muted flex items-center justify-center">
+                              <User className="w-4 h-4" />
+                            </div>
+                          )}
                         </motion.div>
                       );
                     })}
@@ -452,6 +517,7 @@ const ChatPage = () => {
                         </div>
                       </motion.div>
                     )}
+                    <div ref={endRef} />
                   </div>
                 </div>
               )}
@@ -497,10 +563,20 @@ const ChatPage = () => {
                     </button>
                   )}
                 </div>
+                {!atBottom && (
+                  <button
+                    onClick={() => endRef.current?.scrollIntoView({ behavior: 'smooth' })}
+                    className="fixed right-6 bottom-28 z-10 inline-flex items-center gap-1 px-2 py-1 rounded-full border bg-background shadow-sm text-xs hover:bg-muted"
+                    title="Scroll to newest"
+                  >
+                    <ArrowDown className="w-3.5 h-3.5" /> New messages
+                  </button>
+                )}
               </div>
             </div>
           </section>
           {/* Inspector Panel */}
+          {showInspector && (
           <aside className="hidden lg:flex flex-col max-h-full overflow-hidden border-l bg-background/40">
             <div className="px-4 py-3 border-b bg-background/80 backdrop-blur">
               <div className="text-sm font-semibold">Run Inspector</div>
@@ -565,6 +641,7 @@ const ChatPage = () => {
               </div>
             </div>
           </aside>
+          )}
         </div>
       </main>
       {/* API Key modal removed per design.mdc simplification */}

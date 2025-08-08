@@ -1,7 +1,7 @@
 "use client"
 
 import React from 'react'
-import { motion } from 'framer-motion'
+import { motion, LayoutGroup } from 'framer-motion'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { GlobalSearch } from '@/components/global-search'
@@ -82,17 +82,31 @@ export function GitHubHeader() {
           {/* Right side - Navigation and User */}
           <div className="flex items-center space-x-5">
             {/* Navigation */}
-            <nav className="hidden lg:flex items-center space-x-2">
-              {navItems.map(item => (
-                <Link
-                  key={item.key || item.href}
-                  href={item.href}
-                  aria-current={isActive(item.href) ? 'page' : undefined}
-                  className={getLinkClasses(item.href, item.variant)}
-                >
-                  {item.label}
-                </Link>
-              ))}
+            <nav className="hidden lg:flex items-center space-x-2 relative">
+              <LayoutGroup id="top-nav">
+                {navItems.map(item => {
+                  const active = isActive(item.href)
+                  return (
+                    <div key={item.key || item.href} className="relative">
+                      {active && (
+                        <motion.span
+                          layoutId="nav-active"
+                          className="absolute inset-0 rounded-full bg-muted/70 border border-muted/60"
+                          style={{ zIndex: 0 }}
+                          transition={{ type: 'spring', stiffness: 350, damping: 30 }}
+                        />
+                      )}
+                      <Link
+                        href={item.href}
+                        aria-current={active ? 'page' : undefined}
+                        className={`${getLinkClasses(item.href, item.variant)} relative z-10`}
+                      >
+                        {item.label}
+                      </Link>
+                    </div>
+                  )
+                })}
+              </LayoutGroup>
             </nav>
 
 

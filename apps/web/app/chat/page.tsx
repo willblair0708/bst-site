@@ -31,45 +31,139 @@ import Inspector, { TraceEvent as InspectorEvent, ToolTrace as InspectorToolTrac
 // Simplified UI: sliders/selects removed
 
 // Memoized animation variants to prevent re-renders
+// Enhanced animation variants following Astra-Soft design principles
 const containerVariants = {
   initial: { opacity: 0 },
   animate: { 
     opacity: 1,
-    transition: {
-      duration: 0.3,
-      staggerChildren: 0.1
+    transition: { 
+      duration: 0.4,
+      ease: [0.25, 0.46, 0.45, 0.94],
+      staggerChildren: 0.1,
+      delayChildren: 0.1
     }
   }
 } as const;
 
 const itemVariants = {
-  initial: { opacity: 0, y: 8 },
-  animate: { 
-    opacity: 1, 
-    y: 0
-  }
-} as const;
-
-const messageVariants = {
-  initial: { opacity: 0, y: 12, scale: 0.98 },
-  animate: { 
-    opacity: 1, 
-    y: 0, 
-    scale: 1
-  },
-  exit: { 
-    opacity: 0, 
-    y: -8, 
-    scale: 0.96
-  }
-} as const;
-
-const floatingVariants = {
   initial: { opacity: 0, y: 20, scale: 0.95 },
   animate: { 
     opacity: 1, 
+    y: 0,
+    scale: 1,
+    transition: { 
+      type: "spring",
+      stiffness: 350,
+      damping: 25,
+      mass: 0.5
+    }
+  }
+} as const;
+
+// Snap motion for quick interactions (70ms ease-out)
+const snapVariants = {
+  initial: { scale: 1 },
+  tap: { scale: 0.95 },
+  hover: { scale: 1.02 },
+  transition: { duration: 0.07, ease: "easeOut" }
+} as const;
+
+// Pulse success for verification actions
+const pulseVariants = {
+  idle: { scale: 1 },
+  pulse: { 
+    scale: [1, 1.12, 1],
+    transition: { 
+      type: "spring",
+      stiffness: 150,
+      damping: 10,
+      duration: 0.6
+    }
+  }
+} as const;
+
+// Gentle glow for interactive elements - simplified for TypeScript compatibility
+
+// Message entrance with stagger and spring physics
+const messageVariants = {
+  initial: { 
+    opacity: 0, 
+    y: 30, 
+    scale: 0.9,
+    filter: "blur(10px)"
+  },
+  animate: { 
+    opacity: 1, 
     y: 0, 
-    scale: 1
+    scale: 1,
+    filter: "blur(0px)",
+    transition: { 
+      type: "spring",
+      stiffness: 400,
+      damping: 30,
+      mass: 0.8,
+      duration: 0.6
+    }
+  },
+  exit: { 
+    opacity: 0, 
+    y: -20, 
+    scale: 0.95,
+    filter: "blur(8px)",
+    transition: { 
+      duration: 0.3,
+      ease: [0.4, 0, 0.2, 1]
+    }
+  }
+} as const;
+
+// Floating animation for input areas
+const floatingVariants = {
+  initial: { 
+    opacity: 0, 
+    y: 20, 
+    scale: 0.95,
+    rotateX: 10
+  },
+  animate: { 
+    opacity: 1, 
+    y: 0, 
+    scale: 1,
+    rotateX: 0,
+    transition: { 
+      type: "spring",
+      stiffness: 300,
+      damping: 25,
+      delay: 0.2
+    }
+  },
+  focus: {
+    scale: 1.02,
+    y: -2,
+    transition: { 
+      type: "spring",
+      stiffness: 400,
+      damping: 25
+    }
+  }
+} as const;
+
+// Simplified breathing animation for typing indicators
+
+// Magnetic button effect
+const magneticVariants = {
+  rest: { scale: 1 },
+  hover: { 
+    scale: 1.05,
+    transition: { 
+      type: "spring",
+      stiffness: 400,
+      damping: 25
+    }
+  },
+  tap: { 
+    scale: 0.95,
+    transition: { duration: 0.1 }
   }
 } as const;
 
@@ -437,70 +531,126 @@ const ChatPage = () => {
 
   const Sidebar = useMemo(() => (
     <motion.aside 
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      transition={{ duration: 0.3, staggerChildren: 0.1 }}
-      className="w-72 flex-col bg-gray-100 p-4 hidden lg:flex border-r border-gray-200 overflow-hidden"
+      variants={containerVariants}
+      initial="initial"
+      animate="animate"
+      className="w-72 flex-col bg-gray-100 p-4 hidden lg:flex border-r border-gray-200 overflow-hidden relative"
     >
+      {/* Subtle ambient background animation */}
+      <motion.div
+        className="absolute inset-0 opacity-30"
+        animate={{
+          background: [
+            "radial-gradient(circle at 20% 20%, rgba(156, 163, 175, 0.1) 0%, transparent 50%)",
+            "radial-gradient(circle at 80% 80%, rgba(156, 163, 175, 0.1) 0%, transparent 50%)",
+            "radial-gradient(circle at 40% 60%, rgba(156, 163, 175, 0.1) 0%, transparent 50%)",
+          ]
+        }}
+        transition={{
+          duration: 10,
+          ease: "easeInOut",
+          repeat: Infinity,
+          repeatType: "reverse"
+        }}
+      />
       {/* Header */}
       <motion.div 
-        initial={{ opacity: 0, y: 8 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.2, delay: 0.1 }}
-        className="flex items-center gap-3 mb-6 px-2"
+        variants={itemVariants}
+        className="flex items-center gap-3 mb-6 px-2 relative z-10"
       >
         <motion.div 
-          className="w-8 h-8 rounded-xl bg-gray-200 flex items-center justify-center"
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
+          className="w-8 h-8 rounded-xl bg-gray-200 flex items-center justify-center relative overflow-hidden"
+          variants={magneticVariants}
+          initial="rest"
+          whileHover="hover"
+          whileTap="tap"
         >
-          <Hash className="w-4 h-4 text-gray-600" />
+          {/* Subtle shimmer effect */}
+          <motion.div
+            className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent"
+            animate={{
+              x: ["-100%", "100%"]
+            }}
+            transition={{
+              duration: 3,
+              ease: "easeInOut",
+              repeat: Infinity,
+              repeatDelay: 5
+            }}
+          />
+          <Hash className="w-4 h-4 text-gray-600 relative z-10" />
         </motion.div>
-        <div className="flex flex-col">
-          <span className="font-semibold text-gray-800">Runix</span>
+        <motion.div 
+          className="flex flex-col"
+          variants={itemVariants}
+        >
+          <motion.span 
+            className="font-semibold text-gray-800"
+            animate={{
+              scale: [1, 1.01, 1]
+            }}
+            transition={{
+              duration: 4,
+              ease: "easeInOut",
+              repeat: Infinity
+            }}
+          >
+            Runix
+          </motion.span>
           <span className="text-xs text-gray-500">Assistant</span>
-        </div>
-        <div className="ml-auto">
+        </motion.div>
+        <motion.div 
+          className="ml-auto"
+          variants={itemVariants}
+        >
           <ThemeToggle />
-      </div>
+      </motion.div>
       </motion.div>
 
       {/* New Chat Button */}
       <motion.div 
-        initial={{ opacity: 0, y: 8 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.2, delay: 0.2 }}
-        className="mb-6"
+        variants={itemVariants}
+        className="mb-6 relative z-10"
       >
         <motion.div
-          whileHover={{ scale: 1.02 }}
-          whileTap={{ scale: 0.98 }}
+          variants={magneticVariants}
+          initial="rest"
+          whileHover="hover"
+          whileTap="tap"
+          className="relative overflow-hidden rounded-xl"
         >
+          {/* Gradient shimmer on hover */}
+          <motion.div
+            className="absolute inset-0 bg-gradient-to-r from-gray-700 via-gray-600 to-gray-700 opacity-0"
+            whileHover={{ opacity: 1 }}
+            transition={{ duration: 0.3 }}
+          />
           <Button 
-            className="w-full h-10 rounded-xl bg-gray-800 text-white hover:bg-gray-700 transition-all font-medium group" 
+            className="w-full h-10 rounded-xl bg-gray-800 text-white hover:bg-gray-700 transition-all font-medium group relative z-10" 
             onClick={createSession}
           >
-          <Plus className="w-4 h-4 mr-2" />
-          New Chat
-        </Button>
+            <Plus className="w-4 h-4 mr-2" />
+            <motion.span
+              initial={{ opacity: 0.8 }}
+              whileHover={{ opacity: 1 }}
+            >
+              New Chat
+            </motion.span>
+          </Button>
         </motion.div>
       </motion.div>
 
       {/* Conversation History */}
-      <div className="flex-1 overflow-hidden">
+      <div className="flex-1 overflow-hidden relative z-10">
         <motion.h3 
-          initial={{ opacity: 0, y: 8 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.2, delay: 0.3 }}
+          variants={itemVariants}
           className="text-xs font-medium text-gray-500 mb-3 px-2"
         >
           Recent
         </motion.h3>
         <div className="h-full overflow-hidden">
           <motion.div 
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.3, delay: 0.4 }}
+            variants={containerVariants}
             className="space-y-1 pr-1 overflow-y-auto"
           >
             <AnimatePresence mode="popLayout">
@@ -508,21 +658,73 @@ const ChatPage = () => {
                 <motion.div 
                   key={s.id}
                   layout
-                  variants={messageVariants}
+                  variants={{
+                    initial: { 
+                      opacity: 0, 
+                      x: -20, 
+                      scale: 0.95 
+                    },
+                    animate: { 
+                      opacity: 1, 
+                      x: 0, 
+                      scale: 1,
+                      transition: {
+                        type: "spring",
+                        stiffness: 300,
+                        damping: 25,
+                        delay: index * 0.05
+                      }
+                    },
+                    exit: {
+                      opacity: 0,
+                      x: -20,
+                      scale: 0.95,
+                      transition: { duration: 0.2 }
+                    }
+                  }}
                   className={cn(
-                    "group py-2.5 px-3 rounded-lg text-sm cursor-pointer flex items-center gap-2 transition-all",
+                    "group py-2.5 px-3 rounded-lg text-sm cursor-pointer flex items-center gap-2 transition-all relative overflow-hidden",
                     activeSessionId === s.id 
                       ? "bg-gray-200 text-gray-800" 
                       : "text-gray-600 hover:bg-gray-50 hover:text-gray-800"
                   )}
                   onClick={() => { setActiveSessionId(s.id); setCurrentAgent(s.agent); }}
-                  whileHover={{ x: 2 }}
-                  whileTap={{ scale: 0.98 }}
+                  whileHover={{ 
+                    x: 4,
+                    transition: { 
+                      type: "spring", 
+                      stiffness: 400, 
+                      damping: 25 
+                    }
+                  }}
+                  whileTap={{ 
+                    scale: 0.98,
+                    transition: { duration: 0.1 }
+                  }}
                 >
-                  <div className={cn(
-                    "w-1.5 h-1.5 rounded-full shrink-0 transition-colors",
-                    activeSessionId === s.id ? "bg-gray-600" : "bg-transparent"
-                  )} />
+                  {/* Hover shimmer effect */}
+                  <motion.div
+                    className="absolute inset-0 bg-gradient-to-r from-transparent via-gray-300/20 to-transparent"
+                    initial={{ x: "-100%" }}
+                    whileHover={{
+                      x: "100%",
+                      transition: { duration: 0.6, ease: "easeInOut" }
+                    }}
+                  />
+                  <motion.div 
+                    className={cn(
+                      "w-1.5 h-1.5 rounded-full shrink-0 relative z-10",
+                      activeSessionId === s.id ? "bg-gray-600" : "bg-transparent"
+                    )}
+                    animate={activeSessionId === s.id ? {
+                      scale: [1, 1.2, 1],
+                      transition: {
+                        duration: 2,
+                        ease: "easeInOut",
+                        repeat: Infinity
+                      }
+                    } : {}}
+                  />
                   
                 {editingSessionId === s.id ? (
                   <input
@@ -605,23 +807,52 @@ const ChatPage = () => {
                   <div className="w-full max-w-2xl">
                     <motion.div 
                       className="mb-8 text-center"
-                      initial={{ opacity: 0, y: 8 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ duration: 0.2, delay: 0.1 }}
+                      variants={itemVariants}
                     >
-                      <h1 className="text-2xl font-medium text-gray-800 mb-2">
+                      <motion.h1 
+                        className="text-2xl font-medium text-gray-800 mb-2"
+                        animate={{
+                          scale: [1, 1.01, 1],
+                          opacity: [0.9, 1, 0.9]
+                        }}
+                        transition={{
+                          duration: 4,
+                          ease: "easeInOut",
+                          repeat: Infinity
+                        }}
+                      >
                         What can I help you with?
-                      </h1>
+                      </motion.h1>
                     </motion.div>
 
                     <motion.div 
-                      initial={{ opacity: 0, y: 8 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ duration: 0.2, delay: 0.2 }}
+                      variants={floatingVariants}
+                      initial="initial"
+                      animate="animate"
+                      whileFocus="focus"
                       className="relative"
                     >
-                      <div className="bg-white border border-gray-200 rounded-2xl p-3 focus-within:border-gray-300 transition-all shadow-sm">
-                        <div className="flex items-end gap-3">
+                      <motion.div 
+                        className="bg-white border border-gray-200 rounded-2xl p-3 focus-within:border-gray-300 transition-all shadow-sm relative overflow-hidden"
+                        animate={inputValue ? {
+                          borderColor: ["rgba(229, 231, 235, 1)", "rgba(16, 185, 129, 0.3)", "rgba(229, 231, 235, 1)"],
+                          transition: { duration: 2, ease: "easeInOut", repeat: Infinity }
+                        } : {}}
+                      >
+                        {/* Subtle gradient background */}
+                        <motion.div
+                          className="absolute inset-0 bg-gradient-to-br from-blue-50/30 via-purple-50/20 to-pink-50/30"
+                          animate={{
+                            opacity: [0, 0.3, 0],
+                            scale: [1, 1.1, 1]
+                          }}
+                          transition={{
+                            duration: 8,
+                            ease: "easeInOut",
+                            repeat: Infinity
+                          }}
+                        />
+                        <div className="flex items-end gap-3 relative z-10">
                           <Textarea
                             ref={composerRef as any}
                             placeholder="Ask me anything..."
@@ -632,8 +863,10 @@ const ChatPage = () => {
                             rows={1}
                           />
                           <motion.div
-                            whileHover={{ scale: 1.05 }}
-                            whileTap={{ scale: 0.95 }}
+                            variants={magneticVariants}
+                            initial="rest"
+                            whileHover="hover"
+                            whileTap="tap"
                           >
                             {isAiTyping ? (
                               <Button 
@@ -660,7 +893,7 @@ const ChatPage = () => {
                             )}
                           </motion.div>
                         </div>
-                      </div>
+                      </motion.div>
                     </motion.div>
                   </div>
                 </motion.div>
@@ -720,21 +953,45 @@ const ChatPage = () => {
                                 <div className="relative max-w-4xl">
                                   {!message.content ? (
                                     <div className="flex items-center gap-2 py-2">
-                                                            <motion.div 
-                        className="w-2 h-2 rounded-full bg-gray-400" 
-                        animate={{ opacity: [0.4, 1, 0.4] }} 
-                        transition={{ repeat: Infinity, duration: 1 }} 
-                      />
-                      <motion.div 
-                        className="w-2 h-2 rounded-full bg-gray-400" 
-                        animate={{ opacity: [0.4, 1, 0.4] }} 
-                        transition={{ repeat: Infinity, duration: 1, delay: 0.2 }} 
-                      />
-                      <motion.div 
-                        className="w-2 h-2 rounded-full bg-gray-400" 
-                        animate={{ opacity: [0.4, 1, 0.4] }} 
-                        transition={{ repeat: Infinity, duration: 1, delay: 0.4 }} 
-                      />
+                                                                                                  <motion.div 
+                                        className="w-2 h-2 rounded-full bg-gray-400" 
+                                        animate={{
+                                          scale: [1, 1.1, 1],
+                                          opacity: [0.6, 1, 0.6]
+                                        }}
+                                        transition={{
+                                          duration: 2,
+                                          ease: "easeInOut",
+                                          repeat: Infinity,
+                                          delay: 0
+                                        }}
+                                      />
+                                      <motion.div 
+                                        className="w-2 h-2 rounded-full bg-gray-400" 
+                                        animate={{
+                                          scale: [1, 1.1, 1],
+                                          opacity: [0.6, 1, 0.6]
+                                        }}
+                                        transition={{
+                                          duration: 2,
+                                          ease: "easeInOut",
+                                          repeat: Infinity,
+                                          delay: 0.2
+                                        }}
+                                      />
+                                      <motion.div 
+                                        className="w-2 h-2 rounded-full bg-gray-400" 
+                                        animate={{
+                                          scale: [1, 1.1, 1],
+                                          opacity: [0.6, 1, 0.6]
+                                        }}
+                                        transition={{
+                                          duration: 2,
+                                          ease: "easeInOut",
+                                          repeat: Infinity,
+                                          delay: 0.4
+                                        }}
+                                      />
                                     </div>
                                   ) : (
                                     <div className="prose prose-sm max-w-none leading-relaxed text-gray-800">

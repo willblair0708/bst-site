@@ -12,6 +12,7 @@ import { ScrollArea } from "@/components/ui/scroll-area"
 import { Layers, PanelRight } from "lucide-react"
 import { WorkspaceTabs } from "@/components/ide/workspace-tabs"
 import { RepoEditor } from "@/components/ide/repo-editor"
+import { ArtifactsPanel } from "@/components/ide/artifacts-panel"
 
 export function Shell({ repoId }: { repoId?: string }) {
   const jobs = useMemo(() => [
@@ -33,6 +34,23 @@ export function Shell({ repoId }: { repoId?: string }) {
   ], [])
 
   const prefersReducedMotion = useReducedMotion()
+  const [selectedPath, setSelectedPath] = React.useState<string | undefined>(undefined)
+  const [artifacts, setArtifacts] = React.useState<any[]>([])
+
+  const runProtocol = React.useCallback(async () => {
+    const res = await fetch('/api/repo/exec', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ repo: repoId || 'demo', cmd: 'ls -1' }) })
+    const json = await res.json()
+    const lines = (json.stdout || '').split('\n')
+    const csv = lines.find((l: string) => l.endsWith('.csv'))
+    if (csv) {
+      const cat = await fetch('/api/repo/exec', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ repo: repoId || 'demo', cmd: `cat ${csv}` }) })
+      const catJson = await cat.json()
+      const rows = (catJson.stdout || '').trim().split('\n').map((r: string) => r.split(',').map((s: string) => s.trim()))
+      setArtifacts([{ name: csv, path: csv, type: 'csv', preview: rows }])
+    } else {
+      setArtifacts([])
+    }
+  }, [repoId])
 
   return (
     <div className="h-full overflow-hidden">
@@ -43,7 +61,7 @@ export function Shell({ repoId }: { repoId?: string }) {
           <div className="grid grid-cols-[240px_minmax(0,1fr)_360px] gap-2 min-h-0 overflow-hidden">
             {/* Explorer */}
             <div className="rounded-2xl bg-card border border-border shadow-elevation-1 overflow-hidden min-h-0">
-              <WorkspaceTabs repoId={repoId || 'demo'} onOpenFile={() => {}} />
+              <WorkspaceTabs repoId={repoId || 'demo'} onOpenFile={(p) => setSelectedPath(p)} />
             </div>
 
             {/* Notebook/Protocol editor */}
@@ -54,8 +72,11 @@ export function Shell({ repoId }: { repoId?: string }) {
               whileHover={prefersReducedMotion ? undefined : { scale: 1.002 }}
               className="rounded-2xl bg-primary-100/60 border border-border shadow-elevation-2 overflow-hidden min-h-0 hover:animate-spark-glow"
             >
-              {/* Swap in RepoEditor when file is opened (todo: state) */}
-              <ProtocolEditor />
+              {selectedPath ? (
+                <RepoEditor repoId={repoId || 'demo'} path={selectedPath} />
+              ) : (
+                <ProtocolEditor />
+              )}
             </motion.div>
 
             {/* Right rail: Evidence Drawer trigger + Graph view */}
@@ -74,15 +95,18 @@ export function Shell({ repoId }: { repoId?: string }) {
                     <Layers className="w-4 h-4 text-viz-purple-500" />
                     <span className="text-sm font-medium">Evidence</span>
                   </div>
-                  <EvidenceDrawer
-                    jobs={jobs}
-                    trigger={<Button size="sm" variant="outline" className="rounded-xl">Open</Button>}
-                  />
+                  <div className="flex items-center gap-2">
+                    <Button size="sm" variant="outline" className="rounded-xl" onClick={runProtocol}>Run Protocol</Button>
+                    <EvidenceDrawer
+                      jobs={jobs}
+                      trigger={<Button size="sm" variant="outline" className="rounded-xl">Open</Button>}
+                    />
+                  </div>
                 </div>
               </motion.div>
 
               <ScrollArea className="rounded-2xl bg-card border border-border shadow-elevation-1 p-2 flex-1">
-                <DAGGraph nodes={[]} height={260} className="h-full" />
+                <ArtifactsPanel artifacts={artifacts as any} />
               </ScrollArea>
               {/* floating quick actions */}
               <div className="absolute right-2 bottom-2">

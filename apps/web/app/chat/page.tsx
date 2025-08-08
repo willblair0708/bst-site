@@ -12,8 +12,6 @@ import {
   RotateCcw,
   Square,
   Globe,
-  Bot,
-  User,
 } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
@@ -65,6 +63,9 @@ const ChatPage = () => {
   const markdownComponents: any = {
     a: (props: any) => (
       <a {...props} target="_blank" rel="noreferrer" className="underline underline-offset-2 text-primary hover:text-primary/80" />
+    ),
+    p: (props: any) => (
+      <p className="mt-2 first:mt-0 mb-2 last:mb-0" {...props} />
     ),
     pre: ({ children }: any) => (
       <pre className="mt-2 mb-2 rounded-lg border bg-muted/60 p-3 overflow-auto text-[12px] leading-relaxed">
@@ -415,9 +416,8 @@ const ChatPage = () => {
       
       <main className="flex-1 flex flex-col bg-background">
         {/* Top bar */}
-        <div className="h-12 border-b bg-background/70 backdrop-blur px-3 sm:px-4 flex items-center gap-2">
+        <div className="h-12 border-b bg-background/60 backdrop-blur px-3 sm:px-4 flex items-center gap-2">
           <div className="text-sm font-medium">Runix Chat</div>
-          <span className="text-[10px] text-muted-foreground">Director mode</span>
           <div className="ml-auto flex items-center gap-2">
             <Button size="sm" variant="outline" className="rounded" onClick={createSession}><Plus className="w-3.5 h-3.5 mr-1"/>New</Button>
             <button className="text-xs px-2 py-1 rounded border hover:bg-muted/60" onClick={() => setShowInspector(v => !v)}>{showInspector ? 'Hide' : 'Show'} inspector</button>
@@ -457,24 +457,24 @@ const ChatPage = () => {
                 </div>
               ) : (
                 <div className="h-full overflow-hidden">
-                  <div ref={listRef} onScroll={handleScroll} className="h-full max-w-2xl mx-auto px-6 py-8 space-y-6 overflow-auto">
+                  <div ref={listRef} onScroll={handleScroll} className="h-full max-w-3xl mx-auto px-6 py-8 overflow-auto">
                       {messages.slice(-MAX_MESSAGES).map((message, index) => {
                       const isUser = message.author === 'User';
                       return (
                         <motion.div
                           key={message.id}
-                          className={cn("group/message relative flex items-start gap-3", isUser ? "justify-end" : "justify-start")}
+                          className={cn("group/message relative flex items-start mt-5 sm:mt-6 first:mt-0", isUser ? "justify-end" : "justify-start")}
                           variants={fadeInUp}
                           initial="initial"
                           animate="animate"
                           transition={{ delay: index * 0.05, duration: 0.35 }}
                         >
-                          {!isUser && (
-                            <div className="shrink-0 w-8 h-8 rounded-full border bg-primary-100/50 flex items-center justify-center">
-                              <Bot className="w-4 h-4" />
-                            </div>
-                          )}
-                          <div className={cn("relative max-w-[68ch] rounded-2xl text-sm px-4 py-3 border shadow-sm", isUser ? "bg-primary text-primary-foreground" : "bg-muted/70") }>
+                          <div className={cn(
+                            "relative max-w-[720px] rounded-2xl text-[15px] leading-[1.6] px-4 py-3 border shadow-sm",
+                            isUser
+                              ? "bg-primary/10 text-foreground border-primary/20 ml-auto"
+                              : "bg-card text-foreground border-border/60 mr-auto"
+                          )}>
                             {(!isUser && !message.content) ? (
                               <div className="flex items-center gap-2">
                                 <motion.div className="w-2 h-2 rounded-full bg-muted-foreground/70" animate={{ opacity: [0.3, 1, 0.3] }} transition={{ repeat: Infinity, duration: 1 }} />
@@ -504,11 +504,6 @@ const ChatPage = () => {
                               {new Date(message.createdAt || Date.now()).toLocaleTimeString()}
                             </div>
                           </div>
-                          {isUser && (
-                            <div className="shrink-0 w-8 h-8 rounded-full border bg-muted flex items-center justify-center">
-                              <User className="w-4 h-4" />
-                            </div>
-                          )}
                         </motion.div>
                       );
                     })}
@@ -519,13 +514,13 @@ const ChatPage = () => {
               )}
             </div>
             {/* Input area inside center pane */}
-            <div className="p-4 sm:p-6 bg-background/80 border-t backdrop-blur supports-[backdrop-filter]:bg-background/60">
+            <div className="p-4 sm:p-6 bg-background/70 border-t backdrop-blur supports-[backdrop-filter]:bg-background/60">
               <div className="max-w-2xl mx-auto">
-                <motion.div className="relative bg-background rounded-2xl border focus-within:border-ring transition-colors shadow-soft" variants={fadeInUp} initial="initial" animate="animate" transition={{ delay: 0.2, duration: 0.5 }}>
+                <motion.div className="relative bg-card rounded-2xl border focus-within:border-ring transition-colors shadow-soft" variants={fadeInUp} initial="initial" animate="animate" transition={{ delay: 0.2, duration: 0.5 }}>
                   <div className="flex items-center p-2">
                     <Textarea
                       placeholder="Ask me about research, analysis, or any scientific concept..."
-                      className="flex-1 bg-transparent border-0 px-4 py-2 text-sm text-foreground placeholder:text-muted-foreground resize-none focus:outline-none min-h-[40px] max-h-[96px] leading-relaxed"
+                      className="flex-1 bg-transparent border-0 px-4 py-2 text-[15px] text-foreground placeholder:text-muted-foreground resize-none focus:outline-none min-h-[40px] max-h-[120px] leading-relaxed"
                       value={inputValue}
                       onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setInputValue(e.target.value)}
                       onKeyPress={(e: React.KeyboardEvent<HTMLTextAreaElement>) => {
@@ -551,7 +546,7 @@ const ChatPage = () => {
                     </div>
                   </div>
                 </motion.div>
-                <div className="mt-2 flex items-center justify-between text-xs text-muted-foreground">
+                 <div className="mt-2 flex items-center justify-between text-xs text-muted-foreground">
                   <div>Enter to send • Shift+Enter for newline</div>
                   {messages.length > 0 && messages[messages.length - 1]?.author === 'AI' && (
                     <button className="inline-flex items-center gap-1 hover:text-foreground" onClick={handleRegenerate}>
@@ -562,7 +557,7 @@ const ChatPage = () => {
                 {!atBottom && (
                   <button
                     onClick={() => endRef.current?.scrollIntoView({ behavior: 'smooth' })}
-                    className="fixed right-6 bottom-28 z-10 inline-flex items-center gap-1 px-2 py-1 rounded-full border bg-background shadow-sm text-xs hover:bg-muted"
+                    className="fixed right-6 bottom-24 z-10 inline-flex items-center gap-1 px-2 py-1 rounded-full border bg-background shadow-sm text-xs hover:bg-muted"
                     title="Scroll to newest"
                   >
                     <ArrowDown className="w-3.5 h-3.5" /> New messages

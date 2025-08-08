@@ -6,7 +6,7 @@ import { TerminalConsole } from "@/components/ide/terminal-console"
 import { QuickActions } from "@/components/ide/quick-actions"
 import { Button } from "@/components/ui/button"
 import { ScrollArea } from "@/components/ui/scroll-area"
-import { Layers, Plus, X } from "lucide-react"
+import { Layers, Plus, X, Play, Download } from "lucide-react"
 import { WorkspaceTabs } from "@/components/ide/workspace-tabs"
 import { RepoEditor } from "@/components/ide/repo-editor"
 import { AgentChat } from "@/components/ide/agent-chat"
@@ -186,12 +186,14 @@ export function Shell({ repoId }: { repoId?: string }) {
   // Define grid columns via inline style so Tailwind JIT doesn't strip dynamic values
   const gridTemplateColumns = `${leftWidth}px minmax(0,1fr) ${rightWidth}px`
 
+  const rowsStyle = { gridTemplateRows: `minmax(0,1fr) ${Math.max(100, bottomHeight || 160)}px` } as const
+
   return (
     <div className="h-full overflow-hidden">
       {/* Main column */}
       <div className="h-full flex flex-col min-w-0 overflow-hidden">
         {/* Center work area */}
-        <div className="flex-1 grid" style={{ gridTemplateRows: `minmax(0,1fr) ${bottomHeight}px` }}>
+        <div className="flex-1 grid" style={{ ...rowsStyle, height: '100%' }}>
           <div className={"grid gap-2 min-h-0 overflow-hidden p-2"} style={{ gridTemplateColumns }}>
             {/* Explorer */}
             <div className="relative rounded-2xl bg-card border border-border shadow-elevation-1 overflow-hidden min-h-0">
@@ -213,7 +215,7 @@ export function Shell({ repoId }: { repoId?: string }) {
               initial={prefersReducedMotion ? false : { opacity: 0, y: 12 }}
               animate={prefersReducedMotion ? {} : { opacity: 1, y: 0 }}
               transition={{ duration: 0.4, ease: "easeOut" }}
-              className="relative rounded-2xl bg-primary-100/60 border border-border shadow-elevation-2 overflow-hidden min-h-0 hover:animate-spark-glow"
+              className="relative rounded-2xl bg-primary-100/60 border border-border shadow-elevation-2 overflow-hidden min-h-0"
             >
               <div className="flex items-center gap-1 px-2 py-1 border-b bg-background/60 overflow-x-auto">
                 {openFiles.length === 0 && (
@@ -268,26 +270,26 @@ export function Shell({ repoId }: { repoId?: string }) {
               className="flex flex-col min-h-0 overflow-hidden"
             >
               <Tabs value={rightTab} onValueChange={(v) => setRightTab(v as any)} className="flex-1 flex flex-col min-h-0">
-                <motion.div className="rounded-2xl bg-card border border-border shadow-elevation-1 p-2 mb-2 hover:animate-spark-glow">
-                  <div className="flex items-center justify-between">
-                    <TabsList className="h-8 rounded-lg">
-                      <TabsTrigger value="agents" className="px-3">Agents</TabsTrigger>
-                      <TabsTrigger value="evidence" className="px-3">
-                        <div className="flex items-center gap-1"><Layers className="w-4 h-4 text-viz-purple-500" /><span>Evidence</span></div>
-                      </TabsTrigger>
-                    </TabsList>
-                    <Button size="sm" variant="outline" className="rounded-xl" onClick={runProtocol}>Run Protocol</Button>
-                    <Button size="sm" variant="secondary" className="rounded-xl ml-2" onClick={exportBundle}>Export Bundle</Button>
+                <div className="flex items-center justify-between px-1 pb-2">
+                  <TabsList className="h-8 rounded-lg">
+                    <TabsTrigger value="agents" className="px-3">Agents</TabsTrigger>
+                    <TabsTrigger value="evidence" className="px-3">
+                      <div className="flex items-center gap-1"><Layers className="w-4 h-4 text-viz-purple-500" /><span>Evidence</span></div>
+                    </TabsTrigger>
+                  </TabsList>
+                  <div className="flex items-center gap-1">
+                    <Button size="icon" variant="ghost" className="rounded-lg" onClick={runProtocol} title="Run Protocol" aria-label="Run Protocol"><Play className="w-4 h-4" /></Button>
+                    <Button size="icon" variant="ghost" className="rounded-lg" onClick={exportBundle} title="Export Bundle" aria-label="Export Bundle"><Download className="w-4 h-4" /></Button>
                   </div>
-                </motion.div>
+                </div>
 
                 <TabsContent value="agents" className="flex-1 min-h-0 overflow-hidden">
-                  <ScrollArea className="rounded-2xl bg-card border border-border shadow-elevation-1 flex-1">
+                  <ScrollArea className="rounded-xl bg-card border border-border flex-1">
                     <AgentChat />
                   </ScrollArea>
                 </TabsContent>
                 <TabsContent value="evidence" className="flex-1 min-h-0 overflow-hidden">
-                  <ScrollArea className="rounded-2xl bg-card border border-border shadow-elevation-1 p-2 flex-1">
+                  <ScrollArea className="rounded-xl bg-card border border-border p-2 flex-1">
                     <EvidencePanel jobs={jobs} />
                   </ScrollArea>
                 </TabsContent>
@@ -313,7 +315,7 @@ export function Shell({ repoId }: { repoId?: string }) {
               initial={prefersReducedMotion ? false : { opacity: 0, y: 8 }}
               animate={prefersReducedMotion ? {} : { opacity: 1, y: 0 }}
               transition={{ duration: 0.3, ease: "easeOut", delay: 0.08 }}
-              className="rounded-2xl bg-collaboration-100/70 border border-border shadow-elevation-2 overflow-hidden hover:animate-spark-glow h-full flex flex-col"
+              className="rounded-2xl bg-collaboration-100/70 border border-border shadow-elevation-2 overflow-hidden h-full flex flex-col"
             >
               <div className="flex items-center justify-between px-2 py-1 border-b bg-background/60">
                 <div className="flex items-center gap-1 overflow-x-auto">

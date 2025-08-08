@@ -6,40 +6,96 @@ import { FileExplorer } from "@/components/ide/file-explorer"
 import { Search, GitBranch, Bot, Files } from "lucide-react"
 import { Input } from "@/components/ui/input"
 import { ScrollArea } from "@/components/ui/scroll-area"
+import { motion, AnimatePresence } from "framer-motion"
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 
 export function WorkspaceTabs({ repoId, onOpenFile, selectedPath }: { repoId: string; onOpenFile: (p: string) => void; selectedPath?: string }) {
+  const [tab, setTab] = React.useState("files")
+  React.useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if ((e.ctrlKey || e.metaKey) && ['1','2','3','4'].includes(e.key)) {
+        e.preventDefault()
+        setTab(['files','search','branch','agents'][parseInt(e.key)-1])
+      }
+    }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [])
+
+  const triggers = [
+    { key: 'files', icon: Files, label: 'Files' },
+    { key: 'search', icon: Search, label: 'Search' },
+    { key: 'branch', icon: GitBranch, label: 'Branches' },
+    { key: 'agents', icon: Bot, label: 'Agents' },
+  ] as const
+
   return (
-    <Tabs defaultValue="files" className="h-full flex flex-col">
-      <TabsList className="grid grid-cols-4 rounded-xl m-2 h-9">
-        <TabsTrigger value="files" aria-label="Files" className="p-0 data-[state=active]:bg-primary-100"><Files className="w-4 h-4" /></TabsTrigger>
-        <TabsTrigger value="search" aria-label="Search" className="p-0 data-[state=active]:bg-primary-100"><Search className="w-4 h-4" /></TabsTrigger>
-        <TabsTrigger value="branch" aria-label="Branch" className="p-0 data-[state=active]:bg-primary-100"><GitBranch className="w-4 h-4" /></TabsTrigger>
-        <TabsTrigger value="agents" aria-label="Agents" className="p-0 data-[state=active]:bg-primary-100"><Bot className="w-4 h-4" /></TabsTrigger>
+    <Tabs value={tab} onValueChange={setTab} className="h-full flex flex-col">
+      <TabsList className="relative grid grid-cols-4 rounded-xl m-2 h-10 bg-muted/50">
+        <TooltipProvider>
+          {triggers.map(({ key, icon: Icon, label }) => (
+            <Tooltip key={key}>
+              <TooltipTrigger asChild>
+                <TabsTrigger value={key} aria-label={label} className="relative p-0 rounded-xl data-[state=active]:text-foreground">
+                  {tab === key && (
+                    <motion.span layoutId="ws-active" className="absolute inset-0 rounded-xl bg-primary-100 border border-primary-100/70" transition={{ type: 'spring', stiffness: 350, damping: 25 }} />
+                  )}
+                  <motion.span className="relative inline-flex items-center justify-center w-10 h-10" whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.98 }}>
+                    <Icon className="w-4 h-4" />
+                  </motion.span>
+                </TabsTrigger>
+              </TooltipTrigger>
+              <TooltipContent side="bottom">{label}</TooltipContent>
+            </Tooltip>
+          ))}
+        </TooltipProvider>
       </TabsList>
 
-      <TabsContent value="files" className="flex-1 overflow-hidden">
-        <FileExplorer repoId={repoId} onOpen={onOpenFile} selectedPath={selectedPath} />
-      </TabsContent>
+      <AnimatePresence mode="wait">
+        {tab === 'files' && (
+          <TabsContent value="files" className="flex-1 overflow-hidden" forceMount>
+            <motion.div initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -6 }}>
+              <FileExplorer repoId={repoId} onOpen={onOpenFile} selectedPath={selectedPath} />
+            </motion.div>
+          </TabsContent>
+        )}
+      </AnimatePresence>
 
-      <TabsContent value="search" className="flex-1 overflow-hidden">
-        <RepoSearch repoId={repoId} onOpenFile={onOpenFile} />
-      </TabsContent>
+      <AnimatePresence mode="wait">
+        {tab === 'search' && (
+          <TabsContent value="search" className="flex-1 overflow-hidden" forceMount>
+            <motion.div initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -6 }}>
+              <RepoSearch repoId={repoId} onOpenFile={onOpenFile} />
+            </motion.div>
+          </TabsContent>
+        )}
+      </AnimatePresence>
 
-      <TabsContent value="branch" className="flex-1 overflow-hidden">
-        <RepoBranches repoId={repoId} />
-      </TabsContent>
+      <AnimatePresence mode="wait">
+        {tab === 'branch' && (
+          <TabsContent value="branch" className="flex-1 overflow-hidden" forceMount>
+            <motion.div initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -6 }}>
+              <RepoBranches repoId={repoId} />
+            </motion.div>
+          </TabsContent>
+        )}
+      </AnimatePresence>
 
-      <TabsContent value="agents" className="flex-1 overflow-hidden">
-        <div className="p-2 text-sm space-y-2">
-          <div className="font-medium">Quick agents</div>
-          <ul className="list-disc pl-5 space-y-1 text-muted-foreground">
-            <li>Scout: search literature on topic</li>
-            <li>Scholar: write referenced section</li>
-            <li>Analyst: generate notebook and run</li>
-            <li>Critic: check contradictions</li>
-          </ul>
-        </div>
-      </TabsContent>
+      <AnimatePresence mode="wait">
+        {tab === 'agents' && (
+          <TabsContent value="agents" className="flex-1 overflow-hidden" forceMount>
+            <motion.div initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -6 }} className="p-2 text-sm space-y-2">
+              <div className="font-medium">Quick agents</div>
+              <ul className="list-disc pl-5 space-y-1 text-muted-foreground">
+                <li>Scout: search literature on topic</li>
+                <li>Scholar: write referenced section</li>
+                <li>Analyst: generate notebook and run</li>
+                <li>Critic: check contradictions</li>
+              </ul>
+            </motion.div>
+          </TabsContent>
+        )}
+      </AnimatePresence>
     </Tabs>
   )
 }

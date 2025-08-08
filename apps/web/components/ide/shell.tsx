@@ -38,18 +38,12 @@ export function Shell({ repoId }: { repoId?: string }) {
   const [artifacts, setArtifacts] = React.useState<any[]>([])
 
   const runProtocol = React.useCallback(async () => {
-    const res = await fetch('/api/repo/exec', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ repo: repoId || 'demo', cmd: 'ls -1' }) })
-    const json = await res.json()
-    const lines = (json.stdout || '').split('\n')
-    const csv = lines.find((l: string) => l.endsWith('.csv'))
-    if (csv) {
-      const cat = await fetch('/api/repo/exec', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ repo: repoId || 'demo', cmd: `cat ${csv}` }) })
-      const catJson = await cat.json()
-      const rows = (catJson.stdout || '').trim().split('\n').map((r: string) => r.split(',').map((s: string) => s.trim()))
-      setArtifacts([{ name: csv, path: csv, type: 'csv', preview: rows }])
-    } else {
-      setArtifacts([])
-    }
+    // Execute the demo python script, then read artifact.csv preview
+    await fetch('/api/repo/exec', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ repo: repoId || 'demo', cmd: 'python3 run_demo.py' }) })
+    const cat = await fetch('/api/repo/exec', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ repo: repoId || 'demo', cmd: `cat artifact.csv` }) })
+    const catJson = await cat.json()
+    const rows = (catJson.stdout || '').trim().split('\n').map((r: string) => r.split(',').map((s: string) => s.trim()))
+    if (rows.length) setArtifacts([{ name: 'artifact.csv', path: 'artifact.csv', type: 'csv', preview: rows }])
   }, [repoId])
 
   return (

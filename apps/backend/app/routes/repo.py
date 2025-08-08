@@ -142,9 +142,10 @@ def search_repo(repo: str = Query('demo'), q: str = Query('')):
 class ExecRequest(BaseModel):
     repo: str
     cmd: str
+    cwd: Optional[str] = None  # relative to repo root
 
 
-ALLOW_CMDS = {"ls", "cat", "head", "tail", "wc", "pwd", "echo"}
+ALLOW_CMDS = {"ls", "cat", "head", "tail", "wc", "pwd", "echo", "python", "python3"}
 
 
 @router.post('/repo/exec')
@@ -159,11 +160,22 @@ def exec_repo(body: ExecRequest):
         parts = shlex.split(cmd)
         if parts[0] not in ALLOW_CMDS:
             raise HTTPException(400, f"Command not allowed: {parts[0]}")
-        # Reject absolute or parent paths in args
+        # Working directory under repo root
+        cwd = base
+        if body.cwd:
+            rel = os.path.normpath(body.cwd).replace('\\', '/')
+            if rel.startswith('..') or rel.startswith('/'):
+                raise HTTPException(400, 'Invalid cwd')
+            cwd = os.path.join(base, rel)
+        # Validate args: reject absolute/parent paths
         for p in parts[1:]:
             if p.startswith('/') or '..' in p:
                 raise HTTPException(400, 'Invalid path argument')
-        res = subprocess.run(cmd, cwd=base, shell=True, capture_output=True, text=True, timeout=10)
+        # Restrict python to run_demo.py only
+        if parts[0] in ("python", "python3"):
+            if len(parts) < 2 or not parts[1].endswith('run_demo.py'):
+                raise HTTPException(400, 'Only run_demo.py is allowed')
+        res = subprocess.run(cmd, cwd=cwd, shell=True, capture_output=True, text=True, timeout=15)
         return {"ok": True, "code": res.returncode, "stdout": res.stdout, "stderr": res.stderr}
     except HTTPException:
         raise

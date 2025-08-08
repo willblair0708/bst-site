@@ -7,7 +7,7 @@ import { Search, GitBranch, Bot, Files } from "lucide-react"
 import { Input } from "@/components/ui/input"
 import { ScrollArea } from "@/components/ui/scroll-area"
 
-export function WorkspaceTabs({ repoId, onOpenFile }: { repoId: string; onOpenFile: (p: string) => void }) {
+export function WorkspaceTabs({ repoId, onOpenFile, selectedPath }: { repoId: string; onOpenFile: (p: string) => void; selectedPath?: string }) {
   return (
     <Tabs defaultValue="files" className="h-full flex flex-col">
       <TabsList className="grid grid-cols-4 rounded-xl m-2 h-9">
@@ -18,7 +18,7 @@ export function WorkspaceTabs({ repoId, onOpenFile }: { repoId: string; onOpenFi
       </TabsList>
 
       <TabsContent value="files" className="flex-1 overflow-hidden">
-        <FileExplorer repoId={repoId} onOpen={onOpenFile} />
+        <FileExplorer repoId={repoId} onOpen={onOpenFile} selectedPath={selectedPath} />
       </TabsContent>
 
       <TabsContent value="search" className="flex-1 overflow-hidden">

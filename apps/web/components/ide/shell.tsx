@@ -61,7 +61,7 @@ export function Shell({ repoId }: { repoId?: string }) {
           <div className="grid grid-cols-[240px_minmax(0,1fr)_360px] gap-2 min-h-0 overflow-hidden">
             {/* Explorer */}
             <div className="rounded-2xl bg-card border border-border shadow-elevation-1 overflow-hidden min-h-0">
-              <WorkspaceTabs repoId={repoId || 'demo'} onOpenFile={(p) => setSelectedPath(p)} />
+              <WorkspaceTabs repoId={repoId || 'demo'} onOpenFile={(p) => setSelectedPath(p)} selectedPath={selectedPath} />
             </div>
 
             {/* Notebook/Protocol editor */}

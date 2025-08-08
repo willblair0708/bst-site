@@ -1,8 +1,8 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useCallback, useMemo } from "react";
 import { Button } from "@/components/ui/button";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import {
   Plus,
   ArrowUp,
@@ -11,6 +11,15 @@ import {
   Square,
   Globe,
   Copy,
+  Sparkles,
+  MessageSquare,
+  Settings,
+  Search,
+  Zap,
+  Brain,
+  Code,
+  FileText,
+  MoreHorizontal,
 } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
@@ -21,10 +30,48 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import Inspector, { TraceEvent as InspectorEvent, ToolTrace as InspectorToolTrace } from "@/components/inspector";
 // Simplified UI: sliders/selects removed
 
-const fadeInUp = {
-  initial: { opacity: 0, y: 40 },
-  animate: { opacity: 1, y: 0 },
-};
+// Memoized animation variants to prevent re-renders
+const containerVariants = {
+  initial: { opacity: 0 },
+  animate: { 
+    opacity: 1,
+    transition: {
+      duration: 0.3,
+      staggerChildren: 0.1
+    }
+  }
+} as const;
+
+const itemVariants = {
+  initial: { opacity: 0, y: 8 },
+  animate: { 
+    opacity: 1, 
+    y: 0
+  }
+} as const;
+
+const messageVariants = {
+  initial: { opacity: 0, y: 12, scale: 0.98 },
+  animate: { 
+    opacity: 1, 
+    y: 0, 
+    scale: 1
+  },
+  exit: { 
+    opacity: 0, 
+    y: -8, 
+    scale: 0.96
+  }
+} as const;
+
+const floatingVariants = {
+  initial: { opacity: 0, y: 20, scale: 0.95 },
+  animate: { 
+    opacity: 1, 
+    y: 0, 
+    scale: 1
+  }
+} as const;
 
 type ChatMessage = { id: number; author: "User" | "AI"; content: string; createdAt: number };
 type AgentId = "crow" | "falcon" | "owl" | "phoenix";
@@ -39,6 +86,18 @@ const ChatPage = () => {
   const [useDirector, setUseDirector] = useState<boolean>(true);
   const [apiKey, setApiKey] = useState<string>("");
   const [inputValue, setInputValue] = useState("");
+  
+  // Memoize handlers to prevent re-renders
+  const handleInputChange = useCallback((e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setInputValue(e.target.value);
+  }, []);
+  
+  const handleKeyDown = useCallback((e: any) => {
+    if (e.key === "Enter" && !e.shiftKey && !e.nativeEvent.isComposing) {
+      e.preventDefault();
+      handleSendMessage();
+    }
+  }, []);
   const [isAiTyping, setIsAiTyping] = useState(false);
   const listRef = useRef<HTMLDivElement | null>(null);
   const endRef = useRef<HTMLDivElement | null>(null);
@@ -376,40 +435,99 @@ const ChatPage = () => {
   const MAX_EVENTS = 24;
   const MAX_TOOLS = 12;
 
-  const Sidebar = () => (
-    <aside className="w-80 flex-col bg-muted/20 p-4 hidden lg:flex border-r overflow-hidden">
+  const Sidebar = useMemo(() => (
+    <motion.aside 
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.3, staggerChildren: 0.1 }}
+      className="w-72 flex-col bg-background/60 backdrop-blur-xl p-4 hidden lg:flex border-r border-border/20 overflow-hidden"
+    >
       {/* Header */}
-      <div className="flex items-center gap-3 mb-8 px-2">
-        <div className="w-8 h-8 rounded-full bg-foreground flex items-center justify-center">
-          <Hash className="w-4 h-4 text-background" />
-        </div>
+      <motion.div 
+        initial={{ opacity: 0, y: 8 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.2, delay: 0.1 }}
+        className="flex items-center gap-3 mb-6 px-2"
+      >
+        <motion.div 
+          className="w-8 h-8 rounded-xl bg-foreground/5 flex items-center justify-center"
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+        >
+          <Hash className="w-4 h-4 text-foreground" />
+        </motion.div>
         <div className="flex flex-col">
-          <span className="font-semibold text-foreground text-sm">Runix</span>
-          <span className="text-xs text-muted-foreground">Research Chat</span>
+          <span className="font-semibold text-foreground">Runix</span>
+          <span className="text-xs text-muted-foreground">Assistant</span>
         </div>
-        <div className="ml-auto"><ThemeToggle /></div>
+        <div className="ml-auto">
+          <ThemeToggle />
       </div>
+      </motion.div>
 
-      {/* New Chat */}
-      <div className="mb-6">
-        <Button className="w-full h-11 rounded-xl bg-background text-foreground hover:bg-muted transition-colors font-medium shadow-sm border" onClick={createSession}>
+      {/* New Chat Button */}
+      <motion.div 
+        initial={{ opacity: 0, y: 8 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.2, delay: 0.2 }}
+        className="mb-6"
+      >
+        <motion.div
+          whileHover={{ scale: 1.02 }}
+          whileTap={{ scale: 0.98 }}
+        >
+          <Button 
+            className="w-full h-10 rounded-xl bg-foreground text-background hover:bg-foreground/90 transition-all font-medium group" 
+            onClick={createSession}
+          >
           <Plus className="w-4 h-4 mr-2" />
           New Chat
         </Button>
-      </div>
+        </motion.div>
+      </motion.div>
 
       {/* Conversation History */}
       <div className="flex-1 overflow-hidden">
-        <h3 className="text-xs font-medium text-muted-foreground mb-4 px-2 tracking-wider uppercase">Chats</h3>
+        <motion.h3 
+          initial={{ opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.2, delay: 0.3 }}
+          className="text-xs font-medium text-muted-foreground mb-3 px-2"
+        >
+          Recent
+        </motion.h3>
         <div className="h-full overflow-hidden">
-          <div className="space-y-1">
-            {sessions.slice(0, MAX_SESSIONS).map(s => (
-              <div key={s.id} className={cn("group py-2 px-3 rounded-lg text-sm cursor-pointer flex items-center gap-2", activeSessionId === s.id ? "bg-muted text-foreground" : "text-muted-foreground hover:bg-muted")}
-                onClick={() => { setActiveSessionId(s.id); setCurrentAgent(s.agent); }}>
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.3, delay: 0.4 }}
+            className="space-y-1 pr-1 overflow-y-auto"
+          >
+            <AnimatePresence mode="popLayout">
+              {sessions.slice(0, MAX_SESSIONS).map((s, index) => (
+                <motion.div 
+                  key={s.id}
+                  layout
+                  variants={messageVariants}
+                  className={cn(
+                    "group py-2.5 px-3 rounded-lg text-sm cursor-pointer flex items-center gap-2 transition-all",
+                    activeSessionId === s.id 
+                      ? "bg-foreground/5 text-foreground" 
+                      : "text-muted-foreground hover:bg-foreground/5 hover:text-foreground"
+                  )}
+                  onClick={() => { setActiveSessionId(s.id); setCurrentAgent(s.agent); }}
+                  whileHover={{ x: 2 }}
+                  whileTap={{ scale: 0.98 }}
+                >
+                  <div className={cn(
+                    "w-1.5 h-1.5 rounded-full shrink-0 transition-colors",
+                    activeSessionId === s.id ? "bg-foreground" : "bg-transparent"
+                  )} />
+                  
                 {editingSessionId === s.id ? (
                   <input
                     autoFocus
-                    className="flex-1 bg-transparent outline-none border rounded px-2 py-1 text-foreground"
+                      className="flex-1 bg-transparent outline-none border border-border/50 rounded px-2 py-1 text-foreground text-xs"
                     value={editingTitle}
                     onChange={(e) => setEditingTitle(e.target.value)}
                     onBlur={() => { renameSession(s.id, editingTitle.trim() || s.title); setEditingSessionId(null); }}
@@ -421,45 +539,53 @@ const ChatPage = () => {
                 ) : (
                   <>
                     <span className="truncate mr-auto">{s.title}</span>
-                    <div className="opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-1">
-                      <button
-                        className="p-1 rounded hover:bg-background/50"
+                      <div className="opacity-0 group-hover:opacity-100 transition-opacity flex items-center">
+                        <motion.button
+                          className="p-1 rounded hover:bg-foreground/10 transition-colors"
                         onClick={(e) => { e.stopPropagation(); setEditingSessionId(s.id); setEditingTitle(s.title); }}
-                        title="Rename"
-                        aria-label="Rename chat"
-                      >
-                        ✎
-                      </button>
-                      <button
-                        className="p-1 rounded hover:bg-background/50"
-                        onClick={(e) => { e.stopPropagation(); deleteSession(s.id); }}
-                        title="Delete"
-                        aria-label="Delete chat"
-                      >
-                        ✕
-                      </button>
+                          whileHover={{ scale: 1.1 }}
+                          whileTap={{ scale: 0.9 }}
+                        >
+                          <MoreHorizontal className="w-3 h-3" />
+                        </motion.button>
                     </div>
                   </>
                 )}
-              </div>
+                </motion.div>
             ))}
-          </div>
+            </AnimatePresence>
+          </motion.div>
         </div>
       </div>
 
-      {/* Actions */}
-      <div className="mt-auto space-y-2">
-        {activeSession && (
-          <Button variant="destructive" className="w-full rounded-lg text-foreground" onClick={() => setSessions(prev => prev.map(s => s.id === activeSessionId ? { ...s, messages: [] } : s))}>Clear</Button>
-        )}
-        <Button variant="outline" className="w-full rounded-lg" onClick={() => setShowInspector(v => !v)}>{showInspector ? 'Hide' : 'Show'} inspector</Button>
-      </div>
-    </aside>
-  );
+      {/* Bottom Actions */}
+      <motion.div 
+        initial={{ opacity: 0, y: 8 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.2, delay: 0.5 }}
+        className="mt-auto space-y-2 pt-4 border-t border-border/20"
+      >
+        <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
+          <Button 
+            variant="outline" 
+            size="sm"
+            className={cn(
+              "w-full rounded-lg text-xs h-8",
+              showInspector ? "bg-foreground/5" : ""
+            )}
+            onClick={() => setShowInspector(v => !v)}
+          >
+            <Code className="w-3 h-3 mr-2" />
+            {showInspector ? 'Hide' : 'Show'} Inspector
+          </Button>
+        </motion.div>
+      </motion.div>
+    </motion.aside>
+  ), [sessions, activeSessionId, editingSessionId, editingTitle, showInspector, currentAgent]);
 
   return (
     <div className="flex h-screen w-full bg-background text-foreground">
-      <Sidebar />
+      {Sidebar}
       
       <main className="flex-1 flex flex-col bg-background">
         {/* Top bar removed per design */}
@@ -469,38 +595,75 @@ const ChatPage = () => {
           <section className="flex flex-col overflow-hidden">
             <div className="flex-1 overflow-hidden">
               {messages.length === 0 ? (
-                <div className="h-full flex items-center justify-center">
-                  <div className="mx-auto w-full max-w-[740px] px-4 sm:px-6 lg:px-8">
-                    <div className="bg-card rounded-2xl border focus-within:ring-1 focus-within:ring-ring">
-                      <div className="flex items-end p-2 gap-2">
-                        <Textarea
-                          ref={composerRef as any}
-                          placeholder="Ask anything…"
-                          className="flex-1 bg-transparent border-0 px-3 py-2 text-[15px] leading-relaxed resize-none focus:outline-none min-h-[48px] max-h-[180px]"
-                          value={inputValue}
-                          onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setInputValue(e.target.value)}
-                          onKeyDown={(e: any) => {
-                            if (e.key === "Enter" && !e.shiftKey && !e.nativeEvent.isComposing) {
-                              e.preventDefault();
-                              handleSendMessage();
-                            }
-                          }}
-                          rows={1}
-                        />
-                        {isAiTyping ? (
-                          <Button size="icon" onClick={handleStop} className="rounded-lg h-9 w-9" title="Stop">
-                            <Square className="w-4 h-4" />
-                          </Button>
-                        ) : (
-                          <Button size="icon" onClick={() => handleSendMessage()} disabled={!inputValue.trim()} className="rounded-lg h-9 w-9">
-                            <ArrowUp className="w-4 h-4" />
-                          </Button>
-                        )}
+                                <motion.div 
+                  initial={{ opacity: 0, y: 20, scale: 0.95 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  transition={{ duration: 0.4, ease: "easeOut" }}
+                  className="h-full flex flex-col items-center justify-center px-6"
+                >
+                  {/* Minimal centered input */}
+                  <div className="w-full max-w-2xl">
+                    <motion.div 
+                      className="mb-8 text-center"
+                      initial={{ opacity: 0, y: 8 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.2, delay: 0.1 }}
+                    >
+                      <h1 className="text-2xl font-medium text-foreground mb-2">
+                        What can I help you with?
+                      </h1>
+                    </motion.div>
+
+                    <motion.div 
+                      initial={{ opacity: 0, y: 8 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.2, delay: 0.2 }}
+                      className="relative"
+                    >
+                      <div className="bg-background border border-border/50 rounded-2xl p-3 focus-within:border-border transition-all">
+                        <div className="flex items-end gap-3">
+                          <Textarea
+                            ref={composerRef as any}
+                            placeholder="Ask me anything..."
+                            className="flex-1 bg-transparent border-0 px-2 py-2 text-base resize-none focus:outline-none min-h-[44px] max-h-[160px] placeholder:text-muted-foreground"
+                            value={inputValue}
+                            onChange={handleInputChange}
+                            onKeyDown={handleKeyDown}
+                            rows={1}
+                          />
+                          <motion.div
+                            whileHover={{ scale: 1.05 }}
+                            whileTap={{ scale: 0.95 }}
+                          >
+                            {isAiTyping ? (
+                              <Button 
+                                size="icon" 
+                                onClick={handleStop} 
+                                className="rounded-xl h-10 w-10 bg-foreground text-background hover:bg-foreground/90" 
+                              >
+                                <Square className="w-4 h-4" />
+                              </Button>
+                            ) : (
+                              <Button 
+                                size="icon" 
+                                onClick={() => handleSendMessage()} 
+                                disabled={!inputValue.trim()} 
+                                className={cn(
+                                  "rounded-xl h-10 w-10 transition-all",
+                                  inputValue.trim() 
+                                    ? "bg-foreground text-background hover:bg-foreground/90" 
+                                    : "bg-muted text-muted-foreground cursor-not-allowed"
+                                )}
+                              >
+                                <ArrowUp className="w-4 h-4" />
+                              </Button>
+                            )}
+                          </motion.div>
+                        </div>
                       </div>
-                    </div>
-                    <div className="mt-2 text-center text-[11px] text-muted-foreground">Enter to send • Shift+Enter for newline</div>
+                    </motion.div>
                   </div>
-                </div>
+                </motion.div>
               ) : (
                 <div className="h-full overflow-hidden">
                   <div
@@ -510,111 +673,159 @@ const ChatPage = () => {
                     aria-live={isAiTyping ? "polite" : "off"}
                     className="h-full overflow-auto"
                   >
-                    <div className="relative mx-auto w-full max-w-[740px] px-4 sm:px-6 lg:px-8 py-6">
-                      {messages.slice(-MAX_MESSAGES).map((message, index) => {
-                        const isUser = message.author === 'User';
-                        return (
-                          <motion.div
-                            key={message.id}
-                            className="group relative flex gap-3 py-2"
-                            variants={fadeInUp}
-                            initial="initial"
-                            animate="animate"
-                            transition={{ duration: 0.25 }}
-                          >
-                            {!isUser && <div className="mt-1 h-7 w-7 rounded-full bg-muted shrink-0" />}
-                            <div
+                                        <div className="relative mx-auto w-full max-w-3xl px-6 py-6">
+                      <AnimatePresence mode="popLayout">
+                        {messages.slice(-MAX_MESSAGES).map((message, index) => {
+                          const isUser = message.author === 'User';
+                          
+                          return (
+                            <motion.div
+                              key={message.id}
+                              initial={{ opacity: 0, y: 12, scale: 0.98 }}
+                              animate={{ opacity: 1, y: 0, scale: 1 }}
+                              exit={{ opacity: 0, y: -8, scale: 0.96 }}
+                              transition={{ duration: 0.3, ease: "easeOut" }}
+                              layout
                               className={cn(
-                                "min-w-0 rounded-2xl border border-border/60",
-                                isUser ? "bg-muted/40 ml-auto" : "bg-card"
+                                "group relative mb-6 flex gap-3",
+                                isUser ? "flex-row-reverse" : "flex-row"
                               )}
                             >
+                              {/* Simple Avatar */}
                               <div className={cn(
-                                "prose prose-sm dark:prose-invert max-w-none px-4 py-3"
+                                "w-8 h-8 rounded-full flex items-center justify-center text-xs font-medium shrink-0 mt-1",
+                                isUser 
+                                  ? "bg-foreground text-background" 
+                                  : "bg-foreground/10 text-foreground"
                               )}>
+                                {isUser ? "U" : "AI"}
+                              </div>
+
+                              {/* Message Content */}
+                              <motion.div
+                                className={cn(
+                                  "flex-1 max-w-2xl rounded-2xl px-4 py-3 transition-all",
+                                  isUser
+                                    ? "bg-foreground text-background"
+                                    : "bg-foreground/5"
+                                )}
+                              >
                                 {(!isUser && !message.content) ? (
-                                  <div className="flex items-center gap-2">
-                                    <motion.div className="w-2 h-2 rounded-full bg-muted-foreground/70" animate={{ opacity: [0.3, 1, 0.3] }} transition={{ repeat: Infinity, duration: 1 }} />
-                                    <motion.div className="w-2 h-2 rounded-full bg-muted-foreground/70" animate={{ opacity: [0.3, 1, 0.3] }} transition={{ repeat: Infinity, duration: 1, delay: 0.15 }} />
-                                    <motion.div className="w-2 h-2 rounded-full bg-muted-foreground/70" animate={{ opacity: [0.3, 1, 0.3] }} transition={{ repeat: Infinity, duration: 1, delay: 0.3 }} />
+                                  <div className="flex items-center gap-2 py-1">
+                                    <motion.div 
+                                      className="w-2 h-2 rounded-full bg-foreground/40" 
+                                      animate={{ opacity: [0.4, 1, 0.4] }} 
+                                      transition={{ repeat: Infinity, duration: 1 }} 
+                                    />
+                                    <motion.div 
+                                      className="w-2 h-2 rounded-full bg-foreground/40" 
+                                      animate={{ opacity: [0.4, 1, 0.4] }} 
+                                      transition={{ repeat: Infinity, duration: 1, delay: 0.2 }} 
+                                    />
+                                    <motion.div 
+                                      className="w-2 h-2 rounded-full bg-foreground/40" 
+                                      animate={{ opacity: [0.4, 1, 0.4] }} 
+                                      transition={{ repeat: Infinity, duration: 1, delay: 0.4 }} 
+                                    />
                                   </div>
                                 ) : (
-                                  <ReactMarkdown remarkPlugins={[remarkGfm]} components={markdownComponents}>{message.content}</ReactMarkdown>
-                                )}
-                                {!isUser && message.content && extractLinks(message.content).length > 0 && (
-                                  <div className="mt-3 flex flex-wrap gap-2">
-                                    {extractLinks(message.content).map((l, i) => (
-                                      <a key={i} href={l.href} target="_blank" rel="noreferrer" className="text-xs inline-flex items-center gap-1 px-2 py-1 rounded-full border bg-background/50 hover:bg-background transition-colors">
-                                        <Globe className="w-3.5 h-3.5" /> {l.text}
-                                      </a>
-                                    ))}
+                                  <div className={cn(
+                                    "prose prose-sm max-w-none leading-relaxed",
+                                    isUser ? "prose-invert" : "dark:prose-invert"
+                                  )}>
+                                    <ReactMarkdown remarkPlugins={[remarkGfm]} components={markdownComponents}>
+                                      {message.content}
+                                    </ReactMarkdown>
                                   </div>
                                 )}
-                              </div>
+                              </motion.div>
+
+                              {/* Action Buttons */}
                               <div className={cn(
-                                "absolute -bottom-6 left-10 sm:left-12 hidden group-hover:flex gap-2 text-xs text-muted-foreground"
+                                "opacity-0 group-hover:opacity-100 transition-opacity flex items-start gap-1 mt-1",
+                                isUser ? "flex-row-reverse" : ""
                               )}>
-                                <button className="inline-flex items-center gap-1 hover:text-foreground" onClick={() => copyToClipboard(message.content)}>
-                                  Copy
-                                </button>
+                                <motion.button 
+                                  className="p-1.5 rounded-lg hover:bg-foreground/10 transition-colors"
+                                  onClick={() => copyToClipboard(message.content)}
+                                  whileHover={{ scale: 1.1 }}
+                                  whileTap={{ scale: 0.9 }}
+                                >
+                                  <Copy className="w-3.5 h-3.5 text-muted-foreground" />
+                                </motion.button>
                                 {!isUser && (
-                                  <button className="inline-flex items-center gap-1 hover:text-foreground" onClick={() => regenerateFromAI(index)}>
-                                    Regenerate
-                                  </button>
+                                  <motion.button 
+                                    className="p-1.5 rounded-lg hover:bg-foreground/10 transition-colors"
+                                    onClick={() => regenerateFromAI(index)}
+                                    whileHover={{ scale: 1.1 }}
+                                    whileTap={{ scale: 0.9 }}
+                                  >
+                                    <RotateCcw className="w-3.5 h-3.5 text-muted-foreground" />
+                                  </motion.button>
                                 )}
-                                <span className="hidden sm:inline">· {new Date(message.createdAt).toLocaleTimeString()}</span>
                               </div>
-                            </div>
-                          </motion.div>
-                        );
-                      })}
-                      <div ref={endRef} />
+                            </motion.div>
+                          );
+                        })}
+                      </AnimatePresence>
+                      <div ref={endRef} className="h-4" />
                     </div>
                   </div>
                 </div>
               )}
             </div>
-            {/* Sticky Composer */}
+                        {/* Minimal Sticky Composer */}
             {messages.length > 0 && (
-              <footer className="sticky bottom-0 inset-x-0 border-t bg-background/70 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-                <div className="mx-auto w-full max-w-[740px] px-4 sm:px-6 lg:px-8 py-4">
-                  <div className="bg-card rounded-2xl border focus-within:ring-1 focus-within:ring-ring">
-                    <div className="flex items-end p-2 gap-2">
+              <motion.footer 
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.3, ease: "easeOut" }}
+                className="sticky bottom-0 inset-x-0 border-t border-border/20 bg-background/90 backdrop-blur-xl"
+              >
+                <div className="mx-auto w-full max-w-3xl px-6 py-4">
+                  <div className="bg-background border border-border/50 rounded-2xl p-3 focus-within:border-border transition-all">
+                    <div className="flex items-end gap-3">
                       <Textarea
                         ref={composerRef as any}
-                        placeholder="Message Runix…"
-                        className="flex-1 bg-transparent border-0 px-3 py-2 text-[15px] leading-relaxed resize-none focus:outline-none min-h-[40px] max-h-[180px]"
+                        placeholder="Continue the conversation..."
+                        className="flex-1 bg-transparent border-0 px-2 py-2 text-base resize-none focus:outline-none min-h-[44px] max-h-[160px] placeholder:text-muted-foreground"
                         value={inputValue}
-                        onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setInputValue(e.target.value)}
-                        onKeyDown={(e: any) => {
-                          if (e.key === "Enter" && !e.shiftKey && !e.nativeEvent.isComposing) {
-                            e.preventDefault();
-                            handleSendMessage();
-                          }
-                        }}
+                        onChange={handleInputChange}
+                        onKeyDown={handleKeyDown}
                         rows={1}
                       />
-                      {isAiTyping ? (
-                        <Button size="icon" onClick={handleStop} className="rounded-lg h-9 w-9" title="Stop">
-                          <Square className="w-4 h-4" />
-                        </Button>
-                      ) : (
-                        <Button size="icon" onClick={() => handleSendMessage()} disabled={!inputValue.trim()} className="rounded-lg h-9 w-9">
-                          <ArrowUp className="w-4 h-4" />
-                        </Button>
-                      )}
+                      <motion.div
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
+                      >
+                        {isAiTyping ? (
+                          <Button 
+                            size="icon" 
+                            onClick={handleStop} 
+                            className="rounded-xl h-10 w-10 bg-foreground text-background hover:bg-foreground/90" 
+                          >
+                            <Square className="w-4 h-4" />
+                          </Button>
+                        ) : (
+                          <Button 
+                            size="icon" 
+                            onClick={() => handleSendMessage()} 
+                            disabled={!inputValue.trim()} 
+                            className={cn(
+                              "rounded-xl h-10 w-10 transition-all",
+                              inputValue.trim() 
+                                ? "bg-foreground text-background hover:bg-foreground/90" 
+                                : "bg-muted text-muted-foreground cursor-not-allowed"
+                            )}
+                          >
+                            <ArrowUp className="w-4 h-4" />
+                          </Button>
+                        )}
+                      </motion.div>
                     </div>
                   </div>
-                  <div className="mt-2 flex items-center justify-between text-[11px] text-muted-foreground">
-                    <div>Enter to send • Shift+Enter for newline</div>
-                    {messages.at(-1)?.author === 'AI' && (
-                      <button className="hover:text-foreground inline-flex items-center gap-1" onClick={handleRegenerate}>
-                        <RotateCcw className="w-3.5 h-3.5" /> Regenerate
-                      </button>
-                    )}
-                  </div>
                 </div>
-              </footer>
+              </motion.footer>
             )}
           </section>
           {/* Inspector Panel */}

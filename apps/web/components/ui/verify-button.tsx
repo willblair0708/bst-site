@@ -1,7 +1,7 @@
 "use client"
 
 import { CheckCircle2, Loader2 } from "lucide-react"
-import { motion, Variants } from "framer-motion"
+import { motion, Variants, useReducedMotion } from "framer-motion"
 import { cn } from "@/lib/utils"
 import { MOTION } from "@/lib/motion/tokens"
 
@@ -20,6 +20,7 @@ export function VerifyButton({
   className,
   children = "Run & Verify"
 }: VerifyButtonProps) {
+  const prefersReducedMotion = useReducedMotion()
 
   const buttonVariants: Variants = {
     rest: { scale: 1 },
@@ -47,18 +48,15 @@ export function VerifyButton({
         className
       )}
       variants={buttonVariants}
-      whileHover="hover"
-      whileTap="tap"
-      animate={isVerified ? "hover" : "rest"}
+      whileHover={prefersReducedMotion ? undefined : "hover"}
+      whileTap={prefersReducedMotion ? undefined : "tap"}
+      animate={isVerified ? (prefersReducedMotion ? "rest" : "hover") : "rest"}
       transition={{ type: "spring", stiffness: 400, damping: 15 }}
       >
       <span className="flex items-center justify-center gap-2">
         {isVerifying ? (
           <>
-            <motion.div
-              animate={{ rotate: 360 }}
-              transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-            >
+            <motion.div animate={prefersReducedMotion ? undefined : { rotate: 360 }} transition={{ duration: 1, repeat: Infinity, ease: "linear" }}>
               <Loader2 className="w-5 h-5" />
             </motion.div>
             <span>Verifying...</span>

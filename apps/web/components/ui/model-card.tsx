@@ -1,14 +1,12 @@
 "use client"
 
 import Link from "next/link"
-import { motion } from "framer-motion"
+import { motion, useReducedMotion } from "framer-motion"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { trackEvent } from "@/lib/analytics"
-import { Bot } from "lucide-react"
-import { GitFork } from "lucide-react"
-import { Star } from "lucide-react"
-import { MOTION } from "@/lib/motion/tokens"
+import { GitFork, Star } from "lucide-react"
+import { MOTION, EASING } from "@/lib/motion/tokens"
 
 import { Variants } from "framer-motion"
 
@@ -23,19 +21,25 @@ interface Model {
 }
 
 export const ModelCard = ({ model, variants }: { model: Model, variants: Variants }) => {
+  const prefersReducedMotion = useReducedMotion()
+  const Icon = model.Icon
+
   return (
     <motion.div
       variants={variants}
-      whileHover={{ y: -2 }}
-      className="border rounded-3xl bg-card shadow-elevation-1 hover:shadow-elevation-2 overflow-hidden group h-full flex flex-col transition-shadow"
+      whileHover={!prefersReducedMotion ? { y: -2, scale: 1.01 } : undefined}
+      transition={{ duration: 0.25, ease: EASING.runix as any }}
+      className="border rounded-3xl bg-card shadow-elevation-1 hover:shadow-elevation-2 overflow-hidden group h-full flex flex-col transition-all"
     >
       <div className="p-6 flex-grow">
         <div className="flex items-start justify-between">
           <div className="flex items-center space-x-4">
             <motion.div 
               className="flex items-center justify-center h-12 w-12 rounded-2xl bg-muted border"
+              whileHover={!prefersReducedMotion ? { rotate: 3, scale: 1.05 } : undefined}
+              transition={{ duration: 0.2, ease: EASING.smooth as any }}
             >
-              <span className="text-xl">🛠️</span>
+              <Icon className="w-6 h-6 text-muted-foreground" />
             </motion.div>
             <div className="flex-1">
               <Link 

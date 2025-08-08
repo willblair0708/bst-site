@@ -1,6 +1,6 @@
 "use client"
 
-import { motion } from "framer-motion"
+import { motion, useReducedMotion } from "framer-motion"
 import { cn } from "@/lib/utils"
 
 interface SkeletonProps {
@@ -10,6 +10,7 @@ interface SkeletonProps {
 
 export function Skeleton({ className, variant = "text" }: SkeletonProps) {
   const baseClasses = "bg-gradient-to-r from-muted via-muted/50 to-muted animate-pulse rounded-xl relative overflow-hidden shadow-elevation-1"
+  const prefersReducedMotion = useReducedMotion()
   
   const variantClasses = {
     text: "h-4 w-full",
@@ -28,14 +29,8 @@ export function Skeleton({ className, variant = "text" }: SkeletonProps) {
       {/* Shimmer effect */}
       <motion.div
         className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/20 to-transparent"
-        animate={{
-          x: ["-100%", "200%"]
-        }}
-        transition={{
-          duration: 1.5,
-          repeat: Infinity,
-          ease: "linear"
-        }}
+        animate={prefersReducedMotion ? undefined : { x: ["-100%", "200%"] }}
+        transition={prefersReducedMotion ? undefined : { duration: 1.5, repeat: Infinity, ease: "linear" }}
       />
     </motion.div>
   )

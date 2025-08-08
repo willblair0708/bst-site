@@ -2,7 +2,7 @@
 
 import { Copy, Check } from "lucide-react"
 import { useState } from "react"
-import { motion } from "framer-motion"
+import { motion, useReducedMotion } from "framer-motion"
 import { cn } from "@/lib/utils"
 import { MOTION } from "@/lib/motion/tokens"
 
@@ -14,6 +14,7 @@ interface HashChipProps {
 
 export function HashChip({ hash, className, showToast }: HashChipProps) {
   const [copied, setCopied] = useState(false)
+  const prefersReducedMotion = useReducedMotion()
 
   const copyHash = async () => {
     try {
@@ -42,7 +43,7 @@ export function HashChip({ hash, className, showToast }: HashChipProps) {
         "min-h-[24px]", // EAA compliance
         className
       )}
-      whileTap={{ scale: 0.98 }}
+      whileTap={!prefersReducedMotion ? { scale: 0.98 } : undefined}
       transition={MOTION.snap}
     >
       <span className="font-mono text-[10px] font-medium tracking-tight">

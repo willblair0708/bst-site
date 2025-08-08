@@ -1,8 +1,9 @@
 "use client"
 
-import { motion } from "framer-motion"
+import { motion, useReducedMotion } from "framer-motion"
 import { LucideIcon } from "lucide-react"
 import { getPillarColor } from "@/lib/icon-utils"
+import { EASING } from "@/lib/motion/tokens"
 
 interface ProofRunwayStep {
   pillar: "VERSIONED_KNOWLEDGE" | "COMPOSABLE_MODELS" | "HUMAN_AI_COLLAB"
@@ -27,6 +28,7 @@ const fadeInUp = {
 export function ProofRunwayCard({ step, index, totalSteps }: ProofRunwayCardProps) {
   const Icon = step.icon
   const pillarConfig = getPillarColor(step.pillar)
+  const prefersReducedMotion = useReducedMotion()
   
   return (
     <motion.div
@@ -34,7 +36,7 @@ export function ProofRunwayCard({ step, index, totalSteps }: ProofRunwayCardProp
       whileInView="animate"
       variants={fadeInUp}
       viewport={{ once: true }}
-      transition={{ duration: 0.5, delay: index * 0.1 }}
+      transition={{ duration: 0.5, delay: index * 0.1, ease: EASING.smooth as any }}
       className="relative text-center group h-full"
     >
       {/* Connection line */}
@@ -44,14 +46,14 @@ export function ProofRunwayCard({ step, index, totalSteps }: ProofRunwayCardProp
       
       <div className="flex flex-col items-center h-full">
         <motion.div
-          whileHover={{ scale: 1.05, y: -5 }}
-          whileTap={{ scale: 0.95 }}
+          whileHover={!prefersReducedMotion ? { scale: 1.04, y: -4 } : undefined}
+          whileTap={!prefersReducedMotion ? { scale: 0.98 } : undefined}
           className={`mx-auto mb-6 flex h-24 w-24 items-center justify-center rounded-3xl transition-all duration-300 relative overflow-hidden ${pillarConfig.bg} border-2 ${pillarConfig.border} shadow-elevation-1`}
         >
           <div className="absolute inset-0 bg-gradient-to-br from-white/40 to-transparent opacity-70" />
           
           <Icon 
-            className={`h-10 w-10 ${pillarConfig.text} relative z-10 transition-transform duration-300 group-hover:scale-105`} 
+            className={`h-10 w-10 ${pillarConfig.text} relative z-10 transition-transform duration-300`} 
             strokeWidth={2}
             aria-hidden="true"
           />

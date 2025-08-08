@@ -1,7 +1,7 @@
 "use client"
 
 import React from 'react'
-import { motion, Variants } from 'framer-motion'
+import { motion, Variants, useReducedMotion } from 'framer-motion'
 import { Hash, FlaskConical, Users, ArrowRight, Zap, Sparkles } from 'lucide-react'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
@@ -26,7 +26,7 @@ const itemVariants: Variants = {
     y: 0,
     transition: {
       duration: 0.5,
-      ease: "easeOut"
+      ease: [0.25, 0.46, 0.45, 0.94]
     }
   }
 }
@@ -80,6 +80,7 @@ const staggerContainer = {
 };
 
 const HeroViz = () => {
+  const prefersReducedMotion = useReducedMotion()
   return (
     <div className="relative flex items-center justify-center w-full h-64 lg:h-80">
       {/* Grid background */}
@@ -115,13 +116,17 @@ const HeroViz = () => {
                         y: pillar.y,
                         transformOrigin: 'bottom center',
                     }}
-                    whileHover={{
-                        scale: 1.05,
-                        rotate: pillar.rotation + (pillar.rotation > 0 ? 2 : -2),
-                        y: pillar.y - 10,
-                        zIndex: 20,
-                        transition: { type: 'spring', stiffness: 300 }
-                    }}
+                    whileHover={
+                      !prefersReducedMotion
+                        ? {
+                            scale: 1.04,
+                            rotate: pillar.rotation + (pillar.rotation > 0 ? 2 : -2),
+                            y: pillar.y - 8,
+                            zIndex: 20,
+                            transition: { type: 'spring', stiffness: 300 }
+                          }
+                        : undefined
+                    }
                 >
                     <div className="flex flex-col items-center justify-center h-full p-4 text-center">
                         <div className={`p-3 mb-3 rounded-full ${pillar.bg} border ${pillar.border}`}>

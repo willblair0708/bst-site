@@ -11,6 +11,8 @@ export function TerminalConsole({ repoId = 'demo' }: { repoId?: string }) {
   const [input, setInput] = useState("")
   const viewRef = useRef<HTMLDivElement>(null)
   const [cwd, setCwd] = useState<string>(".")
+  const [history, setHistory] = useState<string[]>([])
+  const [histIdx, setHistIdx] = useState<number>(-1)
 
   useEffect(() => {
     viewRef.current?.scrollTo({ top: viewRef.current.scrollHeight })
@@ -27,12 +29,15 @@ export function TerminalConsole({ repoId = 'demo' }: { repoId?: string }) {
     "ls | cat <file> | head <file> | tail <file> | wc <file> | mkdir <dir> | touch <file> — repo shell",
     "clear — clear screen",
     "cd <dir> — change directory (within repo)",
+    "Ctrl+L — clear, ↑/↓ — history",
   ]
 
   const handle = useCallback(async () => {
     const cmd = input.trim()
     if (!cmd) return
     append({ text: `> ${cmd}`, kind: "cmd" })
+    setHistory((h) => [cmd, ...h])
+    setHistIdx(-1)
     setInput("")
     const [name, ...rest] = cmd.split(" ")
 
@@ -95,7 +100,30 @@ export function TerminalConsole({ repoId = 'demo' }: { repoId?: string }) {
     } catch (e: any) {
       append(String(e), "err")
     }
-  }, [input])
+  }, [input, cwd, repoId])
+
+  const onKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') { handle() }
+    if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'l') {
+      e.preventDefault(); setLines([])
+    }
+    if (e.key === 'ArrowUp') {
+      e.preventDefault()
+      setHistIdx((idx) => {
+        const next = Math.min(idx + 1, history.length - 1)
+        setInput(history[next] || input)
+        return next
+      })
+    }
+    if (e.key === 'ArrowDown') {
+      e.preventDefault()
+      setHistIdx((idx) => {
+        const next = Math.max(idx - 1, -1)
+        setInput(next === -1 ? "" : (history[next] || ""))
+        return next
+      })
+    }
+  }
 
   return (
     <div className="flex flex-col h-32 bg-neutral-100/60">
@@ -108,7 +136,7 @@ export function TerminalConsole({ repoId = 'demo' }: { repoId?: string }) {
         <input
           value={input}
           onChange={(e) => setInput(e.target.value)}
-          onKeyDown={(e) => { if (e.key === 'Enter') handle() }}
+          onKeyDown={onKeyDown}
           placeholder={`(${cwd}) help | ls | cd data | python3 run_demo.py`}
           className="w-full bg-transparent outline-none font-mono text-[12px]"
         />

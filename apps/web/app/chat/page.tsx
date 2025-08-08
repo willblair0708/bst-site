@@ -6,13 +6,11 @@ import { motion } from "framer-motion";
 import {
   Plus,
   ArrowUp,
-  ArrowDown,
   Hash,
-  Sparkles,
   RotateCcw,
   Square,
   Globe,
-    Copy,
+  Copy,
 } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
@@ -20,6 +18,7 @@ import { cn } from "@/lib/utils";
 import { ThemeToggle } from "@/components/theme-toggle";
 import Textarea from "react-textarea-autosize";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import Inspector, { TraceEvent as InspectorEvent, ToolTrace as InspectorToolTrace } from "@/components/inspector";
 // Simplified UI: sliders/selects removed
 
 const fadeInUp = {
@@ -45,8 +44,11 @@ const ChatPage = () => {
   const endRef = useRef<HTMLDivElement | null>(null);
   const [atBottom, setAtBottom] = useState(true);
   const [showInspector, setShowInspector] = useState(false);
-  type TraceEvent = { ts: number; type: string; detail?: string };
-  type ToolTrace = { tool: string; t_ms?: number; args?: Record<string, any>; phase?: string };
+  const composerRef = useRef<HTMLTextAreaElement | null>(null);
+  const [editingSessionId, setEditingSessionId] = useState<string | null>(null);
+  const [editingTitle, setEditingTitle] = useState<string>("");
+  type TraceEvent = InspectorEvent;
+  type ToolTrace = InspectorToolTrace & { args?: Record<string, any> };
   const [events, setEvents] = useState<TraceEvent[]>([]);
   const [toolTrace, setToolTrace] = useState<ToolTrace[]>([]);
   const [runStart, setRunStart] = useState<number | null>(null);
@@ -98,8 +100,8 @@ const ChatPage = () => {
   const handleScroll = () => {
     const el = listRef.current;
     if (!el) return;
-    const threshold = 48;
-    setAtBottom(el.scrollHeight - el.scrollTop - el.clientHeight < threshold);
+    const distanceFromBottom = el.scrollHeight - el.scrollTop - el.clientHeight;
+    setAtBottom(distanceFromBottom < 48);
   };
 
   // Load sessions and API key
@@ -122,6 +124,23 @@ const ChatPage = () => {
     }
     const storedKey = typeof window !== 'undefined' ? localStorage.getItem('runix_api_key') : null;
     if (storedKey) setApiKey(storedKey);
+  }, []);
+
+  useEffect(() => {
+    // keyboard shortcuts: '/' focus composer, Cmd/Ctrl+I toggle inspector
+    const onKeyDown = (e: KeyboardEvent) => {
+      const isInputActive = (e.target as HTMLElement)?.closest('input, textarea, [contenteditable="true"]');
+      if (!isInputActive && e.key === '/') {
+        e.preventDefault();
+        composerRef.current?.focus();
+      }
+      if ((e.metaKey || e.ctrlKey) && (e.key.toLowerCase() === 'i')) {
+        e.preventDefault();
+        setShowInspector(v => !v);
+      }
+    };
+    window.addEventListener('keydown', onKeyDown);
+    return () => window.removeEventListener('keydown', onKeyDown);
   }, []);
 
   useEffect(() => {
@@ -385,17 +404,43 @@ const ChatPage = () => {
         <div className="h-full overflow-hidden">
           <div className="space-y-1">
             {sessions.slice(0, MAX_SESSIONS).map(s => (
-              <div key={s.id} className={cn("group py-2 px-3 rounded-lg text-sm cursor-pointer flex items-center justify-between", activeSessionId === s.id ? "bg-muted text-foreground" : "text-muted-foreground hover:bg-muted")}
+              <div key={s.id} className={cn("group py-2 px-3 rounded-lg text-sm cursor-pointer flex items-center gap-2", activeSessionId === s.id ? "bg-muted text-foreground" : "text-muted-foreground hover:bg-muted")}
                 onClick={() => { setActiveSessionId(s.id); setCurrentAgent(s.agent); }}>
-                <span className="truncate mr-2">{s.title}</span>
-                <div className="opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-1">
-                  <button className="p-1 rounded hover:bg-background/50" onClick={(e) => { e.stopPropagation(); const t = prompt("Rename chat", s.title) || s.title; renameSession(s.id, t); }}>
-                    ✎
-                  </button>
-                  <button className="p-1 rounded hover:bg-background/50" onClick={(e) => { e.stopPropagation(); deleteSession(s.id); }}>
-                    ✕
-                  </button>
-                </div>
+                {editingSessionId === s.id ? (
+                  <input
+                    autoFocus
+                    className="flex-1 bg-transparent outline-none border rounded px-2 py-1 text-foreground"
+                    value={editingTitle}
+                    onChange={(e) => setEditingTitle(e.target.value)}
+                    onBlur={() => { renameSession(s.id, editingTitle.trim() || s.title); setEditingSessionId(null); }}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') { renameSession(s.id, editingTitle.trim() || s.title); setEditingSessionId(null); }
+                      if (e.key === 'Escape') { setEditingSessionId(null); setEditingTitle(''); }
+                    }}
+                  />
+                ) : (
+                  <>
+                    <span className="truncate mr-auto">{s.title}</span>
+                    <div className="opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-1">
+                      <button
+                        className="p-1 rounded hover:bg-background/50"
+                        onClick={(e) => { e.stopPropagation(); setEditingSessionId(s.id); setEditingTitle(s.title); }}
+                        title="Rename"
+                        aria-label="Rename chat"
+                      >
+                        ✎
+                      </button>
+                      <button
+                        className="p-1 rounded hover:bg-background/50"
+                        onClick={(e) => { e.stopPropagation(); deleteSession(s.id); }}
+                        title="Delete"
+                        aria-label="Delete chat"
+                      >
+                        ✕
+                      </button>
+                    </div>
+                  </>
+                )}
               </div>
             ))}
           </div>
@@ -407,6 +452,7 @@ const ChatPage = () => {
         {activeSession && (
           <Button variant="destructive" className="w-full rounded-lg text-foreground" onClick={() => setSessions(prev => prev.map(s => s.id === activeSessionId ? { ...s, messages: [] } : s))}>Clear</Button>
         )}
+        <Button variant="outline" className="w-full rounded-lg" onClick={() => setShowInspector(v => !v)}>{showInspector ? 'Hide' : 'Show'} inspector</Button>
       </div>
     </aside>
   );
@@ -416,248 +462,170 @@ const ChatPage = () => {
       <Sidebar />
       
       <main className="flex-1 flex flex-col bg-background">
-        {/* Top bar */}
-        <div className="h-12 border-b bg-background/60 backdrop-blur px-3 sm:px-4 flex items-center gap-2">
-          <div className="text-sm font-medium">Runix Chat</div>
-          <div className="ml-auto flex items-center gap-2">
-            <Button size="sm" variant="outline" className="rounded" onClick={createSession}><Plus className="w-3.5 h-3.5 mr-1"/>New</Button>
-            <button className="text-xs px-2 py-1 rounded border hover:bg-muted/60" onClick={() => setShowInspector(v => !v)}>{showInspector ? 'Hide' : 'Show'} inspector</button>
-            <ThemeToggle />
-          </div>
-        </div>
+        {/* Top bar removed per design */}
 
         {/* Main Content with optional Inspector panel */}
-        <div className={cn("flex-1 grid grid-cols-1 overflow-hidden", showInspector ? "lg:grid-cols-[minmax(0,1fr)_340px]" : "lg:grid-cols-1")}>
-          <section className="flex flex-col border-r bg-gradient-to-b from-background to-muted/20 overflow-hidden">
+        <div className={cn("flex-1 grid overflow-hidden", showInspector ? "lg:grid-cols-[1fr_340px]" : "lg:grid-cols-1")}>            
+          <section className="flex flex-col overflow-hidden">
             <div className="flex-1 overflow-hidden">
               {messages.length === 0 ? (
-                <div className="h-full flex flex-col justify-center items-center p-8">
-                  <div className="max-w-2xl w-full">
-                    <div className="text-center mb-12">
-                      <div className="w-16 h-16 rounded-full bg-muted flex items-center justify-center mx-auto mb-6">
-                        <Hash className="w-8 h-8 text-muted-foreground" />
+                <div className="h-full flex items-center justify-center">
+                  <div className="mx-auto w-full max-w-[740px] px-4 sm:px-6 lg:px-8">
+                    <div className="bg-card rounded-2xl border focus-within:ring-1 focus-within:ring-ring">
+                      <div className="flex items-end p-2 gap-2">
+                        <Textarea
+                          ref={composerRef as any}
+                          placeholder="Ask anything…"
+                          className="flex-1 bg-transparent border-0 px-3 py-2 text-[15px] leading-relaxed resize-none focus:outline-none min-h-[48px] max-h-[180px]"
+                          value={inputValue}
+                          onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setInputValue(e.target.value)}
+                          onKeyDown={(e: any) => {
+                            if (e.key === "Enter" && !e.shiftKey && !e.nativeEvent.isComposing) {
+                              e.preventDefault();
+                              handleSendMessage();
+                            }
+                          }}
+                          rows={1}
+                        />
+                        {isAiTyping ? (
+                          <Button size="icon" onClick={handleStop} className="rounded-lg h-9 w-9" title="Stop">
+                            <Square className="w-4 h-4" />
+                          </Button>
+                        ) : (
+                          <Button size="icon" onClick={() => handleSendMessage()} disabled={!inputValue.trim()} className="rounded-lg h-9 w-9">
+                            <ArrowUp className="w-4 h-4" />
+                          </Button>
+                        )}
                       </div>
-                      <h2 className="text-3xl font-bold mb-4 text-foreground">Unlock Your Next Breakthrough</h2>
-                      <p className="text-muted-foreground max-w-lg mx-auto">I'm an AI research assistant, ready to help you analyze data, generate hypotheses, and accelerate your scientific discovery.</p>
                     </div>
-                    {/* Example Prompts */}
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                      {[
-                        "Analyze the impact of HTRA1 mutations on macular degeneration.",
-                        "Simulate electron transfer dynamics in protein complexes.",
-                        "Evaluate the therapeutic potential of targeting PTHR in small cell lung cancer.",
-                        "What are the physical limits of light detection in mammalian eyes?"
-                      ].map((prompt, index) => (
-                        <button key={index} onClick={() => setInputValue(prompt)} className="p-4 text-left border rounded-lg hover:bg-muted transition-colors text-sm text-foreground h-full">
-                          <Sparkles className="w-4 h-4 mb-3 text-muted-foreground" />
-                          <p className="font-medium leading-relaxed">{prompt}</p>
-                        </button>
-                      ))}
-                    </div>
+                    <div className="mt-2 text-center text-[11px] text-muted-foreground">Enter to send • Shift+Enter for newline</div>
                   </div>
                 </div>
               ) : (
                 <div className="h-full overflow-hidden">
-                  <div ref={listRef} onScroll={handleScroll} className="h-full max-w-5xl lg:max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 overflow-auto">
-                    {messages.slice(-MAX_MESSAGES).map((message, index) => {
-                      const isUser = message.author === 'User';
-                      const prev = messages[index - 1];
-                      const next = messages[index + 1];
-                      const startsGroup = !prev || prev.author !== message.author;
-                      const endsGroup = !next || next.author !== message.author;
-                      return (
-                        <motion.div
-                          key={message.id}
-                          className={cn(
-                            "group/message relative mt-3 sm:mt-4 first:mt-0"
-                          )}
-                          variants={fadeInUp}
-                          initial="initial"
-                          animate="animate"
-                          transition={{ delay: index * 0.03, duration: 0.3 }}
-                        >
-                          {/* Bubble */}
-                          <div
-                            className={cn(
-                              "relative rounded-2xl text-[15px] leading-[1.6] px-4 py-3 border shadow-sm",
-                              isUser
-                                ? "ml-auto bg-gradient-to-br from-primary to-primary/90 text-primary-foreground border-primary/40 shadow-elevation-2 max-w-[92%]"
-                                : "mr-auto bg-card text-foreground border-border/60 shadow-elevation-1 max-w-[92%]",
-                              startsGroup && "mt-2",
-                              endsGroup && "mb-1"
-                            )}
+                  <div
+                    ref={listRef}
+                    onScroll={handleScroll}
+                    role="log"
+                    aria-live={isAiTyping ? "polite" : "off"}
+                    className="h-full overflow-auto"
+                  >
+                    <div className="relative mx-auto w-full max-w-[740px] px-4 sm:px-6 lg:px-8 py-6">
+                      {messages.slice(-MAX_MESSAGES).map((message, index) => {
+                        const isUser = message.author === 'User';
+                        return (
+                          <motion.div
+                            key={message.id}
+                            className="group relative flex gap-3 py-2"
+                            variants={fadeInUp}
+                            initial="initial"
+                            animate="animate"
+                            transition={{ duration: 0.25 }}
                           >
-                            {(!isUser && !message.content) ? (
-                              <div className="flex items-center gap-2">
-                                <motion.div className="w-2 h-2 rounded-full bg-muted-foreground/70" animate={{ opacity: [0.3, 1, 0.3] }} transition={{ repeat: Infinity, duration: 1 }} />
-                                <motion.div className="w-2 h-2 rounded-full bg-muted-foreground/70" animate={{ opacity: [0.3, 1, 0.3] }} transition={{ repeat: Infinity, duration: 1, delay: 0.15 }} />
-                                <motion.div className="w-2 h-2 rounded-full bg-muted-foreground/70" animate={{ opacity: [0.3, 1, 0.3] }} transition={{ repeat: Infinity, duration: 1, delay: 0.3 }} />
-                              </div>
-                            ) : (
-                              <ReactMarkdown remarkPlugins={[remarkGfm]} components={markdownComponents}>{message.content}</ReactMarkdown>
-                            )}
-
-                            {!isUser && message.content && extractLinks(message.content).length > 0 && (
-                              <div className="mt-3 flex flex-wrap gap-2">
-                                {extractLinks(message.content).map((l, i) => (
-                                  <a key={i} href={l.href} target="_blank" rel="noreferrer" className="text-xs inline-flex items-center gap-1 px-2 py-1 rounded-full border bg-background/50 hover:bg-background transition-colors">
-                                    <Globe className="w-3.5 h-3.5" /> {l.text}
-                                  </a>
-                                ))}
-                              </div>
-                            )}
-                          </div>
-
-                          {/* Actions under the bubble (always visible) */}
-                          <div className={cn("mt-1 flex gap-1", isUser ? "justify-end" : "justify-start")}
-                          >
-                            <button
-                              className="p-1.5 rounded-md border bg-background/90 hover:bg-background"
-                              onClick={() => copyToClipboard(message.content)}
-                              title="Copy"
-                              aria-label="Copy message"
+                            {!isUser && <div className="mt-1 h-7 w-7 rounded-full bg-muted shrink-0" />}
+                            <div
+                              className={cn(
+                                "min-w-0 rounded-2xl border border-border/60",
+                                isUser ? "bg-muted/40 ml-auto" : "bg-card"
+                              )}
                             >
-                              <Copy className="w-3.5 h-3.5" />
-                            </button>
-                            {!isUser && (
-                              <button
-                                className="p-1.5 rounded-md border bg-background/90 hover:bg-background"
-                                onClick={() => regenerateFromAI(index)}
-                                title="Regenerate"
-                                aria-label="Regenerate response"
-                              >
-                                <RotateCcw className="w-3.5 h-3.5" />
-                              </button>
-                            )}
-                          </div>
-
-                        </motion.div>
-                      );
-                    })}
-                    <div ref={endRef} />
+                              <div className={cn(
+                                "prose prose-sm dark:prose-invert max-w-none px-4 py-3"
+                              )}>
+                                {(!isUser && !message.content) ? (
+                                  <div className="flex items-center gap-2">
+                                    <motion.div className="w-2 h-2 rounded-full bg-muted-foreground/70" animate={{ opacity: [0.3, 1, 0.3] }} transition={{ repeat: Infinity, duration: 1 }} />
+                                    <motion.div className="w-2 h-2 rounded-full bg-muted-foreground/70" animate={{ opacity: [0.3, 1, 0.3] }} transition={{ repeat: Infinity, duration: 1, delay: 0.15 }} />
+                                    <motion.div className="w-2 h-2 rounded-full bg-muted-foreground/70" animate={{ opacity: [0.3, 1, 0.3] }} transition={{ repeat: Infinity, duration: 1, delay: 0.3 }} />
+                                  </div>
+                                ) : (
+                                  <ReactMarkdown remarkPlugins={[remarkGfm]} components={markdownComponents}>{message.content}</ReactMarkdown>
+                                )}
+                                {!isUser && message.content && extractLinks(message.content).length > 0 && (
+                                  <div className="mt-3 flex flex-wrap gap-2">
+                                    {extractLinks(message.content).map((l, i) => (
+                                      <a key={i} href={l.href} target="_blank" rel="noreferrer" className="text-xs inline-flex items-center gap-1 px-2 py-1 rounded-full border bg-background/50 hover:bg-background transition-colors">
+                                        <Globe className="w-3.5 h-3.5" /> {l.text}
+                                      </a>
+                                    ))}
+                                  </div>
+                                )}
+                              </div>
+                              <div className={cn(
+                                "absolute -bottom-6 left-10 sm:left-12 hidden group-hover:flex gap-2 text-xs text-muted-foreground"
+                              )}>
+                                <button className="inline-flex items-center gap-1 hover:text-foreground" onClick={() => copyToClipboard(message.content)}>
+                                  Copy
+                                </button>
+                                {!isUser && (
+                                  <button className="inline-flex items-center gap-1 hover:text-foreground" onClick={() => regenerateFromAI(index)}>
+                                    Regenerate
+                                  </button>
+                                )}
+                                <span className="hidden sm:inline">· {new Date(message.createdAt).toLocaleTimeString()}</span>
+                              </div>
+                            </div>
+                          </motion.div>
+                        );
+                      })}
+                      <div ref={endRef} />
+                    </div>
                   </div>
                 </div>
               )}
             </div>
-            {/* Input area inside center pane */}
-            <div className="p-4 sm:p-6 bg-background/70 border-t backdrop-blur supports-[backdrop-filter]:bg-background/60">
-              <div className="max-w-5xl lg:max-w-6xl mx-auto">
-                <motion.div className="relative bg-card rounded-2xl border focus-within:border-ring transition-colors shadow-soft" variants={fadeInUp} initial="initial" animate="animate" transition={{ delay: 0.2, duration: 0.5 }}>
-                  <div className="flex items-center p-2">
-                    <Textarea
-                      placeholder="Ask me about research, analysis, or any scientific concept..."
-                      className="flex-1 bg-transparent border-0 px-4 py-2 text-[15px] text-foreground placeholder:text-muted-foreground resize-none focus:outline-none min-h-[40px] max-h-[120px] leading-relaxed"
-                      value={inputValue}
-                      onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setInputValue(e.target.value)}
-                      onKeyPress={(e: React.KeyboardEvent<HTMLTextAreaElement>) => {
-                        if (e.key === "Enter" && !e.shiftKey) {
-                          e.preventDefault();
-                          handleSendMessage();
-                        }
-                      }}
-                      rows={1}
-                    />
-                    <div className="flex items-center gap-2">
+            {/* Sticky Composer */}
+            {messages.length > 0 && (
+              <footer className="sticky bottom-0 inset-x-0 border-t bg-background/70 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+                <div className="mx-auto w-full max-w-[740px] px-4 sm:px-6 lg:px-8 py-4">
+                  <div className="bg-card rounded-2xl border focus-within:ring-1 focus-within:ring-ring">
+                    <div className="flex items-end p-2 gap-2">
+                      <Textarea
+                        ref={composerRef as any}
+                        placeholder="Message Runix…"
+                        className="flex-1 bg-transparent border-0 px-3 py-2 text-[15px] leading-relaxed resize-none focus:outline-none min-h-[40px] max-h-[180px]"
+                        value={inputValue}
+                        onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setInputValue(e.target.value)}
+                        onKeyDown={(e: any) => {
+                          if (e.key === "Enter" && !e.shiftKey && !e.nativeEvent.isComposing) {
+                            e.preventDefault();
+                            handleSendMessage();
+                          }
+                        }}
+                        rows={1}
+                      />
                       {isAiTyping ? (
-                        <Button size="icon" onClick={handleStop} className="rounded-lg h-8 w-8" title="Stop">
+                        <Button size="icon" onClick={handleStop} className="rounded-lg h-9 w-9" title="Stop">
                           <Square className="w-4 h-4" />
                         </Button>
                       ) : (
-                        <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-                          <Button size="icon" onClick={() => handleSendMessage()} disabled={!inputValue.trim()} className="rounded-xl h-8 w-8 bg-primary text-primary-foreground hover:bg-primary/90 disabled:opacity-30 disabled:pointer-events-none btn-primary-glow">
-                            <ArrowUp className="w-4 h-4" />
-                          </Button>
-                        </motion.div>
+                        <Button size="icon" onClick={() => handleSendMessage()} disabled={!inputValue.trim()} className="rounded-lg h-9 w-9">
+                          <ArrowUp className="w-4 h-4" />
+                        </Button>
                       )}
                     </div>
                   </div>
-                </motion.div>
-                 <div className="mt-2 flex items-center justify-between text-xs text-muted-foreground">
-                  <div>Enter to send • Shift+Enter for newline</div>
-                  {messages.length > 0 && messages[messages.length - 1]?.author === 'AI' && (
-                    <button className="inline-flex items-center gap-1 hover:text-foreground" onClick={handleRegenerate}>
-                      <RotateCcw className="w-3.5 h-3.5" /> Regenerate
-                    </button>
-                  )}
+                  <div className="mt-2 flex items-center justify-between text-[11px] text-muted-foreground">
+                    <div>Enter to send • Shift+Enter for newline</div>
+                    {messages.at(-1)?.author === 'AI' && (
+                      <button className="hover:text-foreground inline-flex items-center gap-1" onClick={handleRegenerate}>
+                        <RotateCcw className="w-3.5 h-3.5" /> Regenerate
+                      </button>
+                    )}
+                  </div>
                 </div>
-                {!atBottom && (
-                  <button
-                    onClick={() => endRef.current?.scrollIntoView({ behavior: 'smooth' })}
-                    className="fixed right-6 bottom-24 z-10 inline-flex items-center gap-1 px-2 py-1 rounded-full border bg-background shadow-sm text-xs hover:bg-muted"
-                    title="Scroll to newest"
-                  >
-                    <ArrowDown className="w-3.5 h-3.5" /> New messages
-                  </button>
-                )}
-              </div>
-            </div>
+              </footer>
+            )}
           </section>
           {/* Inspector Panel */}
           {showInspector && (
-          <aside className="hidden lg:flex flex-col max-h-full overflow-hidden border-l bg-background/40">
-            <div className="px-4 py-3 border-b bg-background/80 backdrop-blur">
-              <div className="text-sm font-semibold">Run Inspector</div>
-              <div className="mt-2 grid grid-cols-3 gap-2">
-                <span className="text-[10px] px-2 py-1 rounded-full border bg-primary-100/40 text-foreground">Events: {events.length}</span>
-                <span className="text-[10px] px-2 py-1 rounded-full border bg-accent-100/40 text-foreground">Tools: {Array.from(new Set(toolTrace.map(t=>t.tool))).length}</span>
-                <span className="text-[10px] px-2 py-1 rounded-full border bg-collaboration-100/40 text-foreground">{runDuration!==null?`${(runDuration/1000).toFixed(1)}s`:'—'}</span>
-              </div>
-            </div>
-            <div className="flex-1 p-4 space-y-4 overflow-hidden">
-              {/* Events - compact list */}
-              {events.length > 0 && (
-                <Card variant="bento" className="bg-primary-100 shadow-elevation-1">
-                  <CardHeader className="py-3 px-3"><CardTitle className="text-xs">Events</CardTitle></CardHeader>
-                  <CardContent className="px-3 pb-3">
-                    <ul className="text-xs space-y-1">
-                      {events.slice(-MAX_EVENTS).map((e,i)=> (
-                        <li key={i} className="font-mono truncate">[{new Date(e.ts).toLocaleTimeString()}] {e.type}{e.detail?` — ${e.detail}`:''}</li>
-                      ))}
-                    </ul>
-                  </CardContent>
-                </Card>
-              )}
-
-              {/* Tool Trace - compact list */}
-              {toolTrace.length > 0 && (
-                <Card variant="bento" className="bg-collaboration-100 shadow-elevation-1">
-                  <CardHeader className="py-3 px-3"><CardTitle className="text-xs">Tools</CardTitle></CardHeader>
-                  <CardContent className="px-3 pb-3">
-                    <ul className="text-xs space-y-2">
-                      {toolTrace.slice(-MAX_TOOLS).map((t,i)=> (
-                        <li key={i} className="flex items-center justify-between gap-2 border-b last:border-b-0 pb-1">
-                          <span className="font-mono truncate max-w-[120px]" title={t.tool}>{t.tool}</span>
-                          <span className="text-muted-foreground">{t.phase || ''}</span>
-                          <span className="text-muted-foreground">{Number.isFinite(t.t_ms)?t.t_ms:''}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </CardContent>
-                </Card>
-              )}
-
-              {/* Evidence - compact list */}
-              {evidence.length > 0 && (
-                <Card variant="bento" className="bg-accent-100 shadow-elevation-1">
-                  <CardHeader className="py-3 px-3"><CardTitle className="text-xs">Evidence</CardTitle></CardHeader>
-                  <CardContent className="px-3 pb-3">
-                    <ul className="text-xs space-y-2 max-h-56 overflow-auto">
-                      {evidence.slice(0, 12).map((e:any, i:number)=> (
-                        <li key={i} className="border-b last:border-b-0 pb-1">
-                          <div className="font-medium truncate" title={e.doc_id || ''}>{e.doc_id || 'Unknown source'}</div>
-                          {e.raw_text && <div className="text-muted-foreground line-clamp-2">{e.raw_text}</div>}
-                        </li>
-                      ))}
-                    </ul>
-                  </CardContent>
-                </Card>
-              )}
-
-              <div className="flex gap-2">
-                <Button size="sm" variant="outline" className="rounded" onClick={() => { setEvents([]); setToolTrace([]); setEvidence([]); }}>Clear</Button>
-              </div>
-            </div>
-          </aside>
+            <Inspector
+              events={events}
+              toolTrace={toolTrace}
+              runDuration={runDuration}
+              evidence={evidence}
+              onClear={() => { setEvents([]); setToolTrace([]); setEvidence([]); }}
+            />
           )}
         </div>
       </main>

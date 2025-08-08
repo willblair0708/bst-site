@@ -278,6 +278,15 @@
         text-wrap: balance;
     }
     
+    /* Glass card utility for consistent translucent panels */
+    .glass-card {
+        background-color: hsl(var(--card) / 0.7);
+        backdrop-filter: blur(8px);
+        -webkit-backdrop-filter: blur(8px);
+        border: 1px solid hsl(var(--border) / 0.6);
+        box-shadow: var(--elevation-1);
+    }
+    
     /* Action Layer - Soft-UI 2.0 */
     .soft-ui {
         box-shadow: var(--soft-outer), var(--soft-inner);

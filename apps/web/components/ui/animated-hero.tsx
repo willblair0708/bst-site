@@ -2,7 +2,7 @@
 
 import React from 'react'
 import { motion, Variants, useReducedMotion } from 'framer-motion'
-import { Hash, FlaskConical, Users, ArrowRight, Zap, Sparkles } from 'lucide-react'
+import { Hash, FlaskConical, Users, ArrowRight, Zap, Sparkles, DollarSign, CalendarDays } from 'lucide-react'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { AnimatedCounter } from '@/components/ui/animated-counter'
@@ -84,16 +84,10 @@ const HeroViz = () => {
   return (
     <div className="relative flex items-center justify-center w-full h-64 lg:h-80">
       {/* Grid background */}
-      <div className="absolute inset-0 z-0">
-        <div 
-            className="w-full h-full"
-            style={{
-                backgroundImage: 'radial-gradient(circle, hsl(var(--border)) 1px, transparent 1px)',
-                backgroundSize: '20px 20px',
-            }}
-        />
-        <div className="absolute inset-0 z-1 bg-gradient-to-t from-background via-background to-transparent" />
-      </div>
+      <motion.div className="absolute inset-0 z-0" initial={false} animate={!prefersReducedMotion ? { y: [0, -6, 0] } : undefined} transition={{ duration: 16, repeat: Infinity, ease: 'easeInOut' }}>
+        <div className="w-full h-full" style={{ backgroundImage: 'radial-gradient(circle, hsl(var(--border)) 1px, transparent 1px)', backgroundSize: '20px 20px' }} />
+        <div className="absolute inset-0 z-[1] bg-gradient-to-t from-background via-background to-transparent" />
+      </motion.div>
 
       {/* Pillar Cards */}
       <motion.div 
@@ -127,6 +121,7 @@ const HeroViz = () => {
                           }
                         : undefined
                     }
+                    animate={!prefersReducedMotion ? { y: [pillar.y, pillar.y + 2, pillar.y], transition: { duration: 6 + i, repeat: Infinity, ease: 'easeInOut' } } : undefined}
                 >
                     <div className="flex flex-col items-center justify-center h-full p-4 text-center">
                         <div className={`p-3 mb-3 rounded-full ${pillar.bg} border ${pillar.border}`}>
@@ -170,16 +165,14 @@ export function AnimatedHero() {
               variants={itemVariants}
               className="text-display font-display tracking-tight text-foreground"
             >
-              Every claim,
-              <br />
-              <span className="text-primary-500">verifiable & runnable.</span>
+              Organize proof. Accelerate tools. Orchestrate agents.
             </motion.h1>
             
             <motion.p 
               variants={itemVariants}
               className="mt-6 text-lg leading-8 text-muted-foreground max-w-xl"
             >
-              The platform for modern science. We turn static papers into <span className="font-semibold text-foreground">versioned, forkable, verifiable</span> artefacts with git-grade provenance.
+              Estelion makes science versioned, reproducible, and AI-driven—from first sketch to published result.
             </motion.p>
             
             <motion.div 
@@ -192,21 +185,26 @@ export function AnimatedHero() {
                   className="group soft-ui bg-primary-500 hover:bg-primary-500/90 text-primary-foreground active:translate-y-px"
                   onClick={() => trackEvent('cta_start_building_clicked')}
                 >
-                  <FlaskConical className={`w-4 h-4 mr-2 ${!prefersReducedMotion && 'group-hover:animate-snap'}`} strokeWidth={2} aria-hidden="true" />
-                  Start Building
+                  Try the live demo
                   <ArrowRight className={`w-4 h-4 ml-2 ${!prefersReducedMotion && 'group-hover:translate-x-1'} transition-transform`} strokeWidth={2} aria-hidden="true" />
                 </Button>
               </Link>
               
-              <Link href="/docs" passHref>
+              <Link href="/dashboard" passHref>
                 <Button 
                   variant="outline" 
                   size="lg"
                   className="group soft-ui bg-background/50 hover:bg-muted"
                 >
-                  Read Docs
+                  Join early access
                 </Button>
               </Link>
+            </motion.div>
+
+            <motion.div variants={itemVariants} className="mt-6 text-sm text-muted-foreground space-y-1 max-w-xl text-left mx-auto lg:mx-0">
+              <div>Organize: Version control for data, protocols, analyses, and claims.</div>
+              <div>Accelerate: One-line access to science models and toolboxes.</div>
+              <div>Orchestrate: Coordinate agent teams to plan, run, and review experiments.</div>
             </motion.div>
           </div>
           
@@ -219,6 +217,51 @@ export function AnimatedHero() {
           </motion.div>
         </motion.div>
         
+        {/* Proof Progress Bar (mocked KPI widget) */}
+        <motion.div 
+          className="mt-10 w-full"
+          variants={staggerContainer}
+          initial="initial"
+          whileInView="animate"
+          viewport={{once: true}}
+        >
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 rounded-2xl border bg-card/70 p-3 shadow-elevation-1">
+            <div className="flex-1 flex items-center gap-2">
+              <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-muted border">
+                <DollarSign className="w-4 h-4 text-muted-foreground" />
+              </div>
+              <div className="text-sm">
+                <span className="text-muted-foreground">Cost / pt</span>
+                <div className="font-mono font-semibold">$
+                  <AnimatedCounter from={0} to={12.4} decimals={2} />
+                </div>
+              </div>
+            </div>
+            <div className="flex-1 flex items-center gap-2">
+              <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-muted border">
+                <CalendarDays className="w-4 h-4 text-muted-foreground" />
+              </div>
+              <div className="text-sm">
+                <span className="text-muted-foreground">Days to answer</span>
+                <div className="font-mono font-semibold">
+                  <AnimatedCounter from={0} to={4.2} decimals={1} />
+                </div>
+              </div>
+            </div>
+            <div className="flex-1 flex items-center gap-2">
+              <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-muted border">
+                <Users className="w-4 h-4 text-muted-foreground" />
+              </div>
+              <div className="text-sm">
+                <span className="text-muted-foreground">Diversity</span>
+                <div className="font-mono font-semibold">+
+                  <AnimatedCounter from={0} to={18} decimals={0} />%
+                </div>
+              </div>
+            </div>
+          </div>
+        </motion.div>
+
         {/* Stats */}
         <motion.div 
           className="mt-20 grid grid-cols-2 sm:grid-cols-4 gap-8 text-center"

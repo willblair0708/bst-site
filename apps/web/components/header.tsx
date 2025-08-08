@@ -68,7 +68,7 @@ export function GitHubHeader() {
           <div className="flex items-center">
             <Link href="/" className="group inline-flex items-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 rounded-2xl">
               <span className="text-2xl font-extrabold tracking-tight bg-gradient-to-br from-foreground to-foreground/70 bg-clip-text text-foreground transition-opacity group-hover:opacity-90">
-                Runix
+                Estelion
               </span>
             </Link>
           </div>
@@ -100,6 +100,7 @@ export function GitHubHeader() {
                       <Link
                         href={item.href}
                         aria-current={active ? 'page' : undefined}
+                        prefetch={false}
                         className={`${getLinkClasses(item.href, item.variant)} ${active && item.variant === 'primary' ? 'bg-transparent border-transparent shadow-none' : ''} relative z-10`}
                       >
                         {item.label}

@@ -1,6 +1,6 @@
 "use client";
 
-import { GitBranch, CheckCircle2, Star, GitFork, Activity, Globe, Lock, ArrowRight, Database, ShieldCheck, FlaskConical, Users, Bot, Sparkles, FileJson, Hash, Workflow, GitMerge, Brain, MessageSquare, Copy } from "lucide-react"
+import { GitBranch, CheckCircle2, Star, GitFork, Activity, Globe, Lock, ArrowRight, Database, ShieldCheck, FlaskConical, Users, Bot, Sparkles, Hash, Workflow, Brain, MessageSquare } from "lucide-react"
 import Link from "next/link"
 import Image from "next/image"
 import { AnimatedHero } from "@/components/ui/animated-hero"
@@ -27,7 +27,7 @@ const PILLARS = {
     bg: "primary-100",
     emoji: "🗂️",
     motion: "snap",
-    description: "Every claim becomes verifiable, forkable knowledge"
+    description: "Every claim becomes a citable, forkable, machine-checkable artifact (DOI + hash)"
   },
   COMPOSABLE_MODELS: { 
     icon: FlaskConical, 
@@ -35,7 +35,7 @@ const PILLARS = {
     bg: "accent-100",
     emoji: "🛠️",
     motion: "spark-glow",
-    description: "Models and simulations that compose and scale"
+    description: "Pin workflows to containers and digests; compose datasets→models→analyses as graphs"
   },
   HUMAN_AI_COLLAB: { 
     icon: Users, 
@@ -43,9 +43,27 @@ const PILLARS = {
     bg: "collaboration-100",
     emoji: "🤝",
     motion: "pulse-success",
-    description: "Human expertise amplified by AI agents"
+    description: "Explainable agent help, peer review, and compute receipts for each suggestion"
   },
 };
+
+const PILLAR_STYLES: Record<keyof typeof PILLARS, { bg: string; border: string; text: string }> = {
+  VERSIONED_KNOWLEDGE: {
+    bg: "bg-primary-500/10",
+    border: "border-primary-500/20",
+    text: "text-primary-500",
+  },
+  COMPOSABLE_MODELS: {
+    bg: "bg-accent-500/10",
+    border: "border-accent-500/20",
+    text: "text-accent-500",
+  },
+  HUMAN_AI_COLLAB: {
+    bg: "bg-collaboration-500/10",
+    border: "border-collaboration-500/20",
+    text: "text-collaboration-500",
+  },
+}
 
 interface Repository {
   name: string;
@@ -64,9 +82,9 @@ interface Repository {
 
 const featuredRepositories: Repository[] = [
   {
-    name: "protein-folding-sim",
-    owner: "deepmind-research",
-    description: "Real-time protein structure prediction with AlphaFold integration",
+    name: "recurrence-risk-sim",
+    owner: "estelion",
+    description: "Platform-trial response-adaptive randomization simulator (RAR) with interim analyses",
     language: "Python",
     stars: 1234,
     forks: 89,
@@ -78,10 +96,10 @@ const featuredRepositories: Repository[] = [
     pillar: "VERSIONED_KNOWLEDGE",
   },
   {
-    name: "crispr-off-target",
-    owner: "broad-institute",
-    description: "ML pipeline for predicting CRISPR-Cas9 off-target effects",
-    language: "R",
+    name: "eligibility-nlp",
+    owner: "estelion",
+    description: "Structured eligibility & outcomes extraction pipeline with evaluation set (no PHI)",
+    language: "Python",
     stars: 892,
     forks: 156,
     isPrivate: false,
@@ -92,10 +110,10 @@ const featuredRepositories: Repository[] = [
     pillar: "VERSIONED_KNOWLEDGE",
   },
   {
-    name: "neuromorphic-compute",
-    owner: "eth-zurich",
-    description: "Spiking neural network simulator for brain-inspired computing",
-    language: "Julia",
+    name: "compute-receipts",
+    owner: "estelion",
+    description: "Spec + CLI to generate and verify compute receipts and attestations",
+    language: "TypeScript",
     stars: 445,
     forks: 67,
     isPrivate: false,
@@ -109,28 +127,28 @@ const featuredRepositories: Repository[] = [
 
 const featuredModels = [
   {
-    name: "BioGPT-3",
-    version: "v2.1.0",
-    description: "Foundation model for biomedical text generation and analysis",
-    provider: "microsoft-research",
+    name: "ESM2 Embeddings",
+    version: "v0.1.0",
+    description: "Protein sequence embeddings via ESM2; pinned container and digest",
+    provider: "facebookresearch",
     Icon: Bot,
     stars: 2341,
     forks: 178,
   },
   {
-    name: "MolGen-XL",
+    name: "Trial Simulator",
     version: "v1.4.2",
-    description: "Molecular structure generation using graph neural networks",
-    provider: "mit-csail",
+    description: "Response-adaptive randomization simulator for platform trials",
+    provider: "estelion",
     Icon: Bot,
     stars: 1567,
     forks: 234,
   },
   {
-    name: "CellSim",
-    version: "v3.0.1",
-    description: "Multi-scale cellular simulation engine with GPU acceleration",
-    provider: "stanford-bio",
+    name: "Consent-Checker",
+    version: "v0.9.3",
+    description: "License and consent policy checks for datasets and workflows",
+    provider: "estelion",
     Icon: Bot,
     stars: 987,
     forks: 89,
@@ -142,23 +160,23 @@ const proofRunwaySteps = [
     pillar: "VERSIONED_KNOWLEDGE" as const,
     icon: GitFork,
     title: "Fork",
-    description: "Create your versioned workspace",
+    description: "Create a versioned workspace (commit inputs + environment digest)",
     motion: "snap",
     emoji: "🗂️",
   },
   {
     pillar: "COMPOSABLE_MODELS" as const,
-    icon: Bot,
-    title: "Model", 
-    description: "Drop in a model or simulator",
+    icon: FlaskConical,
+    title: "Reproduce", 
+    description: "Execute a pinned workflow; capture a compute receipt",
     motion: "spark-glow",
     emoji: "🛠️",
   },
   {
     pillar: "HUMAN_AI_COLLAB" as const,
-    icon: GitMerge,
-    title: "Review",
-    description: "Merge results with agents & peers",
+    icon: ShieldCheck,
+    title: "Attest",
+    description: "Sign the result and mint a DOI; open a review",
     motion: "pulse-success",
     emoji: "🤝",
   },
@@ -267,13 +285,14 @@ export default function LandingPage() {
           >
             <VerifyButton 
               onVerify={() => {
-                addToast("Demo verification complete! ✓")
                 trackEvent('verify_button_demo', { section: 'proof_runway' })
+                addToast("Attestation verified ✓")
               }}
             >
               <Sparkles className="w-4 h-4 mr-2" />
-              <span>Experience Soft-UI</span>
+              <span>Run a Reproduction Demo (5 min)</span>
             </VerifyButton>
+            <p className="mt-3 text-sm text-muted-foreground">Alpha: not for clinical decision-making. Audit logs and attestations included.</p>
           </motion.div>
         </div>
       </section>
@@ -297,13 +316,13 @@ export default function LandingPage() {
               </MicroTooltip>
             </motion.div>
             <h2 id="versioned-knowledge-heading" className="font-display text-3xl tracking-tight sm:text-4xl">
-              Immutable Git-grade history
+              Content-addressed, citable knowledge
             </h2>
             <p className="mt-6 text-lg leading-8 text-muted-foreground">
-              Every dataset, protocol, and result tracked with SHA-256 provenance.
+              Every dataset, protocol, and result is a commit with SHA-256 provenance. Link ORCID, mint DOIs, and export W3C PROV graphs.
               <br />
               <span className="font-semibold text-foreground">
-                Fork → Modify → Verify → Merge
+                Fork → Reproduce → Attest
               </span>
             </p>
           </motion.div>
@@ -333,7 +352,7 @@ export default function LandingPage() {
                       className={`group relative flex h-full flex-col overflow-hidden rounded-3xl glass-card transition-shadow hover:shadow-elevation-2`}
                     >
                 {/* Top-right micro status pill: verified + visibility */}
-                <div className="absolute right-3 top-3 z-10">
+                <div className="absolute right-3 top-3 z-10" aria-label="Repository status">
                   <div className="flex items-center gap-1 rounded-full border bg-card/90 backdrop-blur px-2 py-1 shadow-elevation-1">
                     {repo.verified && (
                       <CheckCircle2 className="h-3.5 w-3.5 text-accent-500" strokeWidth={2.5} aria-label="Verified" />
@@ -351,9 +370,9 @@ export default function LandingPage() {
                   <div className="mb-4 flex items-center justify-between">
                     <div className="flex items-center gap-2">
                       <span className="text-lg">{PILLARS[repo.pillar].emoji}</span>
-                      <div className={`rounded-xl border p-2 bg-${PILLARS[repo.pillar].color}/10 border-${PILLARS[repo.pillar].color}/20`}>
+                      <div className={`rounded-xl border p-2 ${PILLAR_STYLES[repo.pillar].bg} ${PILLAR_STYLES[repo.pillar].border}`}>
                         {React.createElement(PILLARS[repo.pillar].icon, { 
-                          className: `h-4 w-4 text-${PILLARS[repo.pillar].color}` 
+                          className: `h-4 w-4 ${PILLAR_STYLES[repo.pillar].text}` 
                         })}
                       </div>
                     </div>
@@ -380,7 +399,9 @@ export default function LandingPage() {
                     </div>
                     <div className="flex items-center gap-1">
                       <Activity className="h-3 w-3 text-accent-500" />
-                      <span className="font-mono text-accent-500 font-semibold">{repo.reproducibility}%</span>
+                      <MicroTooltip content="Reproducibility: % of independent runs reproducing within tolerance (n=12)">
+                        <span className="font-mono text-accent-500 font-semibold">{repo.reproducibility}%</span>
+                      </MicroTooltip>
                     </div>
                   </div>
 
@@ -433,10 +454,10 @@ export default function LandingPage() {
               </MicroTooltip>
             </motion.div>
             <h2 id="composable-models-heading" className="font-display text-3xl tracking-tight sm:text-4xl">
-              Plug-and-play foundation models
+              Composable models and workflows
             </h2>
             <p className="mt-6 text-lg leading-8 text-muted-foreground">
-              Pre-trained models, simulators, and workflows ready to integrate.
+              Pin workflows to OCI digests, declare I/O contracts, and compose datasets→models→analyses as graphs.
               <br />
               <span className="font-semibold text-foreground">
                 Import → Configure → Run → Share
@@ -490,10 +511,10 @@ export default function LandingPage() {
               </MicroTooltip>
             </motion.div>
             <h2 id="human-ai-collab-heading" className="font-display text-3xl tracking-tight sm:text-4xl">
-              Live agent suggestions & social review
+              Human–AI collaboration with provenance
             </h2>
             <p className="mt-6 text-lg leading-8 text-muted-foreground">
-              AI agents assist with hypothesis generation, experiment design, and peer review.
+              Explainable agent help, peer review workflows, and compute receipts for each suggestion.
               <br />
               <span className="font-semibold text-foreground">
                 Suggest → Validate → Iterate → Publish
@@ -654,10 +675,10 @@ export default function LandingPage() {
             transition={{ duration: 0.5 }}
           >
             <h2 id="core-features-heading" className="font-display text-4xl font-bold tracking-tight sm:text-5xl text-balance">
-              A new operating system for science.
+              Versioned, verifiable, interoperable.
             </h2>
             <p className="mt-6 text-lg leading-8 text-muted-foreground">
-              Built for the next generation of reproducible, collaborative research.
+              Built for citable, reproducible, clinically oriented research.
             </p>
           </motion.div>
 
@@ -666,25 +687,25 @@ export default function LandingPage() {
                   {[
                     {
                       icon: GitBranch,
-                      title: "Git-Based Provenance",
+                      title: "Content-Addressed Science",
                       description:
-                        "Every dataset, model, and result is a verifiable commit in a content-addressed repository.",
+                        "Every dataset, model, workflow, and result is a commit; environments pinned by OCI digest; lineage via W3C PROV.",
                       bg: "",
                       text: "text-foreground",
                     },
                     {
                       icon: ShieldCheck,
-                      title: "Verifiable Pipelines",
+                      title: "Compute Receipts & Attestations",
                       description:
-                        "Execute research workflows in secure, reproducible environments, from anywhere.",
+                        "One-click reproduce in a sandboxed runner. Outputs include inputs, env, logs, checksums, and a cryptographic attestation.",
                       bg: "",
                       text: "text-foreground",
                     },
                     {
                       icon: Database,
-                      title: "Interoperable Data",
+                      title: "FAIR + Contracts",
                       description:
-                        "Connect disparate datasets and models into a single, computable graph of knowledge.",
+                        "FAIR metadata by default; explicit I/O contracts for workflows; automatic license and consent checks.",
                       bg: "",
                       text: "text-foreground",
                     },
@@ -721,6 +742,49 @@ export default function LandingPage() {
               </div>
           </div>
       </section>
+
+        {/* Translation Trials Section */}
+        <section className="bg-muted/40 py-24 sm:py-32" role="region" aria-labelledby="translation-trials-heading">
+          <div className="mx-auto max-w-7xl px-6 lg:px-8">
+            <motion.div
+              className="mx-auto max-w-2xl text-center"
+              initial="initial"
+              whileInView="animate"
+              variants={fadeInUp}
+              viewport={{ once: true }}
+            >
+              <h2 id="translation-trials-heading" className="font-display text-3xl tracking-tight sm:text-4xl">
+                Translation Trials · Ready-to-fork templates
+              </h2>
+              <p className="mt-6 text-lg leading-8 text-muted-foreground">
+                Platform-trial scaffolds, eligibility extraction, safety monitoring, governance, and observability.
+              </p>
+            </motion.div>
+
+            <div className="mx-auto mt-16 max-w-5xl grid gap-8 sm:grid-cols-2">
+              <motion.div className="rounded-3xl glass-card p-6 shadow-elevation-1" variants={fadeInUp}>
+                <h3 className="font-semibold">Platform trial scaffold</h3>
+                <p className="mt-2 text-sm text-muted-foreground">Arms, response-adaptive randomization, and interim analyses with a simulator notebook.</p>
+              </motion.div>
+              <motion.div className="rounded-3xl glass-card p-6 shadow-elevation-1" variants={fadeInUp}>
+                <h3 className="font-semibold">Eligibility & outcomes extraction</h3>
+                <p className="mt-2 text-sm text-muted-foreground">NLP pipelines with test datasets (no PHI) and evaluation harnesses.</p>
+              </motion.div>
+              <motion.div className="rounded-3xl glass-card p-6 shadow-elevation-1" variants={fadeInUp}>
+                <h3 className="font-semibold">SENTINEL (Safety monitoring)</h3>
+                <p className="mt-2 text-sm text-muted-foreground">Drift and adverse event signal dashboards fed by compute receipts.</p>
+              </motion.div>
+              <motion.div className="rounded-3xl glass-card p-6 shadow-elevation-1" variants={fadeInUp}>
+                <h3 className="font-semibold">AEGIS (Governance)</h3>
+                <p className="mt-2 text-sm text-muted-foreground">Role-based approvals, protocol diffs, and Part 11–style audit records.</p>
+              </motion.div>
+              <motion.div className="rounded-3xl glass-card p-6 shadow-elevation-1 sm:col-span-2" variants={fadeInUp}>
+                <h3 className="font-semibold">VIGIL (Observability)</h3>
+                <p className="mt-2 text-sm text-muted-foreground">Lineage graphs for every dataset→analysis→result with provenance views.</p>
+              </motion.div>
+            </div>
+          </div>
+        </section>
 
         {/* CTA Section */}
         <section className="py-24 sm:py-32" role="region" aria-labelledby="cta-heading">
@@ -847,7 +911,7 @@ export default function LandingPage() {
             className="mt-10 flex items-center justify-center gap-2"
           >
             <p className="text-center text-xs leading-5 text-muted-foreground">
-              &copy; {new Date().getFullYear()} Runix Hub.
+              &copy; {new Date().getFullYear()} Estelion.
             </p>
             <motion.span 
               className="text-xs text-accent"
@@ -857,7 +921,7 @@ export default function LandingPage() {
               •
             </motion.span>
             <p className="text-center text-xs leading-5 text-muted-foreground">
-              Turning every scientific claim into a runnable, forkable, verifiable artefact.
+              Turning every scientific claim into a runnable, forkable, verifiable artifact.
             </p>
           </motion.div>
           </div>

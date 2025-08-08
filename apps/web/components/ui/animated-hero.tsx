@@ -165,16 +165,16 @@ export function AnimatedHero() {
               variants={itemVariants}
               className="text-display font-display tracking-tight text-foreground"
             >
-              Every claim,
+              Turn every scientific claim
               <br />
-              <span className="text-primary-500">verifiable & runnable.</span>
+              <span className="text-primary-500">into a runnable, citable artifact.</span>
             </motion.h1>
             
             <motion.p 
               variants={itemVariants}
               className="mt-6 text-lg leading-8 text-muted-foreground max-w-xl"
             >
-              The platform for modern science. We turn static papers into <span className="font-semibold text-foreground">versioned, forkable, verifiable</span> artefacts with git-grade provenance.
+              Fork the dataset and protocol, reproduce the result, and mint an attested record—with agents that help, and provenance you can trust.
             </motion.p>
             
             <motion.div 

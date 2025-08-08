@@ -687,83 +687,86 @@ const ChatPage = () => {
                               transition={{ duration: 0.3, ease: "easeOut" }}
                               layout
                               className={cn(
-                                "group relative mb-6 flex gap-3",
-                                isUser ? "flex-row-reverse" : "flex-row"
+                                "group relative mb-6",
+                                isUser ? "flex justify-end" : ""
                               )}
                             >
-                              {/* Simple Avatar */}
-                              <div className={cn(
-                                "w-8 h-8 rounded-full flex items-center justify-center text-xs font-medium shrink-0 mt-1",
-                                isUser 
-                                  ? "bg-foreground text-background" 
-                                  : "bg-foreground/10 text-foreground"
-                              )}>
-                                {isUser ? "U" : "AI"}
-                              </div>
-
-                              {/* Message Content */}
-                              <motion.div
-                                className={cn(
-                                  "flex-1 max-w-2xl rounded-2xl px-4 py-3 transition-all",
-                                  isUser
-                                    ? "bg-foreground text-background"
-                                    : "bg-foreground/5"
-                                )}
-                              >
-                                {(!isUser && !message.content) ? (
-                                  <div className="flex items-center gap-2 py-1">
-                                    <motion.div 
-                                      className="w-2 h-2 rounded-full bg-foreground/40" 
-                                      animate={{ opacity: [0.4, 1, 0.4] }} 
-                                      transition={{ repeat: Infinity, duration: 1 }} 
-                                    />
-                                    <motion.div 
-                                      className="w-2 h-2 rounded-full bg-foreground/40" 
-                                      animate={{ opacity: [0.4, 1, 0.4] }} 
-                                      transition={{ repeat: Infinity, duration: 1, delay: 0.2 }} 
-                                    />
-                                    <motion.div 
-                                      className="w-2 h-2 rounded-full bg-foreground/40" 
-                                      animate={{ opacity: [0.4, 1, 0.4] }} 
-                                      transition={{ repeat: Infinity, duration: 1, delay: 0.4 }} 
-                                    />
-                                  </div>
-                                ) : (
-                                  <div className={cn(
-                                    "prose prose-sm max-w-none leading-relaxed",
-                                    isUser ? "prose-invert" : "dark:prose-invert"
-                                  )}>
+                              {isUser ? (
+                                /* User Message - In Bubble */
+                                <motion.div
+                                  className="relative max-w-2xl rounded-3xl rounded-br-lg px-4 py-3 bg-foreground text-background"
+                                >
+                                  <div className="prose prose-sm prose-invert max-w-none leading-relaxed">
                                     <ReactMarkdown remarkPlugins={[remarkGfm]} components={markdownComponents}>
                                       {message.content}
                                     </ReactMarkdown>
                                   </div>
-                                )}
-                              </motion.div>
 
-                              {/* Action Buttons */}
-                              <div className={cn(
-                                "opacity-0 group-hover:opacity-100 transition-opacity flex items-start gap-1 mt-1",
-                                isUser ? "flex-row-reverse" : ""
-                              )}>
-                                <motion.button 
-                                  className="p-1.5 rounded-lg hover:bg-foreground/10 transition-colors"
-                                  onClick={() => copyToClipboard(message.content)}
-                                  whileHover={{ scale: 1.1 }}
-                                  whileTap={{ scale: 0.9 }}
-                                >
-                                  <Copy className="w-3.5 h-3.5 text-muted-foreground" />
-                                </motion.button>
-                                {!isUser && (
-                                  <motion.button 
-                                    className="p-1.5 rounded-lg hover:bg-foreground/10 transition-colors"
-                                    onClick={() => regenerateFromAI(index)}
-                                    whileHover={{ scale: 1.1 }}
-                                    whileTap={{ scale: 0.9 }}
-                                  >
-                                    <RotateCcw className="w-3.5 h-3.5 text-muted-foreground" />
-                                  </motion.button>
-                                )}
-                              </div>
+                                  {/* Action Button for User Message */}
+                                  <div className="absolute -bottom-8 right-0 opacity-0 group-hover:opacity-100 transition-opacity">
+                                    <motion.button 
+                                      className="p-1.5 rounded-lg bg-background/80 backdrop-blur-sm border border-border/50 hover:bg-background transition-colors shadow-sm"
+                                      onClick={() => copyToClipboard(message.content)}
+                                      whileHover={{ scale: 1.1 }}
+                                      whileTap={{ scale: 0.9 }}
+                                      title="Copy message"
+                                    >
+                                      <Copy className="w-3 h-3 text-muted-foreground" />
+                                    </motion.button>
+                                  </div>
+                                </motion.div>
+                              ) : (
+                                /* AI Message - No Bubble, Plain Text */
+                                <div className="relative max-w-4xl">
+                                  {!message.content ? (
+                                    <div className="flex items-center gap-2 py-2">
+                                      <motion.div 
+                                        className="w-2 h-2 rounded-full bg-foreground/40" 
+                                        animate={{ opacity: [0.4, 1, 0.4] }} 
+                                        transition={{ repeat: Infinity, duration: 1 }} 
+                                      />
+                                      <motion.div 
+                                        className="w-2 h-2 rounded-full bg-foreground/40" 
+                                        animate={{ opacity: [0.4, 1, 0.4] }} 
+                                        transition={{ repeat: Infinity, duration: 1, delay: 0.2 }} 
+                                      />
+                                      <motion.div 
+                                        className="w-2 h-2 rounded-full bg-foreground/40" 
+                                        animate={{ opacity: [0.4, 1, 0.4] }} 
+                                        transition={{ repeat: Infinity, duration: 1, delay: 0.4 }} 
+                                      />
+                                    </div>
+                                  ) : (
+                                    <div className="prose prose-sm dark:prose-invert max-w-none leading-relaxed text-foreground">
+                                      <ReactMarkdown remarkPlugins={[remarkGfm]} components={markdownComponents}>
+                                        {message.content}
+                                      </ReactMarkdown>
+                                    </div>
+                                  )}
+
+                                  {/* Action Buttons for AI Message */}
+                                  <div className="absolute -bottom-8 left-0 opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-1">
+                                    <motion.button 
+                                      className="p-1.5 rounded-lg bg-background/80 backdrop-blur-sm border border-border/50 hover:bg-background transition-colors shadow-sm"
+                                      onClick={() => copyToClipboard(message.content)}
+                                      whileHover={{ scale: 1.1 }}
+                                      whileTap={{ scale: 0.9 }}
+                                      title="Copy message"
+                                    >
+                                      <Copy className="w-3 h-3 text-muted-foreground" />
+                                    </motion.button>
+                                    <motion.button 
+                                      className="p-1.5 rounded-lg bg-background/80 backdrop-blur-sm border border-border/50 hover:bg-background transition-colors shadow-sm"
+                                      onClick={() => regenerateFromAI(index)}
+                                      whileHover={{ scale: 1.1 }}
+                                      whileTap={{ scale: 0.9 }}
+                                      title="Regenerate response"
+                                    >
+                                      <RotateCcw className="w-3 h-3 text-muted-foreground" />
+                                    </motion.button>
+                                  </div>
+                                </div>
+                              )}
                             </motion.div>
                           );
                         })}

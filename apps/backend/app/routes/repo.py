@@ -92,3 +92,47 @@ def write_file(body: FileWrite):
     return {"ok": True}
 
 
+@router.get('/repo/branches')
+def get_branches(repo: str = Query('demo')):
+    # Demo: return a static set
+    return {"repo": repo, "branches": ["main", "dev", "experiment/analysis"]}
+
+
+@router.get('/repo/search')
+def search_repo(repo: str = Query('demo'), q: str = Query('')):
+    base = REPOS.get(repo)
+    if not base:
+        raise HTTPException(404, 'Unknown repo')
+    if not q:
+        return {"results": []}
+    results = []
+    ql = q.lower()
+    for root, dirs, files in os.walk(base):
+        # skip hidden / heavy dirs
+        dirs[:] = [d for d in dirs if not d.startswith('.') and d not in ('node_modules', 'dist', 'build')]
+        for f in files:
+            if f.startswith('.'):
+                continue
+            p = os.path.join(root, f)
+            rel = os.path.relpath(p, base)
+            # filename match
+            if ql in f.lower():
+                results.append({"path": rel, "preview": f"{f}"})
+                continue
+            try:
+                # small text files only
+                if os.path.getsize(p) <= 200_000:
+                    with open(p, 'r', encoding='utf-8', errors='ignore') as fh:
+                        for i, line in enumerate(fh.readlines()[:500]):
+                            if ql in line.lower():
+                                results.append({"path": rel, "line": i+1, "preview": line.strip()[:200]})
+                                break
+            except Exception:
+                pass
+            if len(results) >= 50:
+                break
+        if len(results) >= 50:
+            break
+    return {"results": results}
+
+

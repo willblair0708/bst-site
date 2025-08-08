@@ -11,6 +11,7 @@ import { Button } from "@/components/ui/button"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Layers, PanelRight } from "lucide-react"
 import { WorkspaceTabs } from "@/components/ide/workspace-tabs"
+import { RepoEditor } from "@/components/ide/repo-editor"
 
 export function Shell({ repoId }: { repoId?: string }) {
   const jobs = useMemo(() => [
@@ -53,6 +54,7 @@ export function Shell({ repoId }: { repoId?: string }) {
               whileHover={prefersReducedMotion ? undefined : { scale: 1.002 }}
               className="rounded-2xl bg-primary-100/60 border border-border shadow-elevation-2 overflow-hidden min-h-0 hover:animate-spark-glow"
             >
+              {/* Swap in RepoEditor when file is opened (todo: state) */}
               <ProtocolEditor />
             </motion.div>
 

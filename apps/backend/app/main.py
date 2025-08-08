@@ -18,12 +18,18 @@ try:
     from app.services.rag import router as rag_router
     from app.services.chem import router as chem_router
     from app.services.docs import router as docs_router
+    from app.routes.evidence import router as evidence_router
+    from app.routes.streams import router as streams_router
+    from app.routes.workflows import router as workflows_router
 except Exception:  # pragma: no cover - allow running as module
     from .routes.tasks import router as tasks_router  # type: ignore
     from .routes.agents import router as agents_router  # type: ignore
     from .services.rag import router as rag_router  # type: ignore
     from .services.chem import router as chem_router  # type: ignore
     from .services.docs import router as docs_router  # type: ignore
+    from .routes.evidence import router as evidence_router  # type: ignore
+    from .routes.streams import router as streams_router  # type: ignore
+    from .routes.workflows import router as workflows_router  # type: ignore
 
 # Load environment variables from multiple potential .env locations
 load_dotenv()  # current working directory
@@ -192,6 +198,9 @@ app.include_router(agents_router, prefix="")
 app.include_router(rag_router, prefix="/services")
 app.include_router(chem_router, prefix="/services")
 app.include_router(docs_router, prefix="/services")
+app.include_router(evidence_router, prefix="")
+app.include_router(streams_router, prefix="")
+app.include_router(workflows_router, prefix="")
 
 
 # Serve OpenAPI action specs statically

@@ -182,6 +182,13 @@ def _analyst_instructions() -> str:
     )
 
 
+def _critic_instructions() -> str:
+    return (
+        "You are CRITIC, a verification agent. Cross-check claims for contradictions or overreach. "
+        "Flag weak evidence and suggest additional queries. Output flags + suggestions."
+    )
+
+
 ALIASES = {
     # legacy → new canonical
     "CROW": "SCOUT",
@@ -245,6 +252,15 @@ def build_agents(mcp_servers: list[Any] | None = None) -> dict[str, Any]:
         instructions=_analyst_instructions(),
         tools=[],
         model=os.getenv("MODEL_ANALYST", "gpt-4o-mini"),
+        mcp_servers=mcp_servers or [],
+        model_settings=common_settings,
+    )
+
+    critic = Agent(
+        name="CRITIC",
+        instructions=_critic_instructions(),
+        tools=[rag_search, rag_expand, web_search_openai],
+        model=os.getenv("MODEL_CRITIC", "gpt-4o-mini"),
         mcp_servers=mcp_servers or [],
         model_settings=common_settings,
     )
@@ -317,6 +333,7 @@ def build_agents(mcp_servers: list[Any] | None = None) -> dict[str, Any]:
         "ARCHIVIST": archivist,
         "ALCHEMIST": alchemist,
         "ANALYST": analyst,
+        "CRITIC": critic,
         "DIRECTOR": director,
     }
 

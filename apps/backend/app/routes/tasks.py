@@ -74,6 +74,14 @@ def _init_db():
         )
         """
     )
+    # Migration: add citation_index if missing
+    cur.execute("PRAGMA table_info(evidence)")
+    cols = [r[1] for r in cur.fetchall()]
+    if "citation_index" not in cols:
+        try:
+            cur.execute("ALTER TABLE evidence ADD COLUMN citation_index INTEGER")
+        except Exception:
+            pass
     conn.commit()
     conn.close()
 
@@ -103,12 +111,13 @@ def _insert_evidence_for_task(task_id: str, answer_text: str | None):
         section = "unknown"
         snippet = c.get("snippet") or ""
         text_hash = hashlib.sha256(snippet.encode("utf-8")).hexdigest() if snippet else None
+        citation_index = c.get("index") if isinstance(c.get("index"), int) else None
         cur.execute(
             """
-            INSERT INTO evidence (task_id, doc_id, source_type, section, span_start, span_end, text_hash, figure_id, table_id, claim_id, raw_text, created_at)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            INSERT INTO evidence (task_id, doc_id, source_type, section, span_start, span_end, text_hash, figure_id, table_id, claim_id, raw_text, created_at, citation_index)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             """,
-            (task_id, doc_id, source_type, section, 0, 0, text_hash, None, None, None, snippet, now),
+            (task_id, doc_id, source_type, section, 0, 0, text_hash, None, None, None, snippet, now, citation_index),
         )
     conn.commit()
     conn.close()

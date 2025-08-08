@@ -267,3 +267,53 @@ async def rag_search(q: str, k: int = 3, authorization: str | None = Header(defa
     return {"passages": results, "clusters": clusters}
 
 
+class IngestSourceRequest(BaseModel):
+    source_type: str  # 'doi' | 'arxiv'
+    id: str           # DOI string or arXiv id/url
+
+
+@router.post("/rag/ingest_from_source")
+async def rag_ingest_from_source(payload: IngestSourceRequest, authorization: str | None = Header(default=None)):
+    if not authorization:
+        return JSONResponse({"error": "Unauthorized"}, status_code=401)
+    st = (payload.source_type or '').lower()
+    doc_id = payload.id
+    title = None
+    text = None
+    if st == 'doi':
+        # fetch Unpaywall metadata (title, abstract if present)
+        import httpx
+        async with httpx.AsyncClient(timeout=20) as client:
+            r = await client.get(f"https://api.unpaywall.org/v2/{doc_id}", params={"email": os.getenv("UNPAYWALL_EMAIL", "dev@example.com")})
+            if r.status_code == 200:
+                data = r.json()
+                title = data.get('title')
+                # fallback: combine best OA location title/host
+                text = (data.get('oa_locations') or [{}])[0].get('host_type') or ''
+    elif st == 'arxiv':
+        # fetch arXiv atom entry summary
+        import httpx, xml.etree.ElementTree as ET
+        async with httpx.AsyncClient(timeout=20, follow_redirects=True) as client:
+            url = "https://export.arxiv.org/api/query"
+            r = await client.get(url, params={"search_query": f"id:{doc_id}", "start": 0, "max_results": 1})
+            if r.status_code == 200:
+                root = ET.fromstring(r.text)
+                ns = {"a": "http://www.w3.org/2005/Atom"}
+                entry = root.find("a:entry", ns)
+                if entry is not None:
+                    title = (entry.find("a:title", ns).text or "").strip()
+                    text = (entry.find("a:summary", ns).text or "").strip()
+    else:
+        return JSONResponse({"error": "Unsupported source_type"}, status_code=400)
+
+    if not text:
+        return JSONResponse({"error": "No text available to index"}, status_code=400)
+
+    # index into passages
+    idx = await rag_index(IndexRequest(doc_id=doc_id, title=title, doi=doc_id if st=='doi' else None, url=None, text=text, section='abstract'), authorization=authorization)  # type: ignore
+    try:
+        return idx  # type: ignore
+    except Exception:
+        return {"ok": True}
+
+

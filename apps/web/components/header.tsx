@@ -45,6 +45,7 @@ export function GitHubHeader() {
 
   const getLinkClasses = (href: string, variant?: 'primary') => {
     if (variant === 'primary') {
+      // Base style for primary link; when active we clear bg/border below
       return `${baseLinkClasses} px-4 py-2 bg-primary-100 text-foreground border border-primary-100/60 hover:bg-primary-100/80 shadow-elevation-1`
     }
     const active = isActive(href)
@@ -52,7 +53,7 @@ export function GitHubHeader() {
       baseLinkClasses,
       'px-4 py-2',
       active
-        ? 'text-foreground bg-muted/70 border border-muted/60'
+        ? 'text-foreground'
         : 'text-muted-foreground hover:text-foreground hover:bg-muted/70',
     ].join(' ')
   }
@@ -91,7 +92,7 @@ export function GitHubHeader() {
                       {active && (
                         <motion.span
                           layoutId="nav-active"
-                          className="absolute inset-0 rounded-full bg-muted/70 border border-muted/60"
+                          className={`absolute inset-0 rounded-full ${item.variant === 'primary' ? 'bg-primary-100 border border-primary-100/70' : 'bg-muted/70 border border-muted/60'}`}
                           style={{ zIndex: 0 }}
                           transition={{ type: 'spring', stiffness: 350, damping: 30 }}
                         />
@@ -99,7 +100,7 @@ export function GitHubHeader() {
                       <Link
                         href={item.href}
                         aria-current={active ? 'page' : undefined}
-                        className={`${getLinkClasses(item.href, item.variant)} relative z-10`}
+                        className={`${getLinkClasses(item.href, item.variant)} ${active && item.variant === 'primary' ? 'bg-transparent border-transparent shadow-none' : ''} relative z-10`}
                       >
                         {item.label}
                       </Link>

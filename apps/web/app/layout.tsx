@@ -31,7 +31,23 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className="dark">
+    <html lang="en" suppressHydrationWarning>
+      <head>
+        {/* Prevent theme flash: set initial theme class before hydration */}
+        <script
+          id="no-flash-theme"
+          dangerouslySetInnerHTML={{
+            __html: `(() => { try {
+              const stored = localStorage.getItem('theme');
+              const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+              const isDark = stored ? stored === 'dark' : prefersDark;
+              const root = document.documentElement;
+              if (isDark) root.classList.add('dark'); else root.classList.remove('dark');
+            } catch {} })();`
+          }}
+        />
+        <meta name="color-scheme" content="light dark" />
+      </head>
       <body className={`${satoshi.variable} ${inter.variable} ${jetbrainsMono.variable}`}>
         <LayoutWrapper>{children}</LayoutWrapper>
       </body>

@@ -11,10 +11,10 @@ export function WorkspaceTabs({ repoId, onOpenFile, selectedPath }: { repoId: st
   return (
     <Tabs defaultValue="files" className="h-full flex flex-col">
       <TabsList className="grid grid-cols-4 rounded-xl m-2 h-9">
-        <TabsTrigger value="files" aria-label="Files" className="p-0"><Files className="w-4 h-4" /></TabsTrigger>
-        <TabsTrigger value="search" aria-label="Search" className="p-0"><Search className="w-4 h-4" /></TabsTrigger>
-        <TabsTrigger value="branch" aria-label="Branch" className="p-0"><GitBranch className="w-4 h-4" /></TabsTrigger>
-        <TabsTrigger value="agents" aria-label="Agents" className="p-0"><Bot className="w-4 h-4" /></TabsTrigger>
+        <TabsTrigger value="files" aria-label="Files" className="p-0 data-[state=active]:bg-primary-100"><Files className="w-4 h-4" /></TabsTrigger>
+        <TabsTrigger value="search" aria-label="Search" className="p-0 data-[state=active]:bg-primary-100"><Search className="w-4 h-4" /></TabsTrigger>
+        <TabsTrigger value="branch" aria-label="Branch" className="p-0 data-[state=active]:bg-primary-100"><GitBranch className="w-4 h-4" /></TabsTrigger>
+        <TabsTrigger value="agents" aria-label="Agents" className="p-0 data-[state=active]:bg-primary-100"><Bot className="w-4 h-4" /></TabsTrigger>
       </TabsList>
 
       <TabsContent value="files" className="flex-1 overflow-hidden">

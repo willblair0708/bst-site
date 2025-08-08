@@ -150,6 +150,12 @@ function RepoSearch({ repoId, onOpenFile }: { repoId: string; onOpenFile: (p: st
     setResults(json?.results || [])
     setLoading(false)
   }, [repoId])
+  const highlight = (text: string) => {
+    if (!q.trim()) return text
+    const i = text.toLowerCase().indexOf(q.toLowerCase())
+    if (i === -1) return text
+    return <span>{text.slice(0,i)}<mark className="bg-primary-200/60 rounded px-0.5">{text.slice(i,i+q.length)}</mark>{text.slice(i+q.length)}</span>
+  }
   return (
     <div className="p-2 space-y-2 h-full">
       <div className="relative">
@@ -169,9 +175,14 @@ function RepoSearch({ repoId, onOpenFile }: { repoId: string; onOpenFile: (p: st
       <ScrollArea className="h-[calc(100%-48px)]">
         <div className="space-y-1">
           {results.map((r, idx) => (
-            <button key={idx} className="w-full text-left px-2 py-2 rounded-xl border border-transparent hover:bg-muted/40 hover:border-border/80 transition-colors" onClick={() => onOpenFile(r.path)}>
-              <div className="text-[13px] font-medium truncate">{r.path}</div>
-              {r.preview && <div className="text-xs text-muted-foreground line-clamp-2">{r.preview}</div>}
+            <button
+              key={idx}
+              className="w-full text-left px-2 py-2 rounded-xl border border-transparent hover:bg-muted/40 hover:border-border/80 transition-colors"
+              onClick={(e) => onOpenFile(r.path)}
+              onKeyDown={(e) => { if (e.altKey && e.key === 'Enter') onOpenFile(r.path) }}
+            >
+              <div className="text-[13px] font-medium truncate">{highlight(r.path)}</div>
+              {r.preview && <div className="text-xs text-muted-foreground line-clamp-2">{highlight(r.preview)}</div>}
             </button>
           ))}
           {!results.length && !q && <div className="text-xs text-muted-foreground p-2">Type to search files</div>}

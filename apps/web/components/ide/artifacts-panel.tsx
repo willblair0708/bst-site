@@ -2,7 +2,7 @@
 
 import React from "react"
 import { motion, AnimatePresence } from "framer-motion"
-import { Download, ExternalLink, FileSpreadsheet, GitBranch, Hash } from "lucide-react"
+import { Download, ExternalLink, FileSpreadsheet, GitBranch, Hash, FileText, FileJson } from "lucide-react"
 import Sparkline from "@/components/ui/sparkline"
 
 type Artifact = {
@@ -30,7 +30,7 @@ export function ArtifactsPanel({ artifacts }: { artifacts: Artifact[] }) {
           >
             <div className="flex items-center justify-between mb-2">
               <div className="flex items-center gap-2 min-w-0">
-                <FileSpreadsheet className="w-4 h-4 text-primary-600" />
+                {a.type === 'csv' ? <FileSpreadsheet className="w-4 h-4 text-primary-600" /> : a.type === 'txt' ? <FileText className="w-4 h-4 text-primary-600" /> : a.type === 'json' ? <FileJson className="w-4 h-4 text-primary-600" /> : <FileText className="w-4 h-4 text-primary-600" />}
                 <div className="truncate text-sm font-medium">{a.name}</div>
               </div>
               <div className="flex items-center gap-2">
@@ -53,7 +53,13 @@ export function ArtifactsPanel({ artifacts }: { artifacts: Artifact[] }) {
                 </table>
               </div>
             )}
-            {(!a.preview || a.type !== 'csv') && (
+            {a.type === 'txt' && a.preview && (
+              <pre className="text-xs p-2 rounded-lg border bg-card/40 overflow-auto">{a.preview}</pre>
+            )}
+            {a.type === 'json' && a.preview && Array.isArray(a.preview) && (
+              <pre className="text-xs p-2 rounded-lg border bg-card/40 overflow-auto">{JSON.stringify(a.preview, null, 2)}</pre>
+            )}
+            {(!a.preview || (a.type !== 'csv' && a.type !== 'txt' && a.type !== 'json')) && (
               <div className="text-xs text-muted-foreground">{a.path}</div>
             )}
 

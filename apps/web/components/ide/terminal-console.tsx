@@ -21,6 +21,17 @@ export function TerminalConsole({ repoId = 'demo' }: { repoId?: string }) {
   const append = (l: Line | string, kind: Line["kind"] = "out") =>
     setLines((prev) => [...prev, typeof l === "string" ? { text: l, kind } : l])
 
+  const ansiToHtml = (text: string) => {
+    // very small subset of ANSI color codes
+    return text.replace(/\u001b\[(\d+?)m/g, (_m, code) => {
+      const c = Number(code)
+      const map: Record<number, string> = {
+        31: 'text-red-600', 32: 'text-green-600', 33: 'text-amber-600', 34: 'text-blue-600', 35: 'text-fuchsia-600', 36: 'text-cyan-600', 0: ''
+      }
+      return `</span><span class=\"${map[c]||''}\">`
+    })
+  }
+
   const helpText = [
     "help — show commands",
     "echo <text> — print",
@@ -129,7 +140,7 @@ export function TerminalConsole({ repoId = 'demo' }: { repoId?: string }) {
     <div className="flex flex-col h-32 bg-neutral-100/60">
       <div ref={viewRef} className="flex-1 overflow-auto font-mono text-[12px] p-2">
         {lines.map((l, i) => (
-          <div key={i} className={l.kind === "err" ? "text-destructive-500" : l.kind === "cmd" ? "text-foreground" : "text-muted-foreground"}>{l.text}</div>
+          <div key={i} className={l.kind === "err" ? "text-destructive-500" : l.kind === "cmd" ? "text-foreground" : "text-muted-foreground"} dangerouslySetInnerHTML={{ __html: l.kind === 'out' ? ansiToHtml(l.text) : l.text }} />
         ))}
       </div>
       <div className="border-t px-2 py-1">

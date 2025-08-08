@@ -458,7 +458,7 @@ const ChatPage = () => {
               ) : (
                 <div className="h-full overflow-hidden">
                   <div ref={listRef} onScroll={handleScroll} className="h-full max-w-2xl mx-auto px-6 py-8 space-y-6 overflow-auto">
-                    {messages.slice(-MAX_MESSAGES).map((message, index) => {
+                      {messages.slice(-MAX_MESSAGES).map((message, index) => {
                       const isUser = message.author === 'User';
                       return (
                         <motion.div
@@ -474,30 +474,36 @@ const ChatPage = () => {
                               <Bot className="w-4 h-4" />
                             </div>
                           )}
-                          <Card className={cn("max-w-[68ch] rounded-2xl text-sm", isUser ? "bg-foreground text-background" : "bg-card/60")} variant={isUser ? undefined : "glass" as any}>
-                            <CardContent className="px-4 py-3">
+                          <div className={cn("relative max-w-[68ch] rounded-2xl text-sm px-4 py-3 border shadow-sm", isUser ? "bg-primary text-primary-foreground" : "bg-muted/70") }>
+                            {(!isUser && !message.content) ? (
+                              <div className="flex items-center gap-2">
+                                <motion.div className="w-2 h-2 rounded-full bg-muted-foreground/70" animate={{ opacity: [0.3, 1, 0.3] }} transition={{ repeat: Infinity, duration: 1 }} />
+                                <motion.div className="w-2 h-2 rounded-full bg-muted-foreground/70" animate={{ opacity: [0.3, 1, 0.3] }} transition={{ repeat: Infinity, duration: 1, delay: 0.15 }} />
+                                <motion.div className="w-2 h-2 rounded-full bg-muted-foreground/70" animate={{ opacity: [0.3, 1, 0.3] }} transition={{ repeat: Infinity, duration: 1, delay: 0.3 }} />
+                              </div>
+                            ) : (
                               <ReactMarkdown remarkPlugins={[remarkGfm]} components={markdownComponents}>{message.content}</ReactMarkdown>
-                              {!isUser && extractLinks(message.content).length > 0 && (
-                                <div className="mt-3 flex flex-wrap gap-2">
-                                  {extractLinks(message.content).map((l, i) => (
-                                    <a key={i} href={l.href} target="_blank" rel="noreferrer" className="text-xs inline-flex items-center gap-1 px-2 py-1 rounded-full border bg-background/50 hover:bg-background transition-colors">
-                                      <Globe className="w-3.5 h-3.5" /> {l.text}
-                                    </a>
-                                  ))}
-                                </div>
+                            )}
+                            {!isUser && message.content && extractLinks(message.content).length > 0 && (
+                              <div className="mt-3 flex flex-wrap gap-2">
+                                {extractLinks(message.content).map((l, i) => (
+                                  <a key={i} href={l.href} target="_blank" rel="noreferrer" className="text-xs inline-flex items-center gap-1 px-2 py-1 rounded-full border bg-background/50 hover:bg-background transition-colors">
+                                    <Globe className="w-3.5 h-3.5" /> {l.text}
+                                  </a>
+                                ))}
+                              </div>
+                            )}
+                            {/* Hover toolbar */}
+                            <div className="absolute -top-3 right-2 hidden group-hover/message:flex gap-1">
+                              <button className="px-2 py-1 text-[11px] rounded-md border bg-background/90 hover:bg-background" onClick={() => copyToClipboard(message.content)}>Copy</button>
+                              {!isUser && (
+                                <button className="px-2 py-1 text-[11px] rounded-md border bg-background/90 hover:bg-background" onClick={() => regenerateFromAI(index)}>Regenerate</button>
                               )}
-                              {/* Hover toolbar */}
-                              <div className="absolute -top-3 right-2 hidden group-hover/message:flex gap-1">
-                                <button className="px-2 py-1 text-[11px] rounded-md border bg-background/90 hover:bg-background" onClick={() => copyToClipboard(message.content)}>Copy</button>
-                                {!isUser && (
-                                  <button className="px-2 py-1 text-[11px] rounded-md border bg-background/90 hover:bg-background" onClick={() => regenerateFromAI(index)}>Regenerate</button>
-                                )}
-                              </div>
-                              <div className="mt-1 text-[11px] text-muted-foreground opacity-0 group-hover/message:opacity-100 transition-opacity">
-                                {new Date(message.createdAt || Date.now()).toLocaleTimeString()}
-                              </div>
-                            </CardContent>
-                          </Card>
+                            </div>
+                            <div className="mt-1 text-[11px] text-muted-foreground opacity-0 group-hover/message:opacity-100 transition-opacity">
+                              {new Date(message.createdAt || Date.now()).toLocaleTimeString()}
+                            </div>
+                          </div>
                           {isUser && (
                             <div className="shrink-0 w-8 h-8 rounded-full border bg-muted flex items-center justify-center">
                               <User className="w-4 h-4" />
@@ -506,17 +512,7 @@ const ChatPage = () => {
                         </motion.div>
                       );
                     })}
-                    {isAiTyping && (
-                      <motion.div className="flex justify-start" variants={fadeInUp} initial="initial" animate="animate">
-                        <div className="rounded-2xl px-4 py-3 text-sm shadow-sm bg-muted">
-                          <div className="flex items-center gap-2">
-                            <motion.div className="w-2 h-2 rounded-full bg-muted-foreground" animate={{ opacity: [0.3, 1, 0.3] }} transition={{ repeat: Infinity, duration: 1 }} />
-                            <motion.div className="w-2 h-2 rounded-full bg-muted-foreground" animate={{ opacity: [0.3, 1, 0.3] }} transition={{ repeat: Infinity, duration: 1, delay: 0.15 }} />
-                            <motion.div className="w-2 h-2 rounded-full bg-muted-foreground" animate={{ opacity: [0.3, 1, 0.3] }} transition={{ repeat: Infinity, duration: 1, delay: 0.3 }} />
-                          </div>
-                        </div>
-                      </motion.div>
-                    )}
+                    {/* Typing indicator now rendered inside the latest assistant bubble when empty */}
                     <div ref={endRef} />
                   </div>
                 </div>

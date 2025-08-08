@@ -183,7 +183,8 @@ export function Shell({ repoId }: { repoId?: string }) {
     } catch {}
   }
 
-  const gridCols = `grid-cols-[${leftWidth}px_minmax(0,1fr)_${rightWidth}px]`
+  // Define grid columns via inline style so Tailwind JIT doesn't strip dynamic values
+  const gridTemplateColumns = `${leftWidth}px minmax(0,1fr) ${rightWidth}px`
 
   return (
     <div className="h-full overflow-hidden">
@@ -191,7 +192,7 @@ export function Shell({ repoId }: { repoId?: string }) {
       <div className="h-full flex flex-col min-w-0 overflow-hidden">
         {/* Center work area */}
         <div className="flex-1 grid" style={{ gridTemplateRows: `minmax(0,1fr) ${bottomHeight}px` }}>
-          <div className={`grid ${gridCols} gap-2 min-h-0 overflow-hidden p-2`}>
+          <div className={"grid gap-2 min-h-0 overflow-hidden p-2"} style={{ gridTemplateColumns }}>
             {/* Explorer */}
             <div className="relative rounded-2xl bg-card border border-border shadow-elevation-1 overflow-hidden min-h-0">
               <WorkspaceTabs repoId={repoKey} onOpenFile={(p) => setSelectedPath(p)} selectedPath={selectedPath} />

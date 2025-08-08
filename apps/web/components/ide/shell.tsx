@@ -333,7 +333,9 @@ export function Shell({ repoId }: { repoId?: string }) {
               </div>
               <div className="flex-1 min-h-0">
                 {/* Render one TerminalConsole for now; multi-terminals can be wired by id if needed */}
-                <TerminalConsole repoId={repoKey} />
+                <div className="h-full min-h-0">
+                  <TerminalConsole repoId={repoKey} />
+                </div>
               </div>
             </motion.div>
           </div>

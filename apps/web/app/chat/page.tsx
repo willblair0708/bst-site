@@ -12,6 +12,7 @@ import {
   RotateCcw,
   Square,
   Globe,
+    Copy,
 } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
@@ -457,24 +458,35 @@ const ChatPage = () => {
                 </div>
               ) : (
                 <div className="h-full overflow-hidden">
-                  <div ref={listRef} onScroll={handleScroll} className="h-full max-w-3xl mx-auto px-6 py-8 overflow-auto">
-                      {messages.slice(-MAX_MESSAGES).map((message, index) => {
+                  <div ref={listRef} onScroll={handleScroll} className="h-full max-w-5xl lg:max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 overflow-auto">
+                    {messages.slice(-MAX_MESSAGES).map((message, index) => {
                       const isUser = message.author === 'User';
+                      const prev = messages[index - 1];
+                      const next = messages[index + 1];
+                      const startsGroup = !prev || prev.author !== message.author;
+                      const endsGroup = !next || next.author !== message.author;
                       return (
                         <motion.div
                           key={message.id}
-                          className={cn("group/message relative flex items-start mt-5 sm:mt-6 first:mt-0", isUser ? "justify-end" : "justify-start")}
+                          className={cn(
+                            "group/message relative grid items-end gap-2 mt-3 sm:mt-4 first:mt-0"
+                          )}
                           variants={fadeInUp}
                           initial="initial"
                           animate="animate"
-                          transition={{ delay: index * 0.05, duration: 0.35 }}
+                          transition={{ delay: index * 0.03, duration: 0.3 }}
                         >
-                          <div className={cn(
-                            "relative max-w-[720px] rounded-2xl text-[15px] leading-[1.6] px-4 py-3 border shadow-sm",
-                            isUser
-                              ? "bg-primary/10 text-foreground border-primary/20 ml-auto"
-                              : "bg-card text-foreground border-border/60 mr-auto"
-                          )}>
+                          {/* Bubble */}
+                          <div
+                            className={cn(
+                              "relative max-w-[1000px] lg:max-w-[1100px] rounded-2xl text-[15px] leading-[1.6] px-4 py-3 border shadow-sm",
+                              isUser
+                                ? "ml-auto bg-gradient-to-br from-primary to-primary/90 text-primary-foreground border-primary/40 shadow-elevation-2"
+                                : "mr-auto bg-card text-foreground border-border/60 shadow-elevation-1",
+                              startsGroup && "mt-2",
+                              endsGroup && "mb-1"
+                            )}
+                          >
                             {(!isUser && !message.content) ? (
                               <div className="flex items-center gap-2">
                                 <motion.div className="w-2 h-2 rounded-full bg-muted-foreground/70" animate={{ opacity: [0.3, 1, 0.3] }} transition={{ repeat: Infinity, duration: 1 }} />
@@ -484,6 +496,7 @@ const ChatPage = () => {
                             ) : (
                               <ReactMarkdown remarkPlugins={[remarkGfm]} components={markdownComponents}>{message.content}</ReactMarkdown>
                             )}
+
                             {!isUser && message.content && extractLinks(message.content).length > 0 && (
                               <div className="mt-3 flex flex-wrap gap-2">
                                 {extractLinks(message.content).map((l, i) => (
@@ -493,21 +506,34 @@ const ChatPage = () => {
                                 ))}
                               </div>
                             )}
-                            {/* Hover toolbar */}
-                            <div className="absolute -top-3 right-2 hidden group-hover/message:flex gap-1">
-                              <button className="px-2 py-1 text-[11px] rounded-md border bg-background/90 hover:bg-background" onClick={() => copyToClipboard(message.content)}>Copy</button>
-                              {!isUser && (
-                                <button className="px-2 py-1 text-[11px] rounded-md border bg-background/90 hover:bg-background" onClick={() => regenerateFromAI(index)}>Regenerate</button>
-                              )}
-                            </div>
-                            <div className="mt-1 text-[11px] text-muted-foreground opacity-0 group-hover/message:opacity-100 transition-opacity">
-                              {new Date(message.createdAt || Date.now()).toLocaleTimeString()}
-                            </div>
                           </div>
+
+                          {/* Actions under the bubble */}
+                          <div className={cn("mt-1 hidden group-hover/message:flex gap-1", isUser ? "justify-end" : "justify-start")}
+                          >
+                            <button
+                              className="p-1.5 rounded-md border bg-background/90 hover:bg-background"
+                              onClick={() => copyToClipboard(message.content)}
+                              title="Copy"
+                              aria-label="Copy message"
+                            >
+                              <Copy className="w-3.5 h-3.5" />
+                            </button>
+                            {!isUser && (
+                              <button
+                                className="p-1.5 rounded-md border bg-background/90 hover:bg-background"
+                                onClick={() => regenerateFromAI(index)}
+                                title="Regenerate"
+                                aria-label="Regenerate response"
+                              >
+                                <RotateCcw className="w-3.5 h-3.5" />
+                              </button>
+                            )}
+                          </div>
+
                         </motion.div>
                       );
                     })}
-                    {/* Typing indicator now rendered inside the latest assistant bubble when empty */}
                     <div ref={endRef} />
                   </div>
                 </div>
@@ -515,7 +541,7 @@ const ChatPage = () => {
             </div>
             {/* Input area inside center pane */}
             <div className="p-4 sm:p-6 bg-background/70 border-t backdrop-blur supports-[backdrop-filter]:bg-background/60">
-              <div className="max-w-2xl mx-auto">
+              <div className="max-w-5xl lg:max-w-6xl mx-auto">
                 <motion.div className="relative bg-card rounded-2xl border focus-within:border-ring transition-colors shadow-soft" variants={fadeInUp} initial="initial" animate="animate" transition={{ delay: 0.2, duration: 0.5 }}>
                   <div className="flex items-center p-2">
                     <Textarea

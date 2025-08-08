@@ -158,8 +158,8 @@ export function TerminalConsole({ repoId = 'demo' }: { repoId?: string }) {
   }, [])
 
   return (
-    <div className="flex flex-col h-32 bg-neutral-100/60">
-      <div ref={viewRef} className="flex-1 overflow-auto font-mono text-[12px] p-2 select-text">
+    <div className="flex flex-col h-full min-h-0 bg-neutral-100/60">
+      <div ref={viewRef} className="flex-1 min-h-0 overflow-auto font-mono text-[12px] p-2 select-text">
         {lines.map((l, i) => (
           <div key={i} className={l.kind === "err" ? "text-destructive-500" : l.kind === "cmd" ? "text-foreground" : "text-muted-foreground"} dangerouslySetInnerHTML={{ __html: l.kind === 'out' ? renderLine(l.text) : l.text }} />
         ))}

@@ -2,7 +2,6 @@
 
 import React, { useMemo } from "react"
 import { motion, useReducedMotion } from "framer-motion"
-import { Sidebar } from "@/components/ide/sidebar"
 import { TerminalConsole } from "@/components/ide/terminal-console"
 import { ProtocolEditor } from "@/components/protocol-editor"
 import { DAGGraph } from "@/components/dag-graph"
@@ -11,6 +10,7 @@ import { QuickActions } from "@/components/ide/quick-actions"
 import { Button } from "@/components/ui/button"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Layers, PanelRight } from "lucide-react"
+import { WorkspaceTabs } from "@/components/ide/workspace-tabs"
 
 export function Shell({ repoId }: { repoId?: string }) {
   const jobs = useMemo(() => [
@@ -34,15 +34,17 @@ export function Shell({ repoId }: { repoId?: string }) {
   const prefersReducedMotion = useReducedMotion()
 
   return (
-    <div className="flex h-full overflow-hidden">
-      {/* Left rail */}
-      <Sidebar />
-
+    <div className="h-full overflow-hidden">
       {/* Main column */}
-      <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
+      <div className="h-full flex flex-col min-w-0 overflow-hidden">
         {/* Center work area */}
         <div className="flex-1 grid grid-rows-[minmax(0,1fr)_auto] gap-2 min-h-0 overflow-hidden p-2">
-          <div className="grid grid-cols-[minmax(0,1fr)_360px] gap-2 min-h-0 overflow-hidden">
+          <div className="grid grid-cols-[240px_minmax(0,1fr)_360px] gap-2 min-h-0 overflow-hidden">
+            {/* Explorer */}
+            <div className="rounded-2xl bg-card border border-border shadow-elevation-1 overflow-hidden min-h-0">
+              <WorkspaceTabs repoId={repoId || 'demo'} onOpenFile={() => {}} />
+            </div>
+
             {/* Notebook/Protocol editor */}
             <motion.div
               initial={prefersReducedMotion ? false : { opacity: 0, y: 12 }}

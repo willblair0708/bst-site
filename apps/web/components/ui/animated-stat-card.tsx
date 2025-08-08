@@ -9,6 +9,7 @@ interface AnimatedStatCardProps {
   value: string
   growth: string
   index: number
+  tone?: 'positive' | 'alert' | 'neutral'
 }
 
 const itemVariants = {
@@ -16,7 +17,7 @@ const itemVariants = {
   visible: { opacity: 1, y: 0 }
 }
 
-export function AnimatedStatCard({ label, value, growth, index }: AnimatedStatCardProps) {
+export function AnimatedStatCard({ label, value, growth, index, tone = 'neutral' }: AnimatedStatCardProps) {
   return (
     <motion.div 
       variants={itemVariants}
@@ -29,14 +30,17 @@ export function AnimatedStatCard({ label, value, growth, index }: AnimatedStatCa
     >
       <motion.div 
         className="text-3xl md:text-4xl font-display font-light text-foreground mb-2 transition-medium group-hover:text-primary"
-        initial={{ scale: 0 }}
-        animate={{ scale: 1 }}
-        transition={{ delay: 1.0 + index * 0.1, duration: 0.6, type: "spring" }}
+        initial={{ scale: 0.9, opacity: 0 }}
+        animate={tone === 'positive' ? { scale: [1, 1.12, 1], opacity: 1 } : { scale: 1, opacity: 1 }}
+        transition={tone === 'positive' 
+          ? { duration: 0.6, times: [0, 0.5, 1], type: 'tween', ease: 'easeInOut', delay: 0.8 + index * 0.1 }
+          : { delay: 0.8 + index * 0.1, duration: 0.6, type: 'spring' }
+        }
       >
         <span className="font-mono">{value}</span>
       </motion.div>
       <div className="text-sm text-muted-foreground mb-2 font-medium">{label}</div>
-      <div className="text-xs text-accent font-medium font-mono flex items-center justify-center">
+      <div className={`text-xs font-medium font-mono flex items-center justify-center ${tone === 'positive' ? 'text-accent' : tone === 'alert' ? 'text-destructive' : 'text-muted-foreground'}`}>
         <TrendingUp className="w-4 h-4 mr-1" />
         {growth}
       </div>

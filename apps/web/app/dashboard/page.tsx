@@ -241,6 +241,27 @@ export default function DashboardPage() {
             </div>
           </div>
         </motion.div>
+
+        {/* Quick Filters */}
+        <motion.div
+          variants={itemVariants}
+          className="mb-8 flex flex-wrap items-center gap-2"
+        >
+          {[
+            { label: 'All', emoji: '✨' },
+            { label: 'Active', emoji: '🟢' },
+            { label: 'Enrolling', emoji: '🧪' },
+            { label: 'Alerts', emoji: '⚠️' },
+          ].map((f) => (
+            <button
+              key={f.label}
+              className="rounded-full px-3 py-1.5 bg-muted/50 hover:bg-muted text-sm text-foreground border border-muted/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 transition-colors"
+            >
+              <span className="mr-1.5">{f.emoji}</span>
+              {f.label}
+            </button>
+          ))}
+        </motion.div>
     
         {/* Main Content */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -250,22 +271,24 @@ export default function DashboardPage() {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               {stats.map((stat, index) => {
                 const pastelBg = stat.changeType === "alert"
-                  ? "bg-error-100 border-error-100/60"
+                  ? "bg-[#FFD5DD] border-[#FFD5DD]/60"
                   : stat.changeType === "increase"
                   ? "bg-accent-100 border-accent-100/60"
                   : "bg-primary-100 border-primary-100/60"
                 return (
-                  <div
+                  <motion.div
                     key={index}
                     className={`rounded-2xl p-4 shadow-elevation-1 border ${pastelBg}`}
+                    whileTap={{ scale: 0.99, transition: { duration: 0.07, ease: "easeOut" } }}
                   >
                     <AnimatedStatCard
                       label={stat.label}
                       value={stat.value}
                       growth={stat.change}
                       index={index}
+                      tone={stat.changeType === 'alert' ? 'alert' : stat.changeType === 'increase' ? 'positive' : 'neutral'}
                     />
-                  </div>
+                  </motion.div>
                 )
               })}
             </div>
@@ -275,6 +298,7 @@ export default function DashboardPage() {
               title="Active Repositories"
               icon={Beaker}
               action={{ label: "View All Repositories", href: "/repositories" }}
+              pillar="versioned"
             >
               <div className="space-y-4">
                 {trials.map((repository) => (
@@ -288,6 +312,7 @@ export default function DashboardPage() {
               title="Recent Activity"
               icon={GitBranch}
               action={{ label: "View Full History", href: "/history" }}
+              pillar="versioned"
             >
               <ul className="space-y-4 relative pl-4 border-l border-border/70">
                 {activity.map((item, index) => (
@@ -304,6 +329,7 @@ export default function DashboardPage() {
               title="Favorite Models"
               icon={Star}
               action={{ label: "Explore Models", href: "/models" }}
+              pillar="models"
             >
               <div className="space-y-4">
                 {models.map((model) => (
@@ -317,6 +343,7 @@ export default function DashboardPage() {
               title="Discussions"
               icon={MessageSquare}
               action={{ label: "View All", href: "/discussions" }}
+              pillar="collab"
             >
               <ul className="space-y-3">
                 {discussions.map((discussion, index) => (
@@ -326,7 +353,7 @@ export default function DashboardPage() {
             </DashboardCard>
 
             {/* Learn & Contribute */}
-            <DashboardCard title="Learn & Contribute" icon={LifeBuoy} action={null}>
+            <DashboardCard title="Learn & Contribute" icon={LifeBuoy} action={null} pillar="versioned">
               <div className="space-y-3">
                 <ResourceLink
                   icon={Book}
@@ -353,29 +380,37 @@ export default function DashboardPage() {
 }
 
 // Sub-components
-const DashboardCard = ({ title, icon: Icon, action, children }: { title: string, icon: React.ElementType, action: {label: string, href: string} | null, children: React.ReactNode }) => (
-  <motion.div
-    className="bg-card/90 backdrop-blur supports-[backdrop-filter]:bg-card/80 border border-border rounded-3xl shadow-elevation-1"
-    variants={itemVariants}
-    whileHover={{ y: -2 }}
-    transition={{ duration: 0.2 }}
-  >
-    <div className="p-5 border-b border-border/70 flex items-center justify-between rounded-t-3xl">
-      <div className="flex items-center gap-3">
-        <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-muted/50">
-          <Icon className="w-4 h-4 text-muted-foreground" />
+const DashboardCard = ({ title, icon: Icon, action, children, pillar = "versioned" }: { title: string, icon: React.ElementType, action: {label: string, href: string} | null, children: React.ReactNode, pillar?: "versioned" | "models" | "collab" }) => {
+  const capClass = pillar === "models"
+    ? "bg-accent-100 border border-accent-100/60"
+    : pillar === "collab"
+    ? "bg-[#EBD4FF] border border-[#EBD4FF]/60"
+    : "bg-primary-100 border border-primary-100/60"
+  return (
+    <motion.div
+      className="bg-card/90 backdrop-blur supports-[backdrop-filter]:bg-card/80 border border-border rounded-3xl shadow-elevation-1"
+      variants={itemVariants}
+      whileHover={{ y: -2 }}
+      whileTap={{ scale: 0.99, transition: { duration: 0.07, ease: "easeOut" } }}
+      transition={{ duration: 0.2 }}
+    >
+      <div className="p-5 border-b border-border/70 flex items-center justify-between rounded-t-3xl">
+        <div className="flex items-center gap-3">
+          <div className={`flex h-9 w-9 items-center justify-center rounded-xl ${capClass}`}>
+            <Icon className="w-4 h-4 text-foreground/80" />
+          </div>
+          <h2 className="text-base font-semibold text-foreground">{title}</h2>
         </div>
-        <h2 className="text-base font-semibold text-foreground">{title}</h2>
+        {action && (
+          <Button variant="outline" size="sm" asChild className="rounded-xl">
+            <Link href={action.href} className="focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 rounded-xl">{action.label}</Link>
+          </Button>
+        )}
       </div>
-      {action && (
-        <Button variant="outline" size="sm" asChild className="rounded-xl">
-          <Link href={action.href} className="focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 rounded-xl">{action.label}</Link>
-        </Button>
-      )}
-    </div>
-    <div className="p-5">{children}</div>
-  </motion.div>
-);
+      <div className="p-5">{children}</div>
+    </motion.div>
+  )
+};
 
 const RepositoryCard = ({ repository }: { repository: Trial }) => {
   const progress = Math.min(100, Math.round((repository.patientEnrollment / repository.totalPatients) * 100))
@@ -413,18 +448,21 @@ const RepositoryCard = ({ repository }: { repository: Trial }) => {
   )
 };
 
-const ActivityItem = ({ item }: { item: Activity }) => (
-  <li className="relative flex items-start gap-4">
-    <span className="absolute -left-[9px] mt-1 inline-block h-2 w-2 rounded-full bg-primary-500" />
-    <item.Icon className="w-4 h-4 mt-0.5 text-muted-foreground" />
-    <div className="flex-1 text-sm">
-      <p className="text-foreground">
-        <span className="font-medium">{item.user}</span> {item.details}
-      </p>
-      <p className="text-xs text-muted-foreground mt-1">{item.time}</p>
-    </div>
-  </li>
-);
+const ActivityItem = ({ item }: { item: Activity }) => {
+  const dotClass = item.type === "PULL_REQUEST" ? "bg-accent-500" : item.type === "COMMIT" ? "bg-primary-500" : "bg-muted-foreground"
+  return (
+    <li className="relative flex items-start gap-4">
+      <span className={`absolute -left-[9px] mt-1 inline-block h-2 w-2 rounded-full ${dotClass}`} />
+      <item.Icon className="w-4 h-4 mt-0.5 text-muted-foreground" />
+      <div className="flex-1 text-sm">
+        <p className="text-foreground">
+          <span className="font-medium">{item.user}</span> {item.details}
+        </p>
+        <p className="text-xs text-muted-foreground mt-1">{item.time}</p>
+      </div>
+    </li>
+  )
+};
 
 const DiscussionItem = ({ discussion }: { discussion: Discussion }) => (
   <li className="text-sm">

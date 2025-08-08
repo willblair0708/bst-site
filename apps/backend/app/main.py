@@ -19,6 +19,7 @@ try:
     from app.services.chem import router as chem_router
     from app.services.docs import router as docs_router
     from app.routes.evidence import router as evidence_router
+    from app.routes.repo import router as repo_router
     from app.routes.streams import router as streams_router
     from app.routes.workflows import router as workflows_router
 except Exception:  # pragma: no cover - allow running as module
@@ -28,6 +29,7 @@ except Exception:  # pragma: no cover - allow running as module
     from .services.chem import router as chem_router  # type: ignore
     from .services.docs import router as docs_router  # type: ignore
     from .routes.evidence import router as evidence_router  # type: ignore
+    from .routes.repo import router as repo_router  # type: ignore
     from .routes.streams import router as streams_router  # type: ignore
     from .routes.workflows import router as workflows_router  # type: ignore
 
@@ -201,6 +203,7 @@ app.include_router(docs_router, prefix="/services")
 app.include_router(evidence_router, prefix="")
 app.include_router(streams_router, prefix="")
 app.include_router(workflows_router, prefix="")
+app.include_router(repo_router, prefix="")
 
 
 # Serve OpenAPI action specs statically

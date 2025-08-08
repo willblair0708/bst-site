@@ -469,7 +469,7 @@ const ChatPage = () => {
                         <motion.div
                           key={message.id}
                           className={cn(
-                            "group/message relative grid items-end gap-2 mt-3 sm:mt-4 first:mt-0"
+                            "group/message relative mt-3 sm:mt-4 first:mt-0"
                           )}
                           variants={fadeInUp}
                           initial="initial"
@@ -479,10 +479,10 @@ const ChatPage = () => {
                           {/* Bubble */}
                           <div
                             className={cn(
-                              "relative max-w-[1000px] lg:max-w-[1100px] rounded-2xl text-[15px] leading-[1.6] px-4 py-3 border shadow-sm",
+                              "relative rounded-2xl text-[15px] leading-[1.6] px-4 py-3 border shadow-sm",
                               isUser
-                                ? "ml-auto bg-gradient-to-br from-primary to-primary/90 text-primary-foreground border-primary/40 shadow-elevation-2"
-                                : "mr-auto bg-card text-foreground border-border/60 shadow-elevation-1",
+                                ? "ml-auto bg-gradient-to-br from-primary to-primary/90 text-primary-foreground border-primary/40 shadow-elevation-2 max-w-[92%]"
+                                : "mr-auto bg-card text-foreground border-border/60 shadow-elevation-1 max-w-[92%]",
                               startsGroup && "mt-2",
                               endsGroup && "mb-1"
                             )}
@@ -508,8 +508,8 @@ const ChatPage = () => {
                             )}
                           </div>
 
-                          {/* Actions under the bubble */}
-                          <div className={cn("mt-1 hidden group-hover/message:flex gap-1", isUser ? "justify-end" : "justify-start")}
+                          {/* Actions under the bubble (always visible) */}
+                          <div className={cn("mt-1 flex gap-1", isUser ? "justify-end" : "justify-start")}
                           >
                             <button
                               className="p-1.5 rounded-md border bg-background/90 hover:bg-background"

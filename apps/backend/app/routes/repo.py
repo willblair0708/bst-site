@@ -2,10 +2,13 @@ import os
 from fastapi import APIRouter, HTTPException, Query
 from pydantic import BaseModel
 from typing import List, Literal, Optional
+import subprocess
+import shlex
 
 router = APIRouter()
 
-BST_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
+# Resolve monorepo root: apps/backend/app/routes -> ../../../../ (repo root)
+BST_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', '..', '..'))
 REPOS = {
     "demo": os.path.join(BST_ROOT, 'examples', 'hello-world-trial')
 }
@@ -134,5 +137,37 @@ def search_repo(repo: str = Query('demo'), q: str = Query('')):
         if len(results) >= 50:
             break
     return {"results": results}
+
+
+class ExecRequest(BaseModel):
+    repo: str
+    cmd: str
+
+
+ALLOW_CMDS = {"ls", "cat", "head", "tail", "wc", "pwd", "echo"}
+
+
+@router.post('/repo/exec')
+def exec_repo(body: ExecRequest):
+    base = REPOS.get(body.repo)
+    if not base:
+        raise HTTPException(404, 'Unknown repo')
+    cmd = body.cmd.strip()
+    if not cmd:
+        return {"ok": True, "code": 0, "stdout": "", "stderr": ""}
+    try:
+        parts = shlex.split(cmd)
+        if parts[0] not in ALLOW_CMDS:
+            raise HTTPException(400, f"Command not allowed: {parts[0]}")
+        # Reject absolute or parent paths in args
+        for p in parts[1:]:
+            if p.startswith('/') or '..' in p:
+                raise HTTPException(400, 'Invalid path argument')
+        res = subprocess.run(cmd, cwd=base, shell=True, capture_output=True, text=True, timeout=10)
+        return {"ok": True, "code": res.returncode, "stdout": res.stdout, "stderr": res.stderr}
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(500, 'Exec failed')
 
 

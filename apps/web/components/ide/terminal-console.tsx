@@ -4,7 +4,7 @@ import React, { useCallback, useEffect, useRef, useState } from "react"
 
 type Line = { text: string; kind?: "out" | "err" | "cmd" }
 
-export function TerminalConsole() {
+export function TerminalConsole({ repoId = 'demo' }: { repoId?: string }) {
   const [lines, setLines] = useState<Line[]>([
     { text: "Runix Terminal — type 'help' for commands", kind: "out" },
   ])
@@ -23,6 +23,7 @@ export function TerminalConsole() {
     "echo <text> — print",
     "review <topic> — agentic referenced review",
     "bundle save — persist current protocol",
+    "ls | cat <file> | head <file> | tail <file> | wc <file> — repo shell",
   ]
 
   const handle = useCallback(async () => {
@@ -39,6 +40,13 @@ export function TerminalConsole() {
       }
       if (name === "echo") {
         append(rest.join(" "))
+        return
+      }
+      if (["ls","cat","head","tail","wc","pwd"].includes(name)) {
+        const res = await fetch('/api/repo/exec', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ repo: repoId, cmd }) })
+        const json = await res.json()
+        if (json.stdout) append(json.stdout)
+        if (json.stderr) append(json.stderr, 'err')
         return
       }
       if (name === "review") {

@@ -98,7 +98,7 @@ export function Shell({ repoId }: { repoId?: string }) {
             transition={{ duration: 0.3, ease: "easeOut", delay: 0.08 }}
             className="rounded-2xl bg-collaboration-100/70 border border-border shadow-elevation-2 overflow-hidden hover:animate-spark-glow"
           >
-            <TerminalConsole />
+            <TerminalConsole repoId={repoId || 'demo'} />
           </motion.div>
         </div>
       </div>

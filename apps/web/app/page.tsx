@@ -330,7 +330,7 @@ export default function LandingPage() {
                       variants={fadeInUp}
                       transition={{ duration: 0.6, ease: EASING.smooth as any }}
                       whileHover={!prefersReducedMotion ? MOTION.bento_hover : undefined}
-                      className={`group relative flex h-full flex-col overflow-hidden rounded-3xl border bg-card shadow-elevation-1 transition-shadow hover:shadow-elevation-2`}
+                      className={`group relative flex h-full flex-col overflow-hidden rounded-3xl glass-card transition-shadow hover:shadow-elevation-2`}
                     >
                 {/* Top-right micro status pill: verified + visibility */}
                 <div className="absolute right-3 top-3 z-10">
@@ -512,7 +512,7 @@ export default function LandingPage() {
               {/* Agent suggestion card - Human-AI Collaboration Pillar (Action Layer) */}
               <motion.div
                 variants={fadeInUp}
-                className="rounded-3xl border bg-card p-6 shadow-elevation-1"
+                className="rounded-3xl glass-card p-6 shadow-elevation-1"
                 whileHover={!prefersReducedMotion ? { y: -2, scale: 1.01, transition: { duration: 0.2, ease: EASING.runix as any } } : undefined}
               >
                 <div className="flex items-start gap-4">
@@ -547,7 +547,7 @@ export default function LandingPage() {
               {/* Peer review card */}
               <motion.div
                 variants={fadeInUp}
-                className="rounded-3xl border bg-card p-6 shadow-elevation-1"
+                className="rounded-3xl glass-card p-6 shadow-elevation-1"
                 whileHover={!prefersReducedMotion ? { y: -2, scale: 1.01, transition: { duration: 0.2, ease: EASING.runix as any } } : undefined}
               >
                 <div className="flex items-start gap-4">
@@ -582,7 +582,7 @@ export default function LandingPage() {
               {/* Lineage graph card */}
               <motion.div
                 variants={fadeInUp}
-                className="rounded-3xl border bg-card p-6 shadow-elevation-1 lg:col-span-2"
+                className="rounded-3xl glass-card p-6 shadow-elevation-1 lg:col-span-2"
                 whileHover={!prefersReducedMotion ? { y: -2, scale: 1.01, transition: { duration: 0.2, ease: EASING.runix as any } } : undefined}
               >
                 <div className="flex items-start gap-4">
@@ -728,7 +728,7 @@ export default function LandingPage() {
             {/* CTA glow accents */}
             <div aria-hidden className="pointer-events-none absolute -top-8 left-12 -z-10 h-48 w-48 rounded-full bg-white/20 blur-2xl" />
             <div aria-hidden className="pointer-events-none absolute -bottom-8 right-12 -z-10 h-56 w-56 rounded-full bg-accent-100/60 blur-3xl" />
-                        <motion.div 
+               <motion.div 
             className="relative isolate overflow-hidden rounded-3xl bg-gradient-to-br from-primary via-primary-600 to-accent/30 px-6 py-24 text-center shadow-2xl sm:px-16 border border-primary/20"
                             initial="initial"
                             whileInView="animate"
@@ -774,7 +774,7 @@ export default function LandingPage() {
                   </div>
 
                         {/* Background decoration */}
-            <motion.div 
+              <motion.div 
               className="absolute -top-24 right-0 -z-10 transform-gpu blur-3xl" 
                       aria-hidden="true"
               animate={{
@@ -832,6 +832,7 @@ export default function LandingPage() {
               >
                 <Link 
                   href={link.href} 
+                  prefetch={false}
                   className="text-sm leading-6 text-muted-foreground hover:text-primary transition-colors duration-200"
                 >
                   {link.label}

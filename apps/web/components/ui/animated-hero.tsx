@@ -84,16 +84,10 @@ const HeroViz = () => {
   return (
     <div className="relative flex items-center justify-center w-full h-64 lg:h-80">
       {/* Grid background */}
-      <div className="absolute inset-0 z-0">
-        <div 
-            className="w-full h-full"
-            style={{
-                backgroundImage: 'radial-gradient(circle, hsl(var(--border)) 1px, transparent 1px)',
-                backgroundSize: '20px 20px',
-            }}
-        />
+      <motion.div className="absolute inset-0 z-0" initial={false} animate={!prefersReducedMotion ? { y: [0, -6, 0] } : undefined} transition={{ duration: 16, repeat: Infinity, ease: 'easeInOut' }}>
+        <div className="w-full h-full" style={{ backgroundImage: 'radial-gradient(circle, hsl(var(--border)) 1px, transparent 1px)', backgroundSize: '20px 20px' }} />
         <div className="absolute inset-0 z-1 bg-gradient-to-t from-background via-background to-transparent" />
-      </div>
+      </motion.div>
 
       {/* Pillar Cards */}
       <motion.div 
@@ -127,6 +121,7 @@ const HeroViz = () => {
                           }
                         : undefined
                     }
+                    animate={!prefersReducedMotion ? { y: [pillar.y, pillar.y + 2, pillar.y], transition: { duration: 6 + i, repeat: Infinity, ease: 'easeInOut' } } : undefined}
                 >
                     <div className="flex flex-col items-center justify-center h-full p-4 text-center">
                         <div className={`p-3 mb-3 rounded-full ${pillar.bg} border ${pillar.border}`}>

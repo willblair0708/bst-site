@@ -23,6 +23,22 @@ const jetbrainsMono = IBM_Plex_Mono({
 export const metadata: Metadata = {
   title: "Runix - The Operating System for Science",
   description: "Runix is a platform for versioning, composing, and collaborating on scientific knowledge.",
+  openGraph: {
+    title: "Runix - The Operating System for Science",
+    description: "Versioned, composable, verifiable science.",
+    url: "https://runix.example.com",
+    siteName: "Runix",
+    images: [
+      { url: "/og.png", width: 1200, height: 630, alt: "Runix" }
+    ],
+    type: "website"
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Runix - The Operating System for Science",
+    description: "Versioned, composable, verifiable science.",
+    images: ["/og.png"],
+  }
 };
 
 export default function RootLayout({

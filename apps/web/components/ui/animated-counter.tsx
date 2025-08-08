@@ -46,6 +46,7 @@ export function AnimatedCounter({
     <motion.span
       ref={nodeRef}
       className={className}
+      aria-live="off"
       initial={{ opacity: 0 }}
       animate={{ opacity: isInView ? 1 : 0 }}
     >

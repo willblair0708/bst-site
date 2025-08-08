@@ -33,19 +33,20 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
-        {/* Prevent theme flash: set initial theme class before hydration */}
+        {/* Prevent theme flash: set initial theme class before hydration; default to light unless user chose dark */}
         <script
           id="no-flash-theme"
           dangerouslySetInnerHTML={{
             __html: `(() => { try {
-              const stored = localStorage.getItem('theme');
-              const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
-              const isDark = stored ? stored === 'dark' : prefersDark;
               const root = document.documentElement;
+              const stored = localStorage.getItem('theme');
+              const isDark = stored === 'dark';
               if (isDark) root.classList.add('dark'); else root.classList.remove('dark');
             } catch {} })();`
           }}
         />
+        {/* Ensure background is light before CSS loads to avoid black flash */}
+        <style id="pretheme-bg">{`html,body{background:#F4F4F2}`}</style>
         <meta name="color-scheme" content="light dark" />
       </head>
       <body className={`${satoshi.variable} ${inter.variable} ${jetbrainsMono.variable}`}>

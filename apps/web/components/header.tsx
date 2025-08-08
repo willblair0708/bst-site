@@ -100,6 +100,7 @@ export function GitHubHeader() {
                       <Link
                         href={item.href}
                         aria-current={active ? 'page' : undefined}
+                        prefetch={false}
                         className={`${getLinkClasses(item.href, item.variant)} ${active && item.variant === 'primary' ? 'bg-transparent border-transparent shadow-none' : ''} relative z-10`}
                       >
                         {item.label}

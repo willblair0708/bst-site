@@ -11,6 +11,7 @@ import { WorkspaceTabs } from "@/components/ide/workspace-tabs"
 import { RepoEditor } from "@/components/ide/repo-editor"
 import { AgentChat } from "@/components/ide/agent-chat"
 import { ArtifactsPanel } from "@/components/ide/artifacts-panel"
+import { EvidencePanel, EvidenceJob } from "@/components/ide/evidence-panel"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 
 function useLocalStorageState<T>(key: string, initial: T) {
@@ -34,6 +35,7 @@ export function Shell({ repoId }: { repoId?: string }) {
   const prefersReducedMotion = useReducedMotion()
   const [selectedPath, setSelectedPath] = React.useState<string | undefined>(undefined)
   const [artifacts, setArtifacts] = React.useState<any[]>([])
+  const [jobs, setJobs] = React.useState<EvidenceJob[]>([])
 
   // Editor open tabs (paths)
   const [openFiles, setOpenFiles] = useLocalStorageState<string[]>(`ide:${repoKey}:openFiles`, [])
@@ -137,8 +139,23 @@ export function Shell({ repoId }: { repoId?: string }) {
     const cat = await fetch('/api/repo/exec', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ repo: repoKey, cmd: `cat artifact.csv` }) })
     const catJson = await cat.json()
     const rows = (catJson.stdout || '').trim().split('\n').map((r: string) => r.split(',').map((s: string) => s.trim()))
-    if (rows.length) setArtifacts([{ name: 'artifact.csv', path: 'artifact.csv', type: 'csv', preview: rows }])
+    if (rows.length) {
+      const a = { name: 'artifact.csv', path: 'artifact.csv', type: 'csv' as const, preview: rows }
+      setArtifacts([a])
+      setJobs([{ id: String(Date.now()), name: 'Analyst · Notebook run', status: 'success', startedAt: new Date().toISOString(), durationSec: 6, costCents: 12, artifacts: [a] }])
+    }
   }, [repoKey])
+
+  // Secondary editor (open to side)
+  const [secondaryPath, setSecondaryPath] = React.useState<string | undefined>(undefined)
+  useEffect(() => {
+    const onOpenSide = (e: any) => {
+      const path = e?.detail?.path as string
+      if (path) setSecondaryPath(path)
+    }
+    window.addEventListener('ide:openToSide' as any, onOpenSide)
+    return () => window.removeEventListener('ide:openToSide' as any, onOpenSide)
+  }, [])
 
   useEffect(() => {
     // ensure selectedPath becomes an open tab
@@ -212,15 +229,24 @@ export function Shell({ repoId }: { repoId?: string }) {
                   </button>
                 ))}
               </div>
-              <RepoEditor
-                repoId={repoKey}
-                path={selectedPath}
-                onDirtyChange={(dirty) => {
-                  if (!selectedPath) return
-                  const el = document.querySelector(`span[data-dirty-for="${CSS.escape(selectedPath)}"]`) as HTMLElement | null
-                  if (el) el.style.opacity = dirty ? '1' : '0'
-                }}
-              />
+              <div className="flex h-[calc(100%-32px)]">
+                <div className={secondaryPath ? 'w-1/2 min-w-0' : 'w-full min-w-0'}>
+                  <RepoEditor
+                    repoId={repoKey}
+                    path={selectedPath}
+                    onDirtyChange={(dirty) => {
+                      if (!selectedPath) return
+                      const el = document.querySelector(`span[data-dirty-for=\"${CSS.escape(selectedPath)}\"]`) as HTMLElement | null
+                      if (el) el.style.opacity = dirty ? '1' : '0'
+                    }}
+                  />
+                </div>
+                {secondaryPath && (
+                  <div className="w-1/2 min-w-0 border-l">
+                    <RepoEditor repoId={repoKey} path={secondaryPath} />
+                  </div>
+                )}
+              </div>
               {/* Resize handle */}
               <div
                 role="separator"
@@ -261,7 +287,7 @@ export function Shell({ repoId }: { repoId?: string }) {
                 </TabsContent>
                 <TabsContent value="evidence" className="flex-1 min-h-0 overflow-hidden">
                   <ScrollArea className="rounded-2xl bg-card border border-border shadow-elevation-1 p-2 flex-1">
-                    <ArtifactsPanel artifacts={artifacts as any} />
+                    <EvidencePanel jobs={jobs} />
                   </ScrollArea>
                 </TabsContent>
               </Tabs>

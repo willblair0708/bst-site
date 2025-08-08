@@ -136,11 +136,32 @@ export function TerminalConsole({ repoId = 'demo' }: { repoId?: string }) {
     }
   }
 
+  const isHash = (s: string) => /\b[0-9a-f]{6,40}\b/.test(s)
+  const isPath = (s: string) => /\b([\w\-\.\/]+\.[\w\-]+|\/[\w\-\.\/]+)\b/.test(s)
+  const renderLine = (text: string) => {
+    const html = ansiToHtml(text).replace(/\b([0-9a-f]{6,40})\b/g, '<span data-kind="hash" class="underline cursor-pointer">$1<\/span>')
+      .replace(/(\w[\w\-\.\/]+\.[\w\-]+)/g, '<span data-kind="path" class="underline cursor-pointer">$1<\/span>')
+    return html
+  }
+
+  useEffect(() => {
+    const el = viewRef.current
+    if (!el) return
+    const onClick = (e: any) => {
+      const t = e.target as HTMLElement
+      if (t?.dataset?.kind === 'hash' || t?.dataset?.kind === 'path') {
+        navigator.clipboard.writeText(t.textContent || '')
+      }
+    }
+    el.addEventListener('click', onClick)
+    return () => el.removeEventListener('click', onClick)
+  }, [])
+
   return (
     <div className="flex flex-col h-32 bg-neutral-100/60">
-      <div ref={viewRef} className="flex-1 overflow-auto font-mono text-[12px] p-2">
+      <div ref={viewRef} className="flex-1 overflow-auto font-mono text-[12px] p-2 select-text">
         {lines.map((l, i) => (
-          <div key={i} className={l.kind === "err" ? "text-destructive-500" : l.kind === "cmd" ? "text-foreground" : "text-muted-foreground"} dangerouslySetInnerHTML={{ __html: l.kind === 'out' ? ansiToHtml(l.text) : l.text }} />
+          <div key={i} className={l.kind === "err" ? "text-destructive-500" : l.kind === "cmd" ? "text-foreground" : "text-muted-foreground"} dangerouslySetInnerHTML={{ __html: l.kind === 'out' ? renderLine(l.text) : l.text }} />
         ))}
       </div>
       <div className="border-t px-2 py-1">

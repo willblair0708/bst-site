@@ -9,6 +9,7 @@ import { GlobalSearch } from '@/components/global-search'
 import { NotificationCenter } from '@/components/notifications'
 import { ThemeToggle } from '@/components/theme-toggle'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
+import { Button } from '@/components/ui/button'
 import { MOTION, EASING } from '@/lib/motion/tokens'
 import { cn } from '@/lib/utils'
 
@@ -491,36 +492,7 @@ export function GitHubHeader() {
               >
                 <NotificationCenter />
               </motion.div>
-
-              {/* User avatar */}
-              <motion.div 
-                variants={{
-                  hidden: { opacity: 0, y: -10 },
-                  visible: { opacity: 1, y: 0 }
-                }}
-              >
-                <button
-                  type="button"
-                  aria-label="Profile"
-                  title="Profile"
-                  className="h-9 w-9 rounded-xl relative overflow-hidden border-0 focus:ring-0 flex items-center justify-center transition-colors duration-200 hover:bg-accent/10"
-                >
-                  <Avatar
-                    className={cn(
-                      'h-6 w-6 rounded-full border border-border/40',
-                      'transition-all duration-200',
-                      activePillar.ring
-                    )}
-                  >
-                    <AvatarFallback className="text-[10px] font-bold bg-muted text-foreground rounded-full">
-                      {currentUser.name.split(' ').map(n => n[0]).join('')}
-                    </AvatarFallback>
-                  </Avatar>
-                </button>
-              </motion.div>
             </motion.div>
-
-
           </div>
         </div>
       </div>

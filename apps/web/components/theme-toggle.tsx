@@ -3,9 +3,12 @@
 import React, { useState, useEffect } from 'react'
 import { Sun, Moon } from 'lucide-react'
 import { Button } from '@/components/ui/button'
+import { motion, useReducedMotion, AnimatePresence } from 'framer-motion'
+import { EASING } from '@/lib/motion/tokens'
 
 export function ThemeToggle() {
   const [theme, setTheme] = useState<'light' | 'dark'>('light')
+  const prefersReducedMotion = useReducedMotion()
 
   useEffect(() => {
     // Check if user has a theme preference
@@ -29,14 +32,65 @@ export function ThemeToggle() {
       variant="ghost"
       size="icon"
       onClick={toggleTheme}
-      className="h-9 w-9 rounded-xl"
+      className="h-9 w-9 rounded-xl relative overflow-hidden"
       title={`Switch to ${theme === 'light' ? 'dark' : 'light'} theme`}
     >
-      {theme === 'light' ? (
-        <Moon className="w-4 h-4 text-muted-foreground hover:text-foreground transition-medium" />
-      ) : (
-        <Sun className="w-4 h-4 text-muted-foreground hover:text-foreground transition-medium" />
-      )}
+      <AnimatePresence mode="wait">
+        {theme === 'light' ? (
+          <motion.div
+            key="moon"
+            initial={!prefersReducedMotion ? { opacity: 0, rotate: -180, scale: 0.5 } : { opacity: 1 }}
+            animate={!prefersReducedMotion ? { 
+              opacity: 1, 
+              rotate: 0, 
+              scale: 1,
+              color: "hsl(var(--muted-foreground))"
+            } : { opacity: 1 }}
+            exit={!prefersReducedMotion ? { opacity: 0, rotate: 180, scale: 0.5 } : { opacity: 0 }}
+            whileHover={!prefersReducedMotion ? {
+              color: "hsl(var(--foreground))",
+              filter: "drop-shadow(0 0 8px hsl(var(--accent) / 0.4))",
+              rotate: [0, -10, 10, 0]
+            } : undefined}
+            transition={{ duration: 0.3, ease: EASING.smooth }}
+            className="absolute inset-0 flex items-center justify-center"
+          >
+            <Moon className="w-4 h-4" />
+          </motion.div>
+        ) : (
+          <motion.div
+            key="sun"
+            initial={!prefersReducedMotion ? { opacity: 0, rotate: 180, scale: 0.5 } : { opacity: 1 }}
+            animate={!prefersReducedMotion ? { 
+              opacity: 1, 
+              rotate: 0, 
+              scale: 1,
+              color: "hsl(var(--muted-foreground))"
+            } : { opacity: 1 }}
+            exit={!prefersReducedMotion ? { opacity: 0, rotate: -180, scale: 0.5 } : { opacity: 0 }}
+            whileHover={!prefersReducedMotion ? {
+              color: "hsl(var(--foreground))",
+              filter: "drop-shadow(0 0 8px hsl(var(--primary) / 0.4))",
+              rotate: [0, 15, -15, 0]
+            } : undefined}
+            transition={{ duration: 0.3, ease: EASING.smooth }}
+            className="absolute inset-0 flex items-center justify-center"
+          >
+            <motion.div
+              animate={!prefersReducedMotion ? {
+                rotate: [0, 360]
+              } : undefined}
+              transition={!prefersReducedMotion ? {
+                duration: 8,
+                repeat: Infinity,
+                ease: "linear"
+              } : undefined}
+            >
+              <Sun className="w-4 h-4" />
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </Button>
   )
 }

@@ -1,8 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server'
 
-export async function POST(_request: NextRequest, { params }: { params: { slug: string } }) {
+export async function POST(_request: NextRequest, { params }: { params: Promise<{ slug: string }> }) {
   // Stub publish endpoint: would validate artifacts, compute digests, write versions, and revalidate
-  return NextResponse.json({ ok: true, slug: params.slug })
+  const { slug } = await params
+  return NextResponse.json({ ok: true, slug })
 }
 
 

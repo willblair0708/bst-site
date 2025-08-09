@@ -3,8 +3,8 @@ import { mockModelDetails } from '@/lib/mock-data'
 
 export const revalidate = 60
 
-export async function GET(_request: NextRequest, { params }: { params: { slug: string; semver: string } }) {
-  const { slug, semver } = params
+export async function GET(_request: NextRequest, { params }: { params: Promise<{ slug: string; semver: string }> }) {
+  const { slug, semver } = await params
   const detail = mockModelDetails[slug]
   if (!detail) return NextResponse.json({ error: 'Not found' }, { status: 404 })
   const version = detail.versions.find((v) => v.semver === semver)

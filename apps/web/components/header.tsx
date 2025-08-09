@@ -97,17 +97,17 @@ export function GitHubHeader() {
 
   return (
     <header className="sticky top-0 z-50 border-b border-border/40 bg-background/80 backdrop-blur-xl supports-[backdrop-filter]:bg-background/60">
-      {/* Enhanced gradient glow */}
-      <div aria-hidden className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-24 bg-gradient-to-b from-primary-50/30 via-primary-100/10 to-transparent dark:from-primary-900/20 dark:via-primary-800/5" />
-      <div aria-hidden className="pointer-events-none absolute inset-x-0 top-0 -z-20 h-px bg-gradient-to-r from-transparent via-primary-300/50 to-transparent dark:via-primary-600/30" />
+      {/* Enhanced background */}
+      <div aria-hidden className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-24 bg-primary-50/20 dark:bg-primary-900/10" />
+      <div aria-hidden className="pointer-events-none absolute inset-x-0 top-0 -z-20 h-px bg-primary-300/30 dark:bg-primary-600/20" />
       <div className="w-full px-4 sm:px-6 lg:px-10">
         <div className="grid grid-cols-[auto_1fr_auto] items-center gap-4 h-20">
           {/* Left side - Logo */}
           <motion.div 
             className="flex items-center relative"
-            initial={{ background: "transparent" }}
+            initial={{ backgroundColor: "transparent" }}
             whileHover={!prefersReducedMotion ? {
-              background: "radial-gradient(circle at center, hsl(var(--primary) / 0.08) 0%, transparent 70%)"
+              backgroundColor: "hsl(var(--primary) / 0.08)"
             } : undefined}
             transition={{ duration: 0.4, ease: EASING.smooth }}
           >
@@ -115,56 +115,40 @@ export function GitHubHeader() {
               <motion.div
                 className="absolute inset-0 rounded-2xl opacity-0 pointer-events-none"
                 initial={{ 
-                  background: "linear-gradient(135deg, hsl(var(--primary) / 0.05) 0%, hsl(var(--accent) / 0.05) 100%)",
+                  backgroundColor: "hsl(var(--primary) / 0.05)",
                   opacity: 0
                 }}
                 whileHover={!prefersReducedMotion ? {
                   opacity: 1,
-                  background: [
-                    "linear-gradient(135deg, hsl(var(--primary) / 0.05) 0%, hsl(var(--accent) / 0.05) 100%)",
-                    "linear-gradient(135deg, hsl(var(--primary) / 0.12) 0%, hsl(var(--accent) / 0.08) 100%)",
-                    "linear-gradient(135deg, hsl(var(--primary) / 0.08) 0%, hsl(var(--accent) / 0.06) 100%)"
-                  ]
+                  backgroundColor: "hsl(var(--primary) / 0.12)"
                 } : undefined}
-                transition={{ duration: 0.6, ease: EASING.smooth }}
+                transition={{ duration: 0.3, ease: EASING.smooth }}
               />
               <motion.span 
                 className="text-2xl text-foreground relative z-10 font-bold tracking-tight"
                 initial={{ color: "hsl(var(--foreground))" }}
                 whileHover={!prefersReducedMotion ? {
-                  color: ["hsl(var(--foreground))", "hsl(var(--primary))", "hsl(var(--foreground))"],
-                  textShadow: [
-                    "0 0 0px transparent",
-                    "0 0 8px hsl(var(--primary) / 0.3)",
-                    "0 0 0px transparent"
-                  ]
+                  color: "hsl(var(--primary))"
                 } : undefined}
-                transition={{ duration: 0.8, ease: EASING.smooth }}
+                transition={{ duration: 0.3, ease: EASING.smooth }}
               >
                 Runix
               </motion.span>
               <motion.div
                 className="ml-2.5 w-2.5 h-2.5 rounded-full relative z-10"
                 initial={{ 
-                  background: "hsl(var(--primary) / 0.6)",
-                  boxShadow: "0 0 0px transparent"
+                  backgroundColor: "hsl(var(--primary) / 0.6)"
                 }}
                 animate={!prefersReducedMotion ? { 
-                  background: [
+                  backgroundColor: [
                     "hsl(var(--primary) / 0.6)",
                     "hsl(var(--accent) / 0.8)",
                     "hsl(var(--primary) / 0.6)"
                   ],
-                  rotate: [0, 180, 360],
-                  boxShadow: [
-                    "0 0 0px transparent",
-                    "0 0 8px hsl(var(--primary) / 0.4)",
-                    "0 0 0px transparent"
-                  ]
+                  rotate: [0, 180, 360]
                 } : undefined}
                 whileHover={!prefersReducedMotion ? {
-                  background: "hsl(var(--accent))",
-                  boxShadow: "0 0 12px hsl(var(--accent) / 0.6)"
+                  backgroundColor: "hsl(var(--accent))"
                 } : undefined}
                 transition={{ 
                   duration: 3, 
@@ -240,19 +224,14 @@ export function GitHubHeader() {
                         <motion.div
                           className="absolute inset-0 rounded-xl opacity-0 pointer-events-none"
                           initial={{ 
-                            background: "linear-gradient(135deg, hsl(var(--accent) / 0.05) 0%, hsl(var(--primary) / 0.05) 100%)",
+                            backgroundColor: "hsl(var(--primary) / 0.05)",
                             opacity: 0
                           }}
                           whileHover={!prefersReducedMotion && !active ? {
-                            opacity: [0, 0.6, 1, 0.8],
-                            background: [
-                              "linear-gradient(135deg, hsl(var(--accent) / 0.05) 0%, hsl(var(--primary) / 0.05) 100%)",
-                              "linear-gradient(135deg, hsl(var(--accent) / 0.08) 0%, hsl(var(--primary) / 0.08) 100%)",
-                              "linear-gradient(135deg, hsl(var(--accent) / 0.12) 0%, hsl(var(--primary) / 0.12) 100%)",
-                              "linear-gradient(135deg, hsl(var(--accent) / 0.1) 0%, hsl(var(--primary) / 0.1) 100%)"
-                            ]
+                            opacity: 1,
+                            backgroundColor: "hsl(var(--primary) / 0.12)"
                           } : undefined}
-                          transition={{ duration: 0.4, ease: EASING.smooth }}
+                          transition={{ duration: 0.3, ease: EASING.smooth }}
                         />
                         
                         {subs ? (
@@ -280,8 +259,7 @@ export function GitHubHeader() {
                                     aria-hidden
                                     initial={{ rotate: 0, y: 0 }}
                                     whileHover={!prefersReducedMotion ? { 
-                                      y: 0.5,
-                                      filter: "drop-shadow(0 2px 4px hsl(var(--primary) / 0.2))"
+                                      y: 0.5
                                     } : undefined}
                                     transition={{ duration: 0.2, ease: EASING.swift }}
                                   >
@@ -313,14 +291,14 @@ export function GitHubHeader() {
                                       <motion.div
                                         className="absolute inset-0 opacity-0 pointer-events-none"
                                         initial={{ 
-                                          background: "linear-gradient(90deg, hsl(var(--accent) / 0.1) 0%, hsl(var(--primary) / 0.1) 100%)",
+                                          backgroundColor: "hsl(var(--primary) / 0.1)",
                                           opacity: 0,
                                           x: "-100%"
                                         }}
                                         whileHover={!prefersReducedMotion ? {
                                           opacity: 1,
                                           x: "0%",
-                                          background: "linear-gradient(90deg, hsl(var(--accent) / 0.15) 0%, hsl(var(--primary) / 0.15) 100%)"
+                                          backgroundColor: "hsl(var(--primary) / 0.15)"
                                         } : undefined}
                                         transition={{ duration: 0.3, ease: EASING.swift }}
                                       />
@@ -401,14 +379,14 @@ export function GitHubHeader() {
                         <motion.div
                           className="absolute inset-0 rounded-full opacity-0 pointer-events-none"
                           initial={{ 
-                            background: "linear-gradient(90deg, hsl(var(--accent) / 0.1) 0%, hsl(var(--primary) / 0.1) 100%)",
+                            backgroundColor: "hsl(var(--primary) / 0.1)",
                             opacity: 0,
                             scaleX: 0.5
                           }}
                           whileHover={!prefersReducedMotion ? {
                             opacity: 1,
                             scaleX: 1,
-                            background: "linear-gradient(90deg, hsl(var(--accent) / 0.15) 0%, hsl(var(--primary) / 0.15) 100%)"
+                            backgroundColor: "hsl(var(--primary) / 0.15)"
                           } : undefined}
                           transition={{ duration: 0.25, ease: EASING.swift }}
                         />
@@ -423,8 +401,7 @@ export function GitHubHeader() {
                           <motion.span
                             initial={{ color: isSubActive ? "hsl(var(--primary))" : "hsl(var(--muted-foreground))" }}
                             whileHover={!prefersReducedMotion && !isSubActive ? {
-                              color: "hsl(var(--foreground))",
-                              textShadow: "0 0 4px hsl(var(--foreground) / 0.3)"
+                              color: "hsl(var(--foreground))"
                             } : undefined}
                             transition={{ duration: 0.2, ease: EASING.swift }}
                           >
@@ -442,7 +419,7 @@ export function GitHubHeader() {
 
             {/* User Actions */}
             <motion.div 
-              className="flex items-center space-x-4"
+              className="flex items-center space-x-3"
               variants={{
                 hidden: { opacity: 0 },
                 visible: {
@@ -458,18 +435,14 @@ export function GitHubHeader() {
             >
               {/* Theme toggle */}
               <motion.div 
-                className="relative rounded-xl p-1 -m-1"
+                className="relative w-11 h-11 flex items-center justify-center rounded-xl"
                 variants={{
                   hidden: { opacity: 0, y: -10 },
                   visible: { opacity: 1, y: 0 }
                 }}
-                initial={{ background: "transparent" }}
+                initial={{ backgroundColor: "transparent" }}
                 whileHover={!prefersReducedMotion ? {
-                  background: [
-                    "transparent",
-                    "radial-gradient(circle at center, hsl(var(--accent) / 0.1) 0%, transparent 70%)",
-                    "radial-gradient(circle at center, hsl(var(--accent) / 0.15) 0%, transparent 70%)"
-                  ]
+                  backgroundColor: "hsl(var(--accent) / 0.1)"
                 } : undefined}
                 whileTap={!prefersReducedMotion ? { y: 1 } : undefined}
                 transition={{ duration: 0.3, ease: EASING.smooth }}
@@ -477,14 +450,12 @@ export function GitHubHeader() {
                 <motion.div
                   className="absolute inset-0 rounded-xl opacity-0 pointer-events-none"
                   initial={{ 
-                    background: "linear-gradient(135deg, hsl(var(--accent) / 0.08) 0%, hsl(var(--primary) / 0.08) 100%)",
-                    opacity: 0,
-                    scale: 0.8
+                    backgroundColor: "hsl(var(--accent) / 0.08)",
+                    opacity: 0
                   }}
                   whileHover={!prefersReducedMotion ? {
                     opacity: 1,
-                    scale: 1,
-                    background: "linear-gradient(135deg, hsl(var(--accent) / 0.12) 0%, hsl(var(--primary) / 0.12) 100%)"
+                    backgroundColor: "hsl(var(--accent) / 0.12)"
                   } : undefined}
                   transition={{ duration: 0.25, ease: EASING.swift }}
                 />
@@ -495,18 +466,14 @@ export function GitHubHeader() {
 
               {/* Notifications */}
               <motion.div 
-                className="relative rounded-xl p-1 -m-1"
+                className="relative w-11 h-11 flex items-center justify-center rounded-xl"
                 variants={{
                   hidden: { opacity: 0, y: -10 },
                   visible: { opacity: 1, y: 0 }
                 }}
-                initial={{ background: "transparent" }}
+                initial={{ backgroundColor: "transparent" }}
                 whileHover={!prefersReducedMotion ? {
-                  background: [
-                    "transparent",
-                    "radial-gradient(circle at center, hsl(var(--primary) / 0.1) 0%, transparent 70%)",
-                    "radial-gradient(circle at center, hsl(var(--primary) / 0.15) 0%, transparent 70%)"
-                  ]
+                  backgroundColor: "hsl(var(--primary) / 0.1)"
                 } : undefined}
                 whileTap={!prefersReducedMotion ? { y: 1 } : undefined}
                 transition={{ duration: 0.3, ease: EASING.smooth }}
@@ -514,14 +481,12 @@ export function GitHubHeader() {
                 <motion.div
                   className="absolute inset-0 rounded-xl opacity-0 pointer-events-none"
                   initial={{ 
-                    background: "linear-gradient(135deg, hsl(var(--primary) / 0.08) 0%, hsl(var(--accent) / 0.08) 100%)",
-                    opacity: 0,
-                    scale: 0.8
+                    backgroundColor: "hsl(var(--primary) / 0.08)",
+                    opacity: 0
                   }}
                   whileHover={!prefersReducedMotion ? {
                     opacity: 1,
-                    scale: 1,
-                    background: "linear-gradient(135deg, hsl(var(--primary) / 0.12) 0%, hsl(var(--accent) / 0.12) 100%)"
+                    backgroundColor: "hsl(var(--primary) / 0.12)"
                   } : undefined}
                   transition={{ duration: 0.25, ease: EASING.swift }}
                 />
@@ -537,13 +502,9 @@ export function GitHubHeader() {
                   hidden: { opacity: 0, y: -10 },
                   visible: { opacity: 1, y: 0 }
                 }}
-                initial={{ background: "transparent" }}
+                initial={{ backgroundColor: "transparent" }}
                 whileHover={!prefersReducedMotion ? {
-                  background: [
-                    "transparent",
-                    "radial-gradient(circle at center, hsl(var(--primary) / 0.05) 0%, hsl(var(--accent) / 0.05) 50%, transparent 70%)",
-                    "radial-gradient(circle at center, hsl(var(--primary) / 0.1) 0%, hsl(var(--accent) / 0.1) 50%, transparent 70%)"
-                  ]
+                  backgroundColor: "hsl(var(--primary) / 0.08)"
                 } : undefined}
                 whileTap={!prefersReducedMotion ? { y: 1 } : undefined}
                 transition={{ duration: 0.4, ease: EASING.smooth }}
@@ -551,45 +512,28 @@ export function GitHubHeader() {
                 <motion.div
                   className="absolute inset-0 rounded-2xl opacity-0 pointer-events-none"
                   initial={{ 
-                    background: "conic-gradient(from 0deg at 50% 50%, hsl(var(--primary) / 0.1) 0deg, hsl(var(--accent) / 0.1) 120deg, hsl(var(--primary) / 0.1) 240deg, hsl(var(--accent) / 0.1) 360deg)",
-                    opacity: 0,
-                    rotate: 0
+                    backgroundColor: "hsl(var(--primary) / 0.1)",
+                    opacity: 0
                   }}
                   whileHover={!prefersReducedMotion ? {
-                    opacity: [0, 0.6, 1],
-                    rotate: [0, 15, 0],
-                    background: [
-                      "conic-gradient(from 0deg at 50% 50%, hsl(var(--primary) / 0.1) 0deg, hsl(var(--accent) / 0.1) 120deg, hsl(var(--primary) / 0.1) 240deg, hsl(var(--accent) / 0.1) 360deg)",
-                      "conic-gradient(from 30deg at 50% 50%, hsl(var(--primary) / 0.15) 0deg, hsl(var(--accent) / 0.15) 120deg, hsl(var(--primary) / 0.15) 240deg, hsl(var(--accent) / 0.15) 360deg)",
-                      "conic-gradient(from 0deg at 50% 50%, hsl(var(--primary) / 0.12) 0deg, hsl(var(--accent) / 0.12) 120deg, hsl(var(--primary) / 0.12) 240deg, hsl(var(--accent) / 0.12) 360deg)"
-                    ]
+                    opacity: 1,
+                    backgroundColor: "hsl(var(--primary) / 0.15)"
                   } : undefined}
-                  transition={{ duration: 0.5, ease: EASING.smooth }}
+                  transition={{ duration: 0.3, ease: EASING.smooth }}
                 />
                 <motion.div
                   className="relative z-10"
-                  whileHover={!prefersReducedMotion ? {
-                    filter: [
-                      "drop-shadow(0 0 0px transparent)",
-                      "drop-shadow(0 0 8px hsl(var(--primary) / 0.3))",
-                      "drop-shadow(0 0 12px hsl(var(--primary) / 0.4))"
-                    ]
-                  } : undefined}
                   transition={{ duration: 0.3, ease: EASING.swift }}
                 >
                   <Avatar className="h-11 w-11 border-2 border-primary-200/60 dark:border-primary-800/60 ring-2 ring-primary-100/40 dark:ring-primary-900/30 rounded-2xl">
                     <motion.div
                       initial={{ 
-                        background: "linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(var(--primary) / 0.8) 100%)"
+                        backgroundColor: "hsl(var(--primary))"
                       }}
                       whileHover={!prefersReducedMotion ? {
-                        background: [
-                          "linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(var(--primary) / 0.8) 100%)",
-                          "linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(var(--accent)) 50%, hsl(var(--primary)) 100%)",
-                          "linear-gradient(135deg, hsl(var(--accent)) 0%, hsl(var(--primary)) 100%)"
-                        ]
+                        backgroundColor: "hsl(var(--accent))"
                       } : undefined}
-                      transition={{ duration: 0.4, ease: EASING.smooth }}
+                      transition={{ duration: 0.3, ease: EASING.smooth }}
                       className="w-full h-full rounded-2xl"
                     >
                       <AvatarFallback className="text-sm font-bold text-primary-foreground rounded-2xl bg-transparent">

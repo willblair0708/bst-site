@@ -503,12 +503,12 @@ export function GitHubHeader() {
                   type="button"
                   aria-label="Profile"
                   title="Profile"
-                  className="h-9 w-9 rounded-xl relative overflow-hidden border-0 focus:ring-0 flex items-center justify-center bg-accent-100/60 dark:bg-accent-100/20"
+                  className="h-9 w-9 rounded-xl relative overflow-hidden border-0 focus:ring-0 flex items-center justify-center transition-colors duration-200 hover:bg-accent/10"
                 >
                   <Avatar
                     className={cn(
-                      'h-7 w-7 rounded-full border-2 border-primary-200/60 dark:border-primary-800/60',
-                      'ring-2 transition-all duration-200',
+                      'h-6 w-6 rounded-full border border-border/40',
+                      'transition-all duration-200',
                       activePillar.ring
                     )}
                   >

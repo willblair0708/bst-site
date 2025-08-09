@@ -435,64 +435,22 @@ export function GitHubHeader() {
             >
               {/* Theme toggle */}
               <motion.div 
-                className="relative w-11 h-11 flex items-center justify-center rounded-xl"
                 variants={{
                   hidden: { opacity: 0, y: -10 },
                   visible: { opacity: 1, y: 0 }
                 }}
-                initial={{ backgroundColor: "transparent" }}
-                whileHover={!prefersReducedMotion ? {
-                  backgroundColor: "hsl(var(--accent) / 0.1)"
-                } : undefined}
-                whileTap={!prefersReducedMotion ? { y: 1 } : undefined}
-                transition={{ duration: 0.3, ease: EASING.smooth }}
               >
-                <motion.div
-                  className="absolute inset-0 rounded-xl opacity-0 pointer-events-none"
-                  initial={{ 
-                    backgroundColor: "hsl(var(--accent) / 0.08)",
-                    opacity: 0
-                  }}
-                  whileHover={!prefersReducedMotion ? {
-                    opacity: 1,
-                    backgroundColor: "hsl(var(--accent) / 0.12)"
-                  } : undefined}
-                  transition={{ duration: 0.25, ease: EASING.swift }}
-                />
-                <div className="relative z-10">
-                  <ThemeToggle />
-                </div>
+                <ThemeToggle />
               </motion.div>
 
               {/* Notifications */}
               <motion.div 
-                className="relative w-11 h-11 flex items-center justify-center rounded-xl"
                 variants={{
                   hidden: { opacity: 0, y: -10 },
                   visible: { opacity: 1, y: 0 }
                 }}
-                initial={{ backgroundColor: "transparent" }}
-                whileHover={!prefersReducedMotion ? {
-                  backgroundColor: "hsl(var(--primary) / 0.1)"
-                } : undefined}
-                whileTap={!prefersReducedMotion ? { y: 1 } : undefined}
-                transition={{ duration: 0.3, ease: EASING.smooth }}
               >
-                <motion.div
-                  className="absolute inset-0 rounded-xl opacity-0 pointer-events-none"
-                  initial={{ 
-                    backgroundColor: "hsl(var(--primary) / 0.08)",
-                    opacity: 0
-                  }}
-                  whileHover={!prefersReducedMotion ? {
-                    opacity: 1,
-                    backgroundColor: "hsl(var(--primary) / 0.12)"
-                  } : undefined}
-                  transition={{ duration: 0.25, ease: EASING.swift }}
-                />
-                <div className="relative z-10">
-                  <NotificationCenter />
-                </div>
+                <NotificationCenter />
               </motion.div>
 
               {/* User avatar */}

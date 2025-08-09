@@ -1,7 +1,7 @@
 "use client"
 
 import React, { useState, useEffect, useMemo, useRef } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
+import { motion, AnimatePresence, useReducedMotion } from 'framer-motion'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import {
@@ -35,6 +35,7 @@ import {
   Target
 } from 'lucide-react'
 import { formatRelativeTime, cn } from '@/lib/utils'
+import { EASING } from '@/lib/motion/tokens'
 
 interface Notification {
   id: string
@@ -143,8 +144,8 @@ export function NotificationCenter() {
   const [notifications, setNotifications] = useState(mockNotifications)
   const [filter, setFilter] = useState<'all' | 'unread' | 'critical'>('all')
   const [isOpen, setIsOpen] = useState(false)
-  const dropdownRef = useRef<HTMLDivElement>(null)
-  
+  const dropdownRef = useRef<HTMLButtonElement>(null)
+  const prefersReducedMotion = useReducedMotion()
 
 
   const unreadCount = notifications.filter(n => !n.read).length
@@ -222,41 +223,76 @@ export function NotificationCenter() {
   // Keep other animations but remove bell movement
 
   return (
-    <DropdownMenu open={isOpen} onOpenChange={setIsOpen}>
-      <DropdownMenuTrigger asChild>
-        <motion.div
-          ref={dropdownRef}
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
-          transition={{ type: "spring", stiffness: 300, damping: 25 }}
-        >
-      <Button
-        variant="ghost"
-        size="icon"
-        className="relative h-9 w-9 rounded-xl overflow-visible"
-      >
-        {/* Simple bell icon */}
-        {unreadCount > 0 ? (
-          <BellDot className="h-4 w-4" />
-        ) : (
-          <Bell className="h-4 w-4" />
-        )}
+    <div className="relative">
+      <DropdownMenu open={isOpen} onOpenChange={setIsOpen}>
+        <DropdownMenuTrigger asChild>
+          <Button
+            ref={dropdownRef}
+            variant="ghost"
+            size="icon"
+            className="h-9 w-9 rounded-xl relative overflow-hidden hover:bg-transparent border-0 focus:ring-0"
+            title={`Notifications ${unreadCount > 0 ? `(${unreadCount} unread)` : ''}`}
+          >
+            <AnimatePresence mode="wait">
+              {unreadCount > 0 ? (
+                <motion.div
+                  key="bell-dot"
+                  initial={!prefersReducedMotion ? { opacity: 0, rotate: -180, scale: 0.5 } : { opacity: 1 }}
+                  animate={!prefersReducedMotion ? { 
+                    opacity: 1, 
+                    rotate: 0, 
+                    scale: 1,
+                    color: "hsl(var(--muted-foreground))"
+                  } : { opacity: 1 }}
+                  exit={!prefersReducedMotion ? { opacity: 0, rotate: 180, scale: 0.5 } : { opacity: 0 }}
+                  whileHover={!prefersReducedMotion ? {
+                    color: "hsl(var(--foreground))",
+                    filter: "drop-shadow(0 0 8px hsl(var(--accent) / 0.4))",
+                    rotate: [0, -10, 10, 0]
+                  } : undefined}
+                  transition={{ duration: 0.3, ease: EASING.smooth }}
+                  className="absolute inset-0 flex items-center justify-center"
+                >
+                  <BellDot className="w-4 h-4" />
+                </motion.div>
+              ) : (
+                <motion.div
+                  key="bell"
+                  initial={!prefersReducedMotion ? { opacity: 0, rotate: 180, scale: 0.5 } : { opacity: 1 }}
+                  animate={!prefersReducedMotion ? { 
+                    opacity: 1, 
+                    rotate: 0, 
+                    scale: 1,
+                    color: "hsl(var(--muted-foreground))"
+                  } : { opacity: 1 }}
+                  exit={!prefersReducedMotion ? { opacity: 0, rotate: -180, scale: 0.5 } : { opacity: 0 }}
+                  whileHover={!prefersReducedMotion ? {
+                    color: "hsl(var(--foreground))",
+                    filter: "drop-shadow(0 0 8px hsl(var(--primary) / 0.4))",
+                    rotate: [0, 15, -15, 0]
+                  } : undefined}
+                  transition={{ duration: 0.3, ease: EASING.smooth }}
+                  className="absolute inset-0 flex items-center justify-center"
+                >
+                  <Bell className="w-4 h-4" />
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </Button>
+        </DropdownMenuTrigger>
         
-        {/* Simple notification count badge */}
+        {/* Notification count badge - positioned outside button container */}
         {unreadCount > 0 && (
           <Badge 
             className={cn(
               "absolute -top-2 -right-2 h-5 w-5 rounded-xl p-0 text-xs text-foreground",
-              "flex items-center justify-center",
+              "flex items-center justify-center z-50 pointer-events-none",
               criticalCount > 0 ? "bg-destructive" : "bg-primary"
             )}
           >
             {unreadCount > 99 ? '99' : unreadCount}
           </Badge>
         )}
-      </Button>
-        </motion.div>
-      </DropdownMenuTrigger>
 
       <DropdownMenuContent 
         align="end" 
@@ -487,6 +523,7 @@ export function NotificationCenter() {
             </div>
       </DropdownMenuContent>
     </DropdownMenu>
+    </div>
   )
 }
 

@@ -32,7 +32,7 @@ export function ThemeToggle() {
       variant="ghost"
       size="icon"
       onClick={toggleTheme}
-      className="h-9 w-9 rounded-xl relative overflow-hidden"
+      className="h-9 w-9 rounded-xl relative overflow-hidden border-0 focus:ring-0"
       title={`Switch to ${theme === 'light' ? 'dark' : 'light'} theme`}
     >
       <AnimatePresence mode="wait">

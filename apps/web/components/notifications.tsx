@@ -230,7 +230,7 @@ export function NotificationCenter() {
             ref={dropdownRef}
             variant="ghost"
             size="icon"
-            className="h-9 w-9 rounded-xl relative overflow-hidden hover:bg-transparent border-0 focus:ring-0"
+            className="h-9 w-9 rounded-xl relative overflow-hidden border-0 focus:ring-0"
             title={`Notifications ${unreadCount > 0 ? `(${unreadCount} unread)` : ''}`}
           >
             <AnimatePresence mode="wait">

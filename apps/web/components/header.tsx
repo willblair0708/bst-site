@@ -76,37 +76,51 @@ export function GitHubHeader() {
   }
 
   const baseLinkClasses =
-    'text-sm font-medium rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 transition-colors'
+    'text-sm font-semibold rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 transition-all duration-200'
 
   const getLinkClasses = (item: { href: string; variant?: 'primary'; matchPrefixes?: string[] }) => {
     if (item.variant === 'primary') {
-      // Base style for primary link; when active we clear bg/border below
-      return `${baseLinkClasses} px-4 py-2 bg-primary-100 text-foreground border border-primary-100/60 hover:bg-primary-100/80 shadow-elevation-1`
+      // Modern primary style with clean gradient
+      return `${baseLinkClasses} px-5 py-2.5 bg-gradient-to-r from-primary-500 to-primary-600 text-primary-foreground hover:from-primary-600 hover:to-primary-700 border border-primary-400/20`
     }
     const active = isActive(item)
     return [
       baseLinkClasses,
-      'px-4 py-2',
+      'px-4 py-2.5 border border-transparent',
       active
-        ? 'text-foreground'
-        : 'text-muted-foreground hover:text-foreground hover:bg-muted/70',
+        ? 'text-foreground bg-accent/40 border-accent/30'
+        : 'text-muted-foreground hover:text-foreground hover:bg-accent/20 hover:border-accent/15',
     ].join(' ')
   }
 
   return (
-    <header className="sticky top-0 z-50 border-b border-border bg-background">
-      {/* Pastel glow underlay */}
-      <div aria-hidden className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-20 bg-gradient-to-b from-primary-100/50 via-accent-100/20 to-transparent" />
+    <header className="sticky top-0 z-50 border-b border-border/40 bg-background/80 backdrop-blur-xl supports-[backdrop-filter]:bg-background/60">
+      {/* Enhanced gradient glow */}
+      <div aria-hidden className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-24 bg-gradient-to-b from-primary-50/30 via-primary-100/10 to-transparent dark:from-primary-900/20 dark:via-primary-800/5" />
+      <div aria-hidden className="pointer-events-none absolute inset-x-0 top-0 -z-20 h-px bg-gradient-to-r from-transparent via-primary-300/50 to-transparent dark:via-primary-600/30" />
       <div className="w-full px-4 sm:px-6 lg:px-10">
         <div className="grid grid-cols-[auto_1fr_auto] items-center gap-4 h-20">
           {/* Left side - Logo */}
-          <div className="flex items-center">
-            <Link href="/" className="group inline-flex items-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 rounded-2xl">
-              <span className="text-2xl font-extrabold tracking-tight bg-gradient-to-br from-foreground to-foreground/70 bg-clip-text text-foreground transition-opacity group-hover:opacity-90">
+          <motion.div 
+            className="flex items-center"
+            whileHover={{ scale: 1.02 }}
+            transition={{ duration: 0.2 }}
+          >
+            <Link href="/" className="group inline-flex items-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 rounded-2xl p-2 -m-2">
+              <motion.span 
+                className="text-2xl font-black tracking-tight bg-gradient-to-br from-primary-600 via-primary-500 to-primary-700 dark:from-primary-400 dark:via-primary-300 dark:to-primary-500 bg-clip-text text-transparent"
+                whileHover={{ scale: 1.05 }}
+                transition={{ duration: 0.2 }}
+              >
                 Runix
-              </span>
+              </motion.span>
+              <motion.div
+                className="ml-2 w-2 h-2 rounded-full bg-gradient-to-br from-accent-400 to-accent-600"
+                animate={{ scale: [1, 1.2, 1], opacity: [0.7, 1, 0.7] }}
+                transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+              />
             </Link>
-          </div>
+          </motion.div>
 
           {/* Center - Search */}
           <div className="flex-1 flex items-center justify-center mx-4 lg:mx-8">
@@ -128,27 +142,44 @@ export function GitHubHeader() {
                       {active && (
                         <motion.span
                           layoutId="nav-active"
-                          className={`absolute inset-0 rounded-full ${item.variant === 'primary' ? 'bg-primary-100 border border-primary-100/70' : 'bg-muted/70 border border-muted/60'}`}
+                          className={`absolute inset-0 rounded-full ${
+                            item.variant === 'primary' 
+                              ? 'bg-gradient-to-r from-primary-400/15 to-primary-500/15 border border-primary-400/25' 
+                              : 'bg-accent/30 border border-accent/35'
+                          }`}
                           style={{ zIndex: 0 }}
-                          transition={{ type: 'spring', stiffness: 350, damping: 30 }}
+                          transition={{ type: 'spring', stiffness: 400, damping: 25 }}
                         />
                       )}
                       {subs ? (
                         <DropdownMenu>
                           <DropdownMenuTrigger asChild>
-                            <button aria-current={active ? 'page' : undefined} className={`${getLinkClasses(item)} ${active && item.variant === 'primary' ? 'bg-transparent border-transparent shadow-none' : ''} relative z-10 text-left`}>
+                            <motion.button 
+                              aria-current={active ? 'page' : undefined} 
+                              className={`${getLinkClasses(item)} ${active && item.variant === 'primary' ? 'bg-transparent border-transparent shadow-none' : ''} relative z-10 text-left group`}
+                              whileHover={{ scale: 1.02 }}
+                              whileTap={{ scale: 0.98 }}
+                              transition={{ duration: 0.15 }}
+                            >
                               <span className="inline-flex items-center gap-2">
                                 <span>{item.label}</span>
-                                <svg className="w-3 h-3" viewBox="0 0 20 20" fill="none" aria-hidden>
+                                <motion.svg 
+                                  className="w-3 h-3 transition-transform duration-200 group-data-[state=open]:rotate-180" 
+                                  viewBox="0 0 20 20" 
+                                  fill="none" 
+                                  aria-hidden
+                                  animate={{ rotate: 0 }}
+                                  whileHover={{ y: 1 }}
+                                >
                                   <path d="M6 8l4 4 4-4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                                </svg>
+                                </motion.svg>
                               </span>
-                            </button>
+                            </motion.button>
                           </DropdownMenuTrigger>
                           <DropdownMenuContent 
                             side="bottom" 
                             align="start" 
-                            className="rounded-lg border bg-background/95 backdrop-blur-sm p-2 shadow-xl min-w-[160px]"
+                            className="rounded-lg border border-border/50 bg-background/95 backdrop-blur-sm p-2 min-w-[160px]"
                             asChild
                           >
                             <motion.div
@@ -168,15 +199,8 @@ export function GitHubHeader() {
                                   >
                                     <Link 
                                       href={s.href} 
-                                      className="group relative block w-full px-3 py-2.5 text-sm text-foreground rounded-md overflow-hidden transition-all duration-200 hover:bg-primary/10 hover:text-primary"
+                                      className="group relative block w-full px-3 py-2.5 text-sm text-foreground rounded-md transition-all duration-200 hover:bg-accent hover:text-accent-foreground"
                                     >
-                                      <motion.div
-                                        className="absolute inset-0 bg-primary/5 rounded-md opacity-0 group-hover:opacity-100"
-                                        initial={false}
-                                        animate={{ opacity: 0 }}
-                                        whileHover={{ opacity: 1 }}
-                                        transition={{ duration: 0.2 }}
-                                      />
                                       <span className="relative z-10">{s.label}</span>
                                     </Link>
                                   </motion.div>
@@ -186,13 +210,19 @@ export function GitHubHeader() {
                           </DropdownMenuContent>
                         </DropdownMenu>
                       ) : (
-                        <Link
-                          href={item.href}
-                          aria-current={active ? 'page' : undefined}
-                          className={`${getLinkClasses(item)} ${active && item.variant === 'primary' ? 'bg-transparent border-transparent shadow-none' : ''} relative z-10`}
+                        <motion.div
+                          whileHover={{ scale: 1.02 }}
+                          whileTap={{ scale: 0.98 }}
+                          transition={{ duration: 0.15 }}
                         >
-                          {item.label}
-                        </Link>
+                          <Link
+                            href={item.href}
+                            aria-current={active ? 'page' : undefined}
+                            className={`${getLinkClasses(item)} ${active && item.variant === 'primary' ? 'bg-transparent border-transparent shadow-none' : ''} relative z-10 inline-block`}
+                          >
+                            {item.label}
+                          </Link>
+                        </motion.div>
                       )}
                     </div>
                   )
@@ -213,17 +243,26 @@ export function GitHubHeader() {
 
 
             {/* User Actions */}
-            <div className="flex items-center space-x-3">
+            <div className="flex items-center space-x-4">
               {/* Theme toggle */}
-              <ThemeToggle />
+              <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                <ThemeToggle />
+              </motion.div>
 
               {/* Notifications */}
-              <NotificationCenter />
+              <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                <NotificationCenter />
+              </motion.div>
 
               {/* User avatar */}
-              <motion.div whileHover={{ scale: 1.06 }} whileTap={{ scale: 0.96 }} transition={{ duration: 0.2 }} className="ml-2">
-                <Avatar className="h-10 w-10 border border-primary-600/20 dark:border-primary-700/30 shadow-elevation-1">
-                  <AvatarFallback className="text-sm font-semibold bg-primary-500 text-primary-foreground">
+              <motion.div 
+                whileHover={{ scale: 1.05 }} 
+                whileTap={{ scale: 0.95 }} 
+                transition={{ duration: 0.2, ease: "easeOut" }} 
+                className="ml-2"
+              >
+                <Avatar className="h-10 w-10 border border-primary-500/20 dark:border-primary-400/20 ring-1 ring-primary-100/30 dark:ring-primary-900/20">
+                  <AvatarFallback className="text-sm font-semibold bg-gradient-to-br from-primary-500 to-primary-600 text-primary-foreground">
                     {currentUser.name.split(' ').map(n => n[0]).join('')}
                   </AvatarFallback>
                 </Avatar>

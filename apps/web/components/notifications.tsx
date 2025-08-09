@@ -515,7 +515,7 @@ export function NotificationCenter() {
     {unreadCount > 0 && (
       <Badge 
         className={cn(
-          "absolute -top-2 -right-2 h-5 w-5 rounded-xl p-0 text-xs text-white",
+          "absolute -top-2 -right-2 h-5 w-5 rounded-xl p-0 text-xs text-foreground",
           "flex items-center justify-center z-50 pointer-events-none",
           criticalCount > 0 ? "bg-destructive" : "bg-primary"
         )}

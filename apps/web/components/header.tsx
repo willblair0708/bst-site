@@ -108,14 +108,14 @@ export function GitHubHeader() {
           >
             <Link href="/" className="group inline-flex items-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 rounded-2xl p-3 -m-3">
               <motion.span 
-                className="text-2xl font-black tracking-tight bg-gradient-to-br from-primary-500 via-primary-600 to-primary-700 dark:from-primary-400 dark:via-primary-300 dark:to-primary-500 bg-clip-text text-transparent"
+                className="text-2xl text-foreground"
                 whileHover={{ scale: 1.05 }}
                 transition={{ duration: 0.2 }}
               >
                 Runix
               </motion.span>
               <motion.div
-                className="ml-2.5 w-2.5 h-2.5 rounded-full bg-gradient-to-br from-accent-400 to-accent-500"
+                className="ml-2.5 w-2.5 h-2.5 rounded-full text-foreground"
                 animate={{ 
                   scale: [1, 1.15, 1], 
                   opacity: [0.8, 1, 0.8],

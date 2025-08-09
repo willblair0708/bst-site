@@ -4,7 +4,7 @@ import React from 'react'
 import { Receipt } from '@/lib/types'
 import { Badge } from '@/components/ui/badge'
 import { Card } from '@/components/ui/card'
-import { Copy, ShieldCheck, Server, Cpu, GitCommit, Boxes } from 'lucide-react'
+import { Copy, ShieldCheck, Server, Cpu, GitCommit, Boxes, ExternalLink, Diff } from 'lucide-react'
 
 export function ReceiptCard({ receipt }: { receipt: Receipt }) {
   const copy = async () => {
@@ -14,9 +14,14 @@ export function ReceiptCard({ receipt }: { receipt: Receipt }) {
     <Card className="p-4 space-y-3 rounded-2xl">
       <div className="flex items-center justify-between">
         <div className="text-sm font-semibold">Run Receipt</div>
-        <button className="text-xs inline-flex items-center gap-1 px-2 py-1 rounded-md border" onClick={copy}>
-          <Copy className="w-3 h-3" /> Copy JSON
-        </button>
+        <div className="flex items-center gap-2">
+          <a className="text-xs inline-flex items-center gap-1 px-2 py-1 rounded-md border" href={`/runs/${receipt.run_id}`}>
+            <ExternalLink className="w-3 h-3" /> Open run
+          </a>
+          <button className="text-xs inline-flex items-center gap-1 px-2 py-1 rounded-md border" onClick={copy}>
+            <Copy className="w-3 h-3" /> Copy JSON
+          </button>
+        </div>
       </div>
       <div className="grid grid-cols-2 gap-3 text-xs">
         <div className="space-y-1">

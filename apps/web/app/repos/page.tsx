@@ -7,7 +7,7 @@ import { RepoCard } from '@/components/repos/RepoCard'
 export default function ReposCatalogPage() {
   const params = useSearchParams()
   const [items, setItems] = useState<any[]>([])
-  const qs = useMemo(() => params.toString(), [params])
+  const qs = useMemo(() => params?.toString() ?? '', [params])
 
   useEffect(() => {
     const url = '/api/repos' + (qs ? `?${qs}` : '')

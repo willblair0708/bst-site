@@ -8,7 +8,8 @@ import { Input } from "@/components/ui/input"
 
 type Node = { name: string; path: string; type: 'file' | 'dir'; children?: Node[] }
 
-export function FileExplorer({ repoId, onOpen, selectedPath, refreshKey }: { repoId: string; onOpen: (p: string) => void; selectedPath?: string; refreshKey?: number }) {
+export function FileExplorer({ repoId, onOpen, selectedPath, refreshKey, openEditors, onSelectOpenEditor, onCloseOpenEditor }:
+  { repoId: string; onOpen: (p: string) => void; selectedPath?: string; refreshKey?: number; openEditors?: string[]; onSelectOpenEditor?: (p: string) => void; onCloseOpenEditor?: (p: string) => void }) {
   const [tree, setTree] = useState<Node[]>([])
   const [open, setOpen] = useState<Record<string, boolean>>({})
   const [loading, setLoading] = useState(false)
@@ -268,6 +269,20 @@ export function FileExplorer({ repoId, onOpen, selectedPath, refreshKey }: { rep
           </div>
         </div>
       )}
+      {!!(openEditors && openEditors.length) && (
+        <div className="px-2 pt-2 pb-1">
+          <div className="text-[10px] font-medium tracking-wide uppercase text-muted-foreground mb-1">Open editors</div>
+          <div className="space-y-1">
+            {openEditors?.map((p) => (
+              <div key={p} className={`flex items-center gap-1 w-full text-left px-2 py-1 rounded hover:bg-muted/50 truncate ${selectedPath === p ? 'bg-muted/40' : ''}`}>
+                <button className="flex-1 text-left truncate" onClick={() => onSelectOpenEditor?.(p)} title={p}>{p}</button>
+                <button className="p-1 rounded hover:bg-muted/40" onClick={() => onCloseOpenEditor?.(p)} aria-label="Close">✕</button>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
       {!!recent.length && (
         <div className="px-2 pt-2 pb-1">
           <div className="text-[10px] font-medium tracking-wide uppercase text-muted-foreground mb-1">Open editors</div>

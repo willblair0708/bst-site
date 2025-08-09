@@ -198,7 +198,14 @@ export function Shell({ repoId }: { repoId?: string }) {
           <div className={"grid gap-2 min-h-0 overflow-hidden p-2"} style={{ gridTemplateColumns }}>
             {/* Explorer */}
             <div className="relative rounded-2xl bg-card border border-border shadow-elevation-1 overflow-hidden min-h-0">
-              <WorkspaceTabs repoId={repoKey} onOpenFile={(p) => setSelectedPath(p)} selectedPath={selectedPath} />
+              <WorkspaceTabs
+                repoId={repoKey}
+                onOpenFile={(p) => setSelectedPath(p)}
+                selectedPath={selectedPath}
+                openFiles={openFiles}
+                onSelectOpenFile={(p) => setSelectedPath(p)}
+                onCloseOpenFile={(p) => closeOpenFile(p)}
+              />
               {/* Resize handle */}
               <div
                 role="separator"

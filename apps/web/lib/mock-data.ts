@@ -43,17 +43,37 @@ export const mockFileTree: FileNode = {
   path: '/',
   type: 'dir',
   children: [
-    { path: '/README.md', type: 'file', size: 2048 },
-    { path: '/otp', type: 'dir', children: [
-      { path: '/otp/protocol.md', type: 'file', size: 4096 },
-      { path: '/otp/environment.lock', type: 'file', size: 1024 },
+    { path: 'README.md', type: 'file', size: 2048 },
+    { path: 'LICENSE', type: 'file', size: 1064 },
+    { path: '.gitignore', type: 'file', size: 512 },
+    { path: 'otp', type: 'dir', children: [
+      { path: 'otp/protocol.md', type: 'file', size: 4096 },
+      { path: 'otp/environment.lock', type: 'file', size: 1024 },
+      { path: 'otp/baseline.json', type: 'file', size: 512 },
     ] },
-    { path: '/workflows', type: 'dir', children: [
-      { path: '/workflows/baseline.yaml', type: 'file', size: 512 },
+    { path: 'workflows', type: 'dir', children: [
+      { path: 'workflows/baseline.yaml', type: 'file', size: 512 },
+      { path: 'workflows/validation.yaml', type: 'file', size: 768 },
     ] },
-    { path: '/src', type: 'dir', children: [
-      { path: '/src/train.py', type: 'file', size: 4096 },
-      { path: '/src/utils.py', type: 'file', size: 1024 },
+    { path: 'src', type: 'dir', children: [
+      { path: 'src/train.py', type: 'file', size: 4096 },
+      { path: 'src/utils.py', type: 'file', size: 1024 },
+      { path: 'src/models', type: 'dir', children: [
+        { path: 'src/models/__init__.py', type: 'file', size: 0 },
+        { path: 'src/models/baseline.py', type: 'file', size: 2048 },
+      ] },
+    ] },
+    { path: 'data', type: 'dir', children: [
+      { path: 'data/samples.csv', type: 'file', size: 8192 },
+      { path: 'data/metadata.json', type: 'file', size: 1024 },
+    ] },
+    { path: 'docs', type: 'dir', children: [
+      { path: 'docs/setup.md', type: 'file', size: 1536 },
+      { path: 'docs/api.md', type: 'file', size: 2048 },
+    ] },
+    { path: 'tests', type: 'dir', children: [
+      { path: 'tests/test_baseline.py', type: 'file', size: 1024 },
+      { path: 'tests/test_utils.py', type: 'file', size: 768 },
     ] },
   ],
 }
@@ -115,6 +135,123 @@ export const mockRepoRuns: RepoRun[] = [
     status: 'running',
     startedAt: nowIso(),
   },
+]
+
+export const mockReadmeContent = `# Oncology Baseline Research Protocol
+
+This repository contains a clinical oncology baseline workflow with comprehensive OTP (Open Trial Protocol) and provenance tracking.
+
+## Overview
+
+A multicenter, open-label, dose-escalation phase I clinical trial evaluating the safety, tolerability, pharmacokinetics, and preliminary efficacy of XYZ-789 in patients with advanced non-small cell lung cancer.
+
+## Quick Start
+
+\`\`\`bash
+# Clone the repository
+git clone https://github.com/runix/oncology-baseline.git
+cd oncology-baseline
+
+# Install dependencies
+pip install -r requirements.txt
+
+# Run baseline analysis
+python src/train.py --config otp/baseline.json
+\`\`\`
+
+## Protocol Structure
+
+- \`otp/\` - Open Trial Protocol files
+  - \`protocol.md\` - Detailed protocol specification
+  - \`baseline.json\` - Baseline parameters
+  - \`environment.lock\` - Reproducible environment
+- \`workflows/\` - Automated analysis workflows
+- \`src/\` - Source code for analysis
+- \`data/\` - Sample datasets and metadata
+
+## Verification Status
+
+- ✅ **Runnable** - Protocol can be executed end-to-end
+- ✅ **Verified** - 5 independent reproductions successful
+- ✅ **IRB-ready** - Institutional Review Board documentation complete
+- 🔒 **S1 Safety Tier** - Standard safety protocols applied
+- 📊 **Restricted Data** - Access requires approval
+
+## Recent Activity
+
+- **v2.1** - Updated eligibility criteria for elderly patients
+- **v2.0** - Added biomarker collection protocols
+- **v1.5** - Initial baseline analysis implementation
+
+## License
+
+Apache-2.0 - See [LICENSE](LICENSE) for details.
+`
+
+export const mockCommits = [
+  {
+    id: 'abc123',
+    message: 'Update eligibility criteria for elderly patients',
+    author: 'Dr. Sarah Johnson',
+    authorEmail: 'sarah.johnson@runix.org',
+    timestamp: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
+    sha: 'abc123def456',
+  },
+  {
+    id: 'def456',
+    message: 'Add biomarker collection protocols',
+    author: 'Dr. Lisa Chen',
+    authorEmail: 'lisa.chen@runix.org',
+    timestamp: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString(),
+    sha: 'def456ghi789',
+  },
+  {
+    id: 'ghi789',
+    message: 'Fix validation workflow parameters',
+    author: 'Dr. Sarah Johnson',
+    authorEmail: 'sarah.johnson@runix.org',
+    timestamp: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString(),
+    sha: 'ghi789jkl012',
+  },
+]
+
+export const mockContributors = [
+  {
+    id: '1',
+    name: 'Dr. Sarah Johnson',
+    email: 'sarah.johnson@runix.org',
+    avatar: '/vercel.svg',
+    commits: 23,
+    role: 'Principal Investigator',
+  },
+  {
+    id: '2',
+    name: 'Dr. Lisa Chen',
+    email: 'lisa.chen@runix.org',
+    avatar: '/next.svg',
+    commits: 15,
+    role: 'Data Scientist',
+  },
+  {
+    id: '3',
+    name: 'Dr. Mike Rodriguez',
+    email: 'mike.rodriguez@runix.org',
+    avatar: '/file.svg',
+    commits: 8,
+    role: 'Biostatistician',
+  },
+]
+
+export const mockBranches = [
+  { name: 'main', isDefault: true, lastCommit: 'abc123', behind: 0, ahead: 0 },
+  { name: 'feature/biomarkers', isDefault: false, lastCommit: 'def456', behind: 2, ahead: 3 },
+  { name: 'hotfix/validation', isDefault: false, lastCommit: 'ghi789', behind: 1, ahead: 1 },
+]
+
+export const mockTags = [
+  { name: 'v2.1.0', sha: 'abc123', createdAt: nowIso() },
+  { name: 'v2.0.0', sha: 'def456', createdAt: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString() },
+  { name: 'v1.5.0', sha: 'ghi789', createdAt: new Date(Date.now() - 14 * 24 * 60 * 60 * 1000).toISOString() },
 ]
 
 import { ImpactCase, MissionMetrics, PillarStats, ProgramCard, SafetyCard } from '@/lib/types'

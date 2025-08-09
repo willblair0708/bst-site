@@ -3,7 +3,8 @@
 import React from "react"
 import { Button } from "@/components/ui/button"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
-import { MoreVertical, Plus, Quote, ImageDown, BookmarkPlus, Package, ShieldCheck } from "lucide-react"
+import { MoreVertical, Plus, Quote, ImageDown, BookmarkPlus, Package, ShieldCheck, Play, Layers, GitBranch } from "lucide-react"
+import Link from 'next/link'
 import { motion } from "framer-motion"
 
 export function QuickActions() {
@@ -26,6 +27,13 @@ export function QuickActions() {
         </motion.div>
       </DropdownMenuTrigger>
       <DropdownMenuContent side="left" align="center" className="rounded-xl">
+        <div className="px-2 py-1 text-[10px] uppercase tracking-wide text-muted-foreground">Shortcuts</div>
+        <div className="px-2 pb-1 flex items-center gap-2">
+          <Link href="/runs" className="text-xs px-2 py-1 rounded-md border inline-flex items-center gap-1"><Play className="w-3 h-3" />Runs</Link>
+          <Link href="/explore/repos" className="text-xs px-2 py-1 rounded-md border inline-flex items-center gap-1"><Layers className="w-3 h-3" />Repos</Link>
+          <Link href="/explore/workflows" className="text-xs px-2 py-1 rounded-md border inline-flex items-center gap-1"><GitBranch className="w-3 h-3" />Workflows</Link>
+        </div>
+        <div className="h-px my-1 bg-border" />
         {items.map(({ icon: Icon, label, shortcut, onClick }) => (
           <DropdownMenuItem key={label} onClick={onClick} className="flex items-center gap-2">
             <Icon className="w-4 h-4" />

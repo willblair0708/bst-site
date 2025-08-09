@@ -10,8 +10,139 @@ import { NotificationCenter } from '@/components/notifications'
 import { ThemeToggle } from '@/components/theme-toggle'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import { MOTION, EASING } from '@/lib/motion/tokens'
+import { cn } from '@/lib/utils'
 
 
+
+// Types
+type NavItem = {
+  href: string
+  key?: string
+  label: string
+  variant?: 'primary'
+  matchPrefixes?: string[]
+}
+
+type SubNav = Record<string, { href: string; label: string }[]>
+
+type PillarTheme = {
+  bgPastel: string
+  text: string
+  ring: string
+  gradientFrom: string
+}
+
+// Navigation model
+const NAV_ITEMS: NavItem[] = [
+  { href: '/explore', key: 'explore', label: 'Explore', variant: 'primary', matchPrefixes: ['/explore', '/repos', '/models', '/datasets', '/workflows', '/templates'] },
+  { href: '/runs', key: 'runs', label: 'Run', matchPrefixes: ['/ide', '/runs', '/testbeds'] },
+  { href: '/dashboard', key: 'dashboard', label: 'Dashboard', matchPrefixes: ['/dashboard'] },
+  { href: '/docs', key: 'docs', label: 'Docs', matchPrefixes: ['/docs'] },
+  { href: '/policy', key: 'policy', label: 'Policy', matchPrefixes: ['/policy'] },
+  { href: '/community', key: 'community', label: 'Community', matchPrefixes: ['/community'] },
+  { href: '/mission', key: 'mission', label: 'Mission', matchPrefixes: ['/mission'] },
+]
+
+const SUB_NAV_MAP: SubNav = {
+  explore: [
+    { href: '/explore', label: 'All' },
+    { href: '/repos', label: 'Repositories' },
+    { href: '/models', label: 'Models' },
+    { href: '/datasets', label: 'Datasets' },
+    { href: '/workflows', label: 'Workflows' },
+    { href: '/templates', label: 'Templates' },
+  ],
+  runs: [
+    { href: '/ide', label: 'IDE' },
+    { href: '/runs', label: 'Runs' },
+    { href: '/testbeds', label: 'Testbeds' },
+  ],
+  docs: [
+    { href: '/docs/getting-started', label: 'Getting Started' },
+    { href: '/docs/concepts', label: 'Concepts' },
+    { href: '/docs/build', label: 'Build' },
+    { href: '/docs/ship', label: 'Ship' },
+    { href: '/docs/govern', label: 'Govern' },
+  ],
+  policy: [
+    { href: '/policy', label: 'Policy Home' },
+    { href: '/policy/templates', label: 'Templates' },
+    { href: '/policy/audit-examples', label: 'Audits' },
+  ],
+  community: [
+    { href: '/community', label: 'Threads' },
+    { href: '/community/events', label: 'Events' },
+    { href: '/community/reproductions', label: 'Reproductions' },
+  ],
+}
+
+// Pillar theming per @design.mdc (Astra-Soft v0.5)
+const PILLAR_THEMES: Record<string, PillarTheme> = {
+  explore: {
+    bgPastel: 'bg-primary-100',
+    text: 'text-primary-600',
+    ring: 'ring-primary-500',
+    gradientFrom: 'from-primary-100',
+  },
+  runs: {
+    bgPastel: 'bg-accent-100',
+    text: 'text-accent-500',
+    ring: 'ring-accent-500',
+    gradientFrom: 'from-accent-100',
+  },
+  community: {
+    bgPastel: 'bg-collaboration-100',
+    text: 'text-collaboration-500',
+    ring: 'ring-[hsl(var(--viz-purple))]',
+    gradientFrom: 'from-collaboration-100',
+  },
+  dashboard: {
+    bgPastel: 'bg-primary-100',
+    text: 'text-primary-600',
+    ring: 'ring-primary-500',
+    gradientFrom: 'from-primary-100',
+  },
+  docs: {
+    bgPastel: 'bg-primary-100',
+    text: 'text-primary-600',
+    ring: 'ring-primary-500',
+    gradientFrom: 'from-primary-100',
+  },
+  policy: {
+    bgPastel: 'bg-primary-100',
+    text: 'text-primary-600',
+    ring: 'ring-primary-500',
+    gradientFrom: 'from-primary-100',
+  },
+  mission: {
+    bgPastel: 'bg-collaboration-100',
+    text: 'text-collaboration-500',
+    ring: 'ring-[hsl(var(--viz-purple))]',
+    gradientFrom: 'from-collaboration-100',
+  },
+  default: {
+    bgPastel: 'bg-primary-100',
+    text: 'text-primary-600',
+    ring: 'ring-primary-500',
+    gradientFrom: 'from-primary-100',
+  },
+}
+
+// Presentation helpers
+const BASE_LINK_CLASSES = 'text-sm font-semibold rounded-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 transition-all duration-200'
+
+function buildLinkClasses(isActive: boolean, variant?: 'primary') {
+  if (variant === 'primary') {
+    return `${BASE_LINK_CLASSES} px-5 py-3 bg-primary-500 text-primary-foreground hover:bg-primary-600 active:translate-y-px soft-ui font-medium tracking-wide`
+  }
+  return [
+    BASE_LINK_CLASSES,
+    'px-4 py-2.5',
+    isActive
+      ? 'text-primary-600 dark:text-primary-400 bg-primary-100 dark:bg-primary-900/30 font-medium'
+      : 'text-muted-foreground hover:text-foreground hover:bg-accent-100/50 dark:hover:bg-accent-900/20',
+  ].join(' ')
+}
 
 const currentUser = {
   name: "Dr. Sarah Johnson",
@@ -26,79 +157,30 @@ export function GitHubHeader() {
   const pathname = usePathname()
   const prefersReducedMotion = useReducedMotion()
 
-  const navItems = [
-    { href: '/explore', key: 'explore', label: 'Explore', variant: 'primary' as const, matchPrefixes: ['/explore', '/repos', '/models', '/datasets', '/workflows', '/templates'] },
-    { href: '/runs', key: 'runs', label: 'Run', matchPrefixes: ['/ide', '/runs', '/testbeds'] },
-    { href: '/dashboard', key: 'dashboard', label: 'Dashboard', matchPrefixes: ['/dashboard'] },
-    { href: '/docs', key: 'docs', label: 'Docs', matchPrefixes: ['/docs'] },
-    { href: '/policy', key: 'policy', label: 'Policy', matchPrefixes: ['/policy'] },
-    { href: '/community', key: 'community', label: 'Community', matchPrefixes: ['/community'] },
-    { href: '/mission', key: 'mission', label: 'Mission', matchPrefixes: ['/mission'] },
-  ]
-
-  const isActive = (item: { href: string; matchPrefixes?: string[] }) => {
+  const isActive = (item: NavItem) => {
     if (!pathname) return false
     const prefixes = item.matchPrefixes ?? [item.href]
-    return prefixes.some(p => pathname.startsWith(p))
+    return prefixes.some((p) => pathname.startsWith(p))
   }
 
-  const activeTop = navItems.find(isActive)
+  const activeTop = NAV_ITEMS.find(isActive)
+  const activePillar = PILLAR_THEMES[activeTop?.key || 'default']
 
-  const subNavMap: Record<string, { href: string; label: string }[]> = {
-    explore: [
-      { href: '/explore', label: 'All' },
-      { href: '/repos', label: 'Repositories' },
-      { href: '/models', label: 'Models' },
-      { href: '/datasets', label: 'Datasets' },
-      { href: '/workflows', label: 'Workflows' },
-      { href: '/templates', label: 'Templates' },
-    ],
-    runs: [
-      { href: '/ide', label: 'IDE' },
-      { href: '/runs', label: 'Runs' },
-      { href: '/testbeds', label: 'Testbeds' },
-    ],
-    docs: [
-      { href: '/docs/getting-started', label: 'Getting Started' },
-      { href: '/docs/concepts', label: 'Concepts' },
-      { href: '/docs/build', label: 'Build' },
-      { href: '/docs/ship', label: 'Ship' },
-      { href: '/docs/govern', label: 'Govern' },
-    ],
-    policy: [
-      { href: '/policy', label: 'Policy Home' },
-      { href: '/policy/templates', label: 'Templates' },
-      { href: '/policy/audit-examples', label: 'Audits' },
-    ],
-    community: [
-      { href: '/community', label: 'Threads' },
-      { href: '/community/events', label: 'Events' },
-      { href: '/community/reproductions', label: 'Reproductions' },
-    ],
-  }
+  const subNavMap = SUB_NAV_MAP
 
-  const baseLinkClasses =
-    'text-sm font-semibold rounded-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 transition-all duration-200'
-
-  const getLinkClasses = (item: { href: string; variant?: 'primary'; matchPrefixes?: string[] }) => {
-    if (item.variant === 'primary') {
-      // Soft-UI primary button with Astra-Soft styling
-      return `${baseLinkClasses} px-5 py-3 bg-primary-500 text-primary-foreground hover:bg-primary-600 active:translate-y-px soft-ui font-medium tracking-wide`
-    }
-    const active = isActive(item)
-    return [
-      baseLinkClasses,
-      'px-4 py-2.5',
-      active
-        ? 'text-primary-600 dark:text-primary-400 bg-primary-100 dark:bg-primary-900/30 font-medium'
-        : 'text-muted-foreground hover:text-foreground hover:bg-accent-100/50 dark:hover:bg-accent-900/20',
-    ].join(' ')
-  }
+  const getLinkClasses = (item: NavItem) => buildLinkClasses(isActive(item), item.variant)
 
   return (
     <header className="sticky top-0 z-50 border-b border-border/40 bg-background/80 backdrop-blur-xl supports-[backdrop-filter]:bg-background/60">
-      {/* Enhanced background */}
-      <div aria-hidden className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-24 bg-primary-50/20 dark:bg-primary-900/10" />
+      {/* Pastel Bento tint per active pillar */}
+      <div
+        aria-hidden
+        className={cn(
+          'pointer-events-none absolute inset-x-0 top-0 -z-10 h-24 opacity-80 bg-gradient-to-b',
+          activePillar.gradientFrom,
+          'to-transparent dark:opacity-30'
+        )}
+      />
       <div aria-hidden className="pointer-events-none absolute inset-x-0 top-0 -z-20 h-px bg-primary-300/30 dark:bg-primary-600/20" />
       <div className="w-full px-4 sm:px-6 lg:px-10">
         <div className="grid grid-cols-[auto_1fr_auto] items-center gap-4 h-20">
@@ -127,7 +209,7 @@ export function GitHubHeader() {
           {/* Right side - Navigation and User */}
           <div className="flex items-center space-x-5">
             {/* Navigation */}
-            <nav className="hidden lg:flex items-center space-x-2 relative">
+            <nav className="hidden lg:flex items-center space-x-2 relative" aria-label="Primary">
               <LayoutGroup id="top-nav">
                 <motion.div 
                   className="flex items-center space-x-2"
@@ -144,7 +226,7 @@ export function GitHubHeader() {
                   initial="hidden"
                   animate="visible"
                 >
-                  {navItems.map((item, index) => {
+                  {NAV_ITEMS.map((item, index) => {
                     const active = isActive(item)
                     const subs = item.key ? subNavMap[item.key] : undefined
                     return (
@@ -417,8 +499,14 @@ export function GitHubHeader() {
                   visible: { opacity: 1, y: 0 }
                 }}
               >
-                <Avatar className="h-8 w-8 ring-1 ring-border hover:ring-2 hover:ring-primary/20 transition-all duration-200">
-                  <AvatarFallback className="text-xs font-medium bg-muted">
+                <Avatar
+                  className={cn(
+                    'h-9 w-9 rounded-2xl border-2 border-primary-200/60 dark:border-primary-800/60',
+                    'ring-2 transition-all duration-200',
+                    activePillar.ring
+                  )}
+                >
+                  <AvatarFallback className="text-[10px] font-bold bg-muted text-foreground rounded-2xl">
                     {currentUser.name.split(' ').map(n => n[0]).join('')}
                   </AvatarFallback>
                 </Avatar>

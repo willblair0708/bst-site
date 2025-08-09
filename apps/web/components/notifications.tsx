@@ -280,19 +280,6 @@ export function NotificationCenter() {
             </AnimatePresence>
           </Button>
         </DropdownMenuTrigger>
-        
-        {/* Notification count badge - positioned outside button container */}
-        {unreadCount > 0 && (
-          <Badge 
-            className={cn(
-              "absolute -top-2 -right-2 h-5 w-5 rounded-xl p-0 text-xs text-foreground",
-              "flex items-center justify-center z-50 pointer-events-none",
-              criticalCount > 0 ? "bg-destructive" : "bg-primary"
-            )}
-          >
-            {unreadCount > 99 ? '99' : unreadCount}
-          </Badge>
-        )}
 
       <DropdownMenuContent 
         align="end" 
@@ -523,6 +510,19 @@ export function NotificationCenter() {
             </div>
       </DropdownMenuContent>
     </DropdownMenu>
+    
+    {/* Notification count badge - positioned outside all containers */}
+    {unreadCount > 0 && (
+      <Badge 
+        className={cn(
+          "absolute -top-2 -right-2 h-5 w-5 rounded-xl p-0 text-xs text-white",
+          "flex items-center justify-center z-50 pointer-events-none",
+          criticalCount > 0 ? "bg-destructive" : "bg-primary"
+        )}
+      >
+        {unreadCount > 99 ? '99' : unreadCount}
+      </Badge>
+    )}
     </div>
   )
 }

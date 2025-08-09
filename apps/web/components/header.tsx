@@ -104,59 +104,16 @@ export function GitHubHeader() {
         <div className="grid grid-cols-[auto_1fr_auto] items-center gap-4 h-20">
           {/* Left side - Logo */}
           <motion.div 
-            className="flex items-center relative"
-            initial={{ backgroundColor: "transparent" }}
-            whileHover={!prefersReducedMotion ? {
-              backgroundColor: "hsl(var(--primary) / 0.08)"
-            } : undefined}
-            transition={{ duration: 0.4, ease: EASING.smooth }}
+            className="flex items-center"
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.3, ease: EASING.smooth }}
           >
-            <Link href="/" className="group inline-flex items-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 rounded-2xl p-3 -m-3 relative overflow-hidden">
-              <motion.div
-                className="absolute inset-0 rounded-2xl opacity-0 pointer-events-none"
-                initial={{ 
-                  backgroundColor: "hsl(var(--primary) / 0.05)",
-                  opacity: 0
-                }}
-                whileHover={!prefersReducedMotion ? {
-                  opacity: 1,
-                  backgroundColor: "hsl(var(--primary) / 0.12)"
-                } : undefined}
-                transition={{ duration: 0.3, ease: EASING.smooth }}
-              />
-              <motion.span 
-                className="text-2xl text-foreground relative z-10 font-bold tracking-tight"
-                initial={{ color: "hsl(var(--foreground))" }}
-                whileHover={!prefersReducedMotion ? {
-                  color: "hsl(var(--primary))"
-                } : undefined}
-                transition={{ duration: 0.3, ease: EASING.smooth }}
-              >
+            <Link href="/" className="group inline-flex items-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 rounded-2xl p-3 -m-3">
+              <span className="text-2xl text-foreground font-bold tracking-tight">
                 Runix
-              </motion.span>
-              <motion.div
-                className="ml-2.5 w-2.5 h-2.5 rounded-full relative z-10"
-                initial={{ 
-                  backgroundColor: "hsl(var(--primary) / 0.6)"
-                }}
-                animate={!prefersReducedMotion ? { 
-                  backgroundColor: [
-                    "hsl(var(--primary) / 0.6)",
-                    "hsl(var(--accent) / 0.8)",
-                    "hsl(var(--primary) / 0.6)"
-                  ],
-                  rotate: [0, 180, 360]
-                } : undefined}
-                whileHover={!prefersReducedMotion ? {
-                  backgroundColor: "hsl(var(--accent))"
-                } : undefined}
-                transition={{ 
-                  duration: 3, 
-                  repeat: Infinity, 
-                  ease: "easeInOut",
-                  times: [0, 0.5, 1]
-                }}
-              />
+              </span>
+              <div className="ml-2.5 w-2.5 h-2.5 rounded-full bg-primary" />
             </Link>
           </motion.div>
 

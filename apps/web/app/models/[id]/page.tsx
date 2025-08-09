@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useMemo } from 'react'
+import { useState, useEffect, useMemo, use as usePromise } from 'react'
 import { notFound } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
@@ -322,33 +322,34 @@ const formatNumber = (num: number) => {
 };
 
 export default function ModelPage({ params }: ModelPageProps) {
+  const resolvedParams = usePromise(params)
   const [activeTab, setActiveTab] = useState('overview')
   const [copySuccess, setCopySuccess] = useState(false)
   const [modelId, setModelId] = useState<string | null>(null)
   const [detail, setDetail] = useState<ModelDetail | null>(null)
+  const [loading, setLoading] = useState<boolean>(true)
 
   useEffect(() => {
     const load = async () => {
-      const p = await params
-      setModelId(p.id)
-      const res = await fetch(`/api/models/${encodeURIComponent(p.id)}`, { cache: 'no-store' })
-      if (res.ok) {
-        const data: ModelDetail = await res.json()
-        setDetail(data)
-      } else {
-        setDetail(null)
+      setLoading(true)
+      setModelId(resolvedParams.id)
+      try {
+        const res = await fetch(`/api/models/${encodeURIComponent(resolvedParams.id)}`, { cache: 'no-store' })
+        if (res.ok) {
+          const data: ModelDetail = await res.json()
+          setDetail(data)
+        } else {
+          setDetail(null)
+        }
+      } finally {
+        setLoading(false)
       }
     }
     load()
-  }, [params])
+  }, [resolvedParams.id])
 
-  // Loading state
-  if (!detail && modelId !== null) {
-    notFound()
-  }
-
-  // Still loading
-  if (!detail) {
+  // Still loading data
+  if (loading) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center">
@@ -357,6 +358,11 @@ export default function ModelPage({ params }: ModelPageProps) {
         </div>
       </div>
     );
+  }
+
+  // Not found after loading completed
+  if (!detail) {
+    notFound()
   }
 
   const handleCopyCode = (code: string) => {

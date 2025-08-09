@@ -11,10 +11,16 @@ const nextConfig: NextConfig = {
     // forceSwcTransforms: true,
   },
   async rewrites() {
+    const apiBase = process.env.NEXT_PUBLIC_API_URL;
+    // Avoid rewriting to self in local dev or when unset
+    if (!apiBase || /localhost:3000$/i.test(apiBase)) {
+      return [];
+    }
+    // Only proxy explicitly prefixed external API paths to avoid clobbering Next.js App Routes
     return [
       {
-        source: '/api/:path*',
-        destination: `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'}/api/:path*`,
+        source: '/external-api/:path*',
+        destination: `${apiBase}/api/:path*`,
       },
     ];
   },

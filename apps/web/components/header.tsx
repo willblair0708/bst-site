@@ -3,6 +3,7 @@
 import React from 'react'
 import { motion, LayoutGroup } from 'framer-motion'
 import Link from 'next/link'
+import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from '@/components/ui/dropdown-menu'
 import { usePathname } from 'next/navigation'
 import { GlobalSearch } from '@/components/global-search'
 import { NotificationCenter } from '@/components/notifications'
@@ -23,32 +24,66 @@ const currentUser = {
 export function GitHubHeader() {
   const pathname = usePathname()
 
-  const [ideHref, setIdeHref] = React.useState('/ide?repo=demo')
-  React.useEffect(() => {
-    try {
-      const last = localStorage.getItem('lastRepo')
-      if (last) setIdeHref(`/ide?repo=${encodeURIComponent(last)}`)
-    } catch {}
-  }, [])
-
   const navItems = [
-    { href: ideHref, key: 'ide', label: 'IDE', variant: 'primary' as const },
-    { href: '/dashboard', label: 'Dashboard' },
-    { href: '/models', label: 'Models' },
-    { href: '/chat', label: 'Chat' },
+    { href: '/explore', key: 'explore', label: 'Explore', variant: 'primary' as const, matchPrefixes: ['/explore', '/repos', '/models', '/datasets', '/workflows', '/templates'] },
+    { href: '/runs', key: 'runs', label: 'Run', matchPrefixes: ['/ide', '/runs', '/testbeds'] },
+    { href: '/dashboard', key: 'dashboard', label: 'Dashboard', matchPrefixes: ['/dashboard'] },
+    { href: '/docs', key: 'docs', label: 'Docs', matchPrefixes: ['/docs'] },
+    { href: '/policy', key: 'policy', label: 'Policy', matchPrefixes: ['/policy'] },
+    { href: '/community', key: 'community', label: 'Community', matchPrefixes: ['/community'] },
+    { href: '/mission', key: 'mission', label: 'Mission', matchPrefixes: ['/mission'] },
   ]
 
-  const isActive = (href: string) => pathname?.startsWith('/ide') ? href.includes('/ide') : pathname?.startsWith(href)
+  const isActive = (item: { href: string; matchPrefixes?: string[] }) => {
+    if (!pathname) return false
+    const prefixes = item.matchPrefixes ?? [item.href]
+    return prefixes.some(p => pathname.startsWith(p))
+  }
+
+  const activeTop = navItems.find(isActive)
+
+  const subNavMap: Record<string, { href: string; label: string }[]> = {
+    explore: [
+      { href: '/explore', label: 'All' },
+      { href: '/repos', label: 'Repositories' },
+      { href: '/models', label: 'Models' },
+      { href: '/datasets', label: 'Datasets' },
+      { href: '/workflows', label: 'Workflows' },
+      { href: '/templates', label: 'Templates' },
+    ],
+    runs: [
+      { href: '/ide', label: 'IDE' },
+      { href: '/runs', label: 'Runs' },
+      { href: '/testbeds', label: 'Testbeds' },
+    ],
+    docs: [
+      { href: '/docs/getting-started', label: 'Getting Started' },
+      { href: '/docs/concepts', label: 'Concepts' },
+      { href: '/docs/build', label: 'Build' },
+      { href: '/docs/ship', label: 'Ship' },
+      { href: '/docs/govern', label: 'Govern' },
+    ],
+    policy: [
+      { href: '/policy', label: 'Policy Home' },
+      { href: '/policy/templates', label: 'Templates' },
+      { href: '/policy/audit-examples', label: 'Audits' },
+    ],
+    community: [
+      { href: '/community', label: 'Threads' },
+      { href: '/community/events', label: 'Events' },
+      { href: '/community/reproductions', label: 'Reproductions' },
+    ],
+  }
 
   const baseLinkClasses =
     'text-sm font-medium rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 transition-colors'
 
-  const getLinkClasses = (href: string, variant?: 'primary') => {
-    if (variant === 'primary') {
+  const getLinkClasses = (item: { href: string; variant?: 'primary'; matchPrefixes?: string[] }) => {
+    if (item.variant === 'primary') {
       // Base style for primary link; when active we clear bg/border below
       return `${baseLinkClasses} px-4 py-2 bg-primary-100 text-foreground border border-primary-100/60 hover:bg-primary-100/80 shadow-elevation-1`
     }
-    const active = isActive(href)
+    const active = isActive(item)
     return [
       baseLinkClasses,
       'px-4 py-2',
@@ -59,7 +94,7 @@ export function GitHubHeader() {
   }
 
   return (
-    <header className="sticky top-0 z-50 border-b border-border/70 bg-background/70 backdrop-blur-xl supports-[backdrop-filter]:bg-background/60">
+    <header className="sticky top-0 z-50 border-b border-border bg-background">
       {/* Pastel glow underlay */}
       <div aria-hidden className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-20 bg-gradient-to-b from-primary-100/50 via-accent-100/20 to-transparent" />
       <div className="w-full px-4 sm:px-6 lg:px-10">
@@ -86,7 +121,8 @@ export function GitHubHeader() {
             <nav className="hidden lg:flex items-center space-x-2 relative">
               <LayoutGroup id="top-nav">
                 {navItems.map(item => {
-                  const active = isActive(item.href)
+                  const active = isActive(item)
+                  const subs = item.key ? subNavMap[item.key] : undefined
                   return (
                     <div key={item.key || item.href} className="relative">
                       {active && (
@@ -97,18 +133,82 @@ export function GitHubHeader() {
                           transition={{ type: 'spring', stiffness: 350, damping: 30 }}
                         />
                       )}
-                      <Link
-                        href={item.href}
-                        aria-current={active ? 'page' : undefined}
-                        className={`${getLinkClasses(item.href, item.variant)} ${active && item.variant === 'primary' ? 'bg-transparent border-transparent shadow-none' : ''} relative z-10`}
-                      >
-                        {item.label}
-                      </Link>
+                      {subs ? (
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <button aria-current={active ? 'page' : undefined} className={`${getLinkClasses(item)} ${active && item.variant === 'primary' ? 'bg-transparent border-transparent shadow-none' : ''} relative z-10 text-left`}>
+                              <span className="inline-flex items-center gap-2">
+                                <span>{item.label}</span>
+                                <svg className="w-3 h-3" viewBox="0 0 20 20" fill="none" aria-hidden>
+                                  <path d="M6 8l4 4 4-4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                                </svg>
+                              </span>
+                            </button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent 
+                            side="bottom" 
+                            align="start" 
+                            className="rounded-lg border bg-background/95 backdrop-blur-sm p-2 shadow-xl min-w-[160px]"
+                            asChild
+                          >
+                            <motion.div
+                              initial={{ opacity: 0, scale: 0.95, y: -10 }}
+                              animate={{ opacity: 1, scale: 1, y: 0 }}
+                              exit={{ opacity: 0, scale: 0.95, y: -10 }}
+                              transition={{ duration: 0.15, ease: "easeOut" }}
+                            >
+                              {subs.map((s, index) => (
+                                <DropdownMenuItem asChild key={s.href} className="p-0">
+                                  <motion.div
+                                    initial={{ opacity: 0, x: -10 }}
+                                    animate={{ opacity: 1, x: 0 }}
+                                    transition={{ delay: index * 0.05, duration: 0.2 }}
+                                    whileHover={{ scale: 1.02 }}
+                                    whileTap={{ scale: 0.98 }}
+                                  >
+                                    <Link 
+                                      href={s.href} 
+                                      className="group relative block w-full px-3 py-2.5 text-sm text-foreground rounded-md overflow-hidden transition-all duration-200 hover:bg-primary/10 hover:text-primary"
+                                    >
+                                      <motion.div
+                                        className="absolute inset-0 bg-primary/5 rounded-md opacity-0 group-hover:opacity-100"
+                                        initial={false}
+                                        animate={{ opacity: 0 }}
+                                        whileHover={{ opacity: 1 }}
+                                        transition={{ duration: 0.2 }}
+                                      />
+                                      <span className="relative z-10">{s.label}</span>
+                                    </Link>
+                                  </motion.div>
+                                </DropdownMenuItem>
+                              ))}
+                            </motion.div>
+                          </DropdownMenuContent>
+                        </DropdownMenu>
+                      ) : (
+                        <Link
+                          href={item.href}
+                          aria-current={active ? 'page' : undefined}
+                          className={`${getLinkClasses(item)} ${active && item.variant === 'primary' ? 'bg-transparent border-transparent shadow-none' : ''} relative z-10`}
+                        >
+                          {item.label}
+                        </Link>
+                      )}
                     </div>
                   )
                 })}
               </LayoutGroup>
             </nav>
+            {/* Contextual subnav */}
+            {activeTop && subNavMap[activeTop.key || ''] && (
+              <nav className="hidden lg:flex items-center ml-4 space-x-2">
+                {subNavMap[activeTop.key || ''].map(s => (
+                  <Link key={s.href} href={s.href} className="text-sm text-muted-foreground px-3 py-1 rounded-full hover:bg-muted/60">
+                    {s.label}
+                  </Link>
+                ))}
+              </nav>
+            )}
 
 
 

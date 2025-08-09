@@ -34,7 +34,7 @@ type PillarTheme = {
 // Navigation model
 const NAV_ITEMS: NavItem[] = [
   { href: '/explore', key: 'explore', label: 'Explore', variant: 'primary', matchPrefixes: ['/explore', '/repos', '/models', '/datasets', '/workflows', '/templates'] },
-  { href: '/runs', key: 'runs', label: 'Run', matchPrefixes: ['/ide', '/runs', '/testbeds'] },
+  { href: '/runs', key: 'runs', label: 'Run', matchPrefixes: ['/ide?repo=demo', '/runs', '/testbeds'] },
   { href: '/dashboard', key: 'dashboard', label: 'Dashboard', matchPrefixes: ['/dashboard'] },
   { href: '/docs', key: 'docs', label: 'Docs', matchPrefixes: ['/docs'] },
   { href: '/policy', key: 'policy', label: 'Policy', matchPrefixes: ['/policy'] },
@@ -52,7 +52,7 @@ const SUB_NAV_MAP: SubNav = {
     { href: '/templates', label: 'Templates' },
   ],
   runs: [
-    { href: '/ide', label: 'IDE' },
+    { href: '/ide?repo=demo', label: 'IDE' },
     { href: '/runs', label: 'Runs' },
     { href: '/testbeds', label: 'Testbeds' },
   ],

@@ -412,51 +412,16 @@ export function GitHubHeader() {
 
               {/* User avatar */}
               <motion.div 
-                className="ml-3 relative rounded-2xl p-1 -m-1"
                 variants={{
                   hidden: { opacity: 0, y: -10 },
                   visible: { opacity: 1, y: 0 }
                 }}
-                initial={{ backgroundColor: "transparent" }}
-                whileHover={!prefersReducedMotion ? {
-                  backgroundColor: "hsl(var(--primary) / 0.08)"
-                } : undefined}
-                whileTap={!prefersReducedMotion ? { y: 1 } : undefined}
-                transition={{ duration: 0.4, ease: EASING.smooth }}
               >
-                <motion.div
-                  className="absolute inset-0 rounded-2xl opacity-0 pointer-events-none"
-                  initial={{ 
-                    backgroundColor: "hsl(var(--primary) / 0.1)",
-                    opacity: 0
-                  }}
-                  whileHover={!prefersReducedMotion ? {
-                    opacity: 1,
-                    backgroundColor: "hsl(var(--primary) / 0.15)"
-                  } : undefined}
-                  transition={{ duration: 0.3, ease: EASING.smooth }}
-                />
-                <motion.div
-                  className="relative z-10"
-                  transition={{ duration: 0.3, ease: EASING.swift }}
-                >
-                  <Avatar className="h-11 w-11 border-2 border-primary-200/60 dark:border-primary-800/60 ring-2 ring-primary-100/40 dark:ring-primary-900/30 rounded-2xl">
-                    <motion.div
-                      initial={{ 
-                        backgroundColor: "hsl(var(--primary))"
-                      }}
-                      whileHover={!prefersReducedMotion ? {
-                        backgroundColor: "hsl(var(--accent))"
-                      } : undefined}
-                      transition={{ duration: 0.3, ease: EASING.smooth }}
-                      className="w-full h-full rounded-2xl"
-                    >
-                      <AvatarFallback className="text-sm font-bold text-primary-foreground rounded-2xl bg-transparent">
-                        {currentUser.name.split(' ').map(n => n[0]).join('')}
-                      </AvatarFallback>
-                    </motion.div>
-                  </Avatar>
-                </motion.div>
+                <Avatar className="h-8 w-8 ring-1 ring-border hover:ring-2 hover:ring-primary/20 transition-all duration-200">
+                  <AvatarFallback className="text-xs font-medium bg-muted">
+                    {currentUser.name.split(' ').map(n => n[0]).join('')}
+                  </AvatarFallback>
+                </Avatar>
               </motion.div>
             </motion.div>
 

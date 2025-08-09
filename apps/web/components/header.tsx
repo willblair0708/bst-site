@@ -267,6 +267,13 @@ const SubNavigation = ({ activeItem, pathname }: { activeItem: NavItem; pathname
   const subs = SUB_NAV_MAP[activeItem.key || '']
   if (!subs) return null
 
+  // Only show sub-navigation on main section pages, not on specific sub-pages
+  const isOnMainSectionPage = pathname === activeItem.href
+  const isOnSubPage = subs.some(sub => pathname === sub.href)
+  
+  // Don't show sub-nav if we're on a specific sub-page
+  if (isOnSubPage && !isOnMainSectionPage) return null
+
   return (
     <AnimatePresence>
       <motion.nav 

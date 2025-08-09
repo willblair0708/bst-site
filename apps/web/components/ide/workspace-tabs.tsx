@@ -9,11 +9,13 @@ import { ScrollArea } from "@/components/ui/scroll-area"
 import { motion, AnimatePresence } from "framer-motion"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 import Sparkline from "@/components/ui/sparkline"
+import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
 import { Badge } from "@/components/ui/badge"
 
-export function WorkspaceTabs({ repoId, onOpenFile, selectedPath }: { repoId: string; onOpenFile: (p: string) => void; selectedPath?: string }) {
+export function WorkspaceTabs({ repoId, onOpenFile, selectedPath, openFiles, onSelectOpenFile, onCloseOpenFile }:
+  { repoId: string; onOpenFile: (p: string) => void; selectedPath?: string; openFiles?: string[]; onSelectOpenFile?: (p: string) => void; onCloseOpenFile?: (p: string) => void }) {
   const [tab, setTab] = React.useState("files")
   React.useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
@@ -59,7 +61,14 @@ export function WorkspaceTabs({ repoId, onOpenFile, selectedPath }: { repoId: st
         {tab === 'files' && (
           <TabsContent value="files" className="flex-1 overflow-hidden" forceMount>
             <motion.div initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -6 }}>
-              <FileExplorer repoId={repoId} onOpen={onOpenFile} selectedPath={selectedPath} />
+              <FileExplorer
+                repoId={repoId}
+                onOpen={onOpenFile}
+                selectedPath={selectedPath}
+                openEditors={openFiles}
+                onSelectOpenEditor={onSelectOpenFile}
+                onCloseOpenEditor={onCloseOpenFile}
+              />
             </motion.div>
           </TabsContent>
         )}
@@ -90,6 +99,9 @@ export function WorkspaceTabs({ repoId, onOpenFile, selectedPath }: { repoId: st
           <TabsContent value="agents" className="flex-1 overflow-hidden" forceMount>
             <motion.div initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -6 }} className="p-2">
               <AgentsPanel />
+              <div className="mt-3 text-[11px] text-muted-foreground">
+                Quick links: <Link className="underline" href="/runs">Runs</Link> · <Link className="underline" href="/explore/repos">Repos</Link> · <Link className="underline" href="/explore/workflows">Workflows</Link>
+              </div>
             </motion.div>
           </TabsContent>
         )}

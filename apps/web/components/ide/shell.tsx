@@ -13,6 +13,7 @@ import { AgentChat } from "@/components/ide/agent-chat"
 import { ArtifactsPanel } from "@/components/ide/artifacts-panel"
 import { EvidencePanel, EvidenceJob } from "@/components/ide/evidence-panel"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { DAGGraph } from "@/components/dag-graph"
 
 function useLocalStorageState<T>(key: string, initial: T) {
   const [value, setValue] = React.useState<T>(() => {
@@ -104,16 +105,16 @@ export function Shell({ repoId }: { repoId?: string }) {
   }
 
   // Right rail tabs persistence + keyboard toggle
-  const [rightTab, setRightTab] = useLocalStorageState<'agents' | 'evidence'>(`ide:${repoKey}:rightTab`, 'agents')
+  const [rightTab, setRightTab] = useLocalStorageState<'agents' | 'evidence' | 'provenance'>(`ide:${repoKey}:rightTab`, 'agents')
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if (e.key === ']' && (e.ctrlKey || e.metaKey)) {
         e.preventDefault()
-        setRightTab((t) => (t === 'agents' ? 'evidence' : 'agents'))
+        setRightTab((t) => (t === 'agents' ? 'evidence' : t === 'evidence' ? 'provenance' : 'agents'))
       }
       if (e.key === '[' && (e.ctrlKey || e.metaKey)) {
         e.preventDefault()
-        setRightTab((t) => (t === 'evidence' ? 'agents' : 'evidence'))
+        setRightTab((t) => (t === 'provenance' ? 'evidence' : t === 'evidence' ? 'agents' : 'provenance'))
       }
     }
     window.addEventListener('keydown', onKey)
@@ -222,13 +223,21 @@ export function Shell({ repoId }: { repoId?: string }) {
                   <div className="text-[11px] text-muted-foreground">No file open</div>
                 )}
                 {openFiles.map((p) => (
-                  <button key={p} onClick={() => setSelectedPath(p)} title={p} className={`group flex items-center gap-2 px-2 py-1 rounded-lg border text-xs mr-1 ${selectedPath === p ? 'bg-card border-border' : 'bg-background/40 border-transparent hover:border-border'}`}>
+                  <button 
+                    key={p} 
+                    onClick={() => setSelectedPath(p)} 
+                    title={p} 
+                    className={`group flex items-center gap-2 px-2 py-1 rounded-lg border text-xs mr-1 ${selectedPath === p ? 'bg-card border-border' : 'bg-background/40 border-transparent hover:border-border'}`}
+                  >
                     <span className="relative truncate max-w-[22ch] font-mono">
                       <span>{p.split('/').pop()}</span>
                       {/* dirty dot via data attribute toggled on editor save/dirty */}
                       <span data-dirty-for={p} className="ml-1 inline-block w-1.5 h-1.5 rounded-full bg-amber-500 align-middle opacity-0" />
                     </span>
-                    <X className="w-3 h-3 opacity-60 group-hover:opacity-100" onClick={(e) => { e.stopPropagation(); closeOpenFile(p) }} />
+                    <X 
+                      className="w-3 h-3 opacity-60 group-hover:opacity-100" 
+                      onClick={(e) => { e.stopPropagation(); closeOpenFile(p) }} 
+                    />
                   </button>
                 ))}
               </div>
@@ -276,6 +285,7 @@ export function Shell({ repoId }: { repoId?: string }) {
                     <TabsTrigger value="evidence" className="px-3">
                       <div className="flex items-center gap-1"><Layers className="w-4 h-4 text-viz-purple-500" /><span>Evidence</span></div>
                     </TabsTrigger>
+                    <TabsTrigger value="provenance" className="px-3">Provenance</TabsTrigger>
                   </TabsList>
                   <div className="flex items-center gap-1">
                     <Button size="icon" variant="ghost" className="rounded-lg" onClick={runProtocol} title="Run Protocol" aria-label="Run Protocol"><Play className="w-4 h-4" /></Button>
@@ -291,6 +301,11 @@ export function Shell({ repoId }: { repoId?: string }) {
                 <TabsContent value="evidence" className="flex-1 min-h-0 overflow-hidden">
                   <ScrollArea className="rounded-xl bg-card border border-border p-2 flex-1">
                     <EvidencePanel jobs={jobs} />
+                  </ScrollArea>
+                </TabsContent>
+                <TabsContent value="provenance" className="flex-1 min-h-0 overflow-hidden">
+                  <ScrollArea className="rounded-xl bg-card border border-border p-2 flex-1">
+                    <DAGGraph height={300} />
                   </ScrollArea>
                 </TabsContent>
               </Tabs>
@@ -344,5 +359,4 @@ export function Shell({ repoId }: { repoId?: string }) {
     </div>
   )
 }
-
 

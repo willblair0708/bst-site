@@ -33,7 +33,7 @@ type PillarTheme = {
 
 // Navigation model
 const NAV_ITEMS: NavItem[] = [
-  { href: '/explore', key: 'explore', label: 'Explore', variant: 'primary', matchPrefixes: ['/explore', '/repos', '/models', '/datasets', '/workflows', '/templates'] },
+  { href: '/explore', key: 'explore', label: 'Explore', variant: 'primary', matchPrefixes: ['/explore', '/explore/repos', '/explore/workflows', '/explore/templates', '/models', '/datasets'] },
   { href: '/runs', key: 'runs', label: 'Run', matchPrefixes: ['/ide?repo=demo', '/runs', '/testbeds'] },
   { href: '/dashboard', key: 'dashboard', label: 'Dashboard', matchPrefixes: ['/dashboard'] },
   { href: '/docs', key: 'docs', label: 'Docs', matchPrefixes: ['/docs'] },
@@ -45,11 +45,11 @@ const NAV_ITEMS: NavItem[] = [
 const SUB_NAV_MAP: SubNav = {
   explore: [
     { href: '/explore', label: 'All' },
-    { href: '/repos', label: 'Repositories' },
+    { href: '/explore/repos', label: 'Repositories' },
     { href: '/models', label: 'Models' },
     { href: '/datasets', label: 'Datasets' },
-    { href: '/workflows', label: 'Workflows' },
-    { href: '/templates', label: 'Templates' },
+    { href: '/explore/workflows', label: 'Workflows' },
+    { href: '/explore/templates', label: 'Templates' },
   ],
   runs: [
     { href: '/ide?repo=demo', label: 'IDE' },

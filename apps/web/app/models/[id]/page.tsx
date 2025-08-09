@@ -1,7 +1,7 @@
-'use client';
+'use client'
 
-import { useState, useEffect } from 'react';
-import { notFound } from 'next/navigation';
+import { useState, useEffect, useMemo } from 'react'
+import { notFound } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Card, 
@@ -55,8 +55,9 @@ import {
   Target,
   Workflow
 } from 'lucide-react';
-import Link from 'next/link';
-import { ModelActions } from './model-actions';
+import Link from 'next/link'
+import { ModelActions } from './model-actions'
+import type { ModelDetail } from '@/lib/types'
 
 interface ModelData {
   id: string;
@@ -312,11 +313,7 @@ contacts = results["contacts"]`,
   return models[formattedId as keyof typeof models] || null;
 };
 
-interface ModelPageProps {
-  params: Promise<{
-    id: string;
-  }>;
-}
+interface ModelPageProps { params: Promise<{ id: string }> }
 
 const formatNumber = (num: number) => {
   if (num >= 1000000) return `${(num / 1000000).toFixed(1)}M`;
@@ -325,28 +322,33 @@ const formatNumber = (num: number) => {
 };
 
 export default function ModelPage({ params }: ModelPageProps) {
-  const [activeTab, setActiveTab] = useState('overview');
-  const [copySuccess, setCopySuccess] = useState(false);
-  const [modelId, setModelId] = useState<string | null>(null);
-  const [model, setModel] = useState<ModelData | null>(null);
+  const [activeTab, setActiveTab] = useState('overview')
+  const [copySuccess, setCopySuccess] = useState(false)
+  const [modelId, setModelId] = useState<string | null>(null)
+  const [detail, setDetail] = useState<ModelDetail | null>(null)
 
   useEffect(() => {
-    const resolveParams = async () => {
-  const resolvedParams = await params;
-      setModelId(resolvedParams.id);
-      const modelData = getModel(resolvedParams.id);
-      setModel(modelData);
-    };
-    resolveParams();
-  }, [params]);
+    const load = async () => {
+      const p = await params
+      setModelId(p.id)
+      const res = await fetch(`/api/models/${encodeURIComponent(p.id)}`, { cache: 'no-store' })
+      if (res.ok) {
+        const data: ModelDetail = await res.json()
+        setDetail(data)
+      } else {
+        setDetail(null)
+      }
+    }
+    load()
+  }, [params])
 
   // Loading state
-  if (!model && modelId !== null) {
-    notFound();
+  if (!detail && modelId !== null) {
+    notFound()
   }
 
   // Still loading
-  if (!model) {
+  if (!detail) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center">
@@ -362,6 +364,9 @@ export default function ModelPage({ params }: ModelPageProps) {
     setCopySuccess(true);
     setTimeout(() => setCopySuccess(false), 2000);
   };
+
+  const model = detail.model
+  const latestVersion = detail.versions[0]
 
   return (
     <motion.div 
@@ -390,20 +395,20 @@ export default function ModelPage({ params }: ModelPageProps) {
             <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-8">
               <div className="flex items-start gap-6 flex-1">
                 <div className="relative">
-                  <Avatar className="h-16 w-16 shadow-elevation-1">
-                    <AvatarImage src={model.authorAvatar} alt={model.author} />
-                    <AvatarFallback className="bg-primary-500 text-foreground text-2xl font-bold">
-                      {model.author.split(' ').map((n: string) => n[0]).join('')}
-                    </AvatarFallback>
-                  </Avatar>
-                  {model.verified && (
+                      <Avatar className="h-16 w-16 shadow-elevation-1">
+                        <AvatarImage src={"/next.svg"} alt={model.owner.handle} />
+                        <AvatarFallback className="bg-primary-500 text-foreground text-2xl font-bold">
+                          {model.owner.handle.slice(0, 2).toUpperCase()}
+                        </AvatarFallback>
+                      </Avatar>
+                    {model.badges.verifiedRuns > 0 && (
                     <motion.div 
                       className="absolute -bottom-2 -right-2 w-7 h-7 bg-accent-500 rounded-full flex items-center justify-center border-2 border-card shadow-elevation-1"
                       initial={{ scale: 0 }}
                       animate={{ scale: 1 }}
                       transition={{ delay: 0.5, type: "spring", stiffness: 150 }}
                     >
-                      <Verified className="h-3.5 w-3.5 text-foreground" />
+                       <Verified className="h-3.5 w-3.5 text-foreground" />
                     </motion.div>
                   )}
                 </div>
@@ -411,11 +416,9 @@ export default function ModelPage({ params }: ModelPageProps) {
                 <div className="flex-1 min-w-0">
                   <div className="flex flex-col gap-3 mb-4">
                     <div className="flex items-center gap-3 flex-wrap">
-                      <h1 className="text-3xl lg:text-4xl font-semibold tracking-tight text-foreground">
-                        {model.name}
-                      </h1>
+                       <h1 className="text-3xl lg:text-4xl font-semibold tracking-tight text-foreground">{model.name}</h1>
                       <div className="flex gap-1.5">
-                        {model.featured && (
+                        {false && (
                           <motion.div
                             initial={{ opacity: 0, scale: 0.8 }}
                             animate={{ opacity: 1, scale: 1 }}
@@ -427,7 +430,7 @@ export default function ModelPage({ params }: ModelPageProps) {
                             </Badge>
                           </motion.div>
                         )}
-                        {model.trending && (
+                        {false && (
                           <motion.div
                             initial={{ opacity: 0, scale: 0.8 }}
                             animate={{ opacity: 1, scale: 1 }}
@@ -444,35 +447,33 @@ export default function ModelPage({ params }: ModelPageProps) {
           
                     <div className="flex items-center gap-2 text-sm">
                       <span className="text-muted-foreground">by</span>
-                      <span className="font-medium text-foreground">{model.author}</span>
+                      <span className="font-medium text-foreground">{model.owner.handle}</span>
                       <span className="text-muted-foreground">•</span>
                       <Badge variant="outline" className="text-xs px-2 py-0.5 rounded-md">
-                        v{model.version}
+                        v{latestVersion?.semver || model.latest.semver}
                       </Badge>
                       <span className="text-muted-foreground">•</span>
-                      <span className="text-muted-foreground">Updated {new Date(model.lastModified).toLocaleDateString()}</span>
+                      <span className="text-muted-foreground">Updated {new Date(model.latest.updatedAt).toLocaleDateString()}</span>
                     </div>
                     {/* Meta chips */}
                     <div className="mt-2 flex items-center gap-3 text-xs text-muted-foreground">
                       <span className="inline-flex items-center gap-1">
                         <Star className="h-3 w-3" />
-                        <span className="font-mono">{formatNumber(model.likes)}</span>
+                        <span className="font-mono">{formatNumber(detail.model.stats.reproductions)}</span>
                       </span>
                       <span className="inline-flex items-center gap-1">
                         <Download className="h-3 w-3" />
-                        <span className="font-mono">{formatNumber(model.downloads)}</span>
+                        <span className="font-mono">{formatNumber(detail.model.stats.runs30d)}</span>
                       </span>
                     </div>
                   </div>
 
-                  <p className="text-base text-muted-foreground leading-relaxed max-w-3xl">
-                    {model.description}
-                  </p>
+                  <p className="text-base text-muted-foreground leading-relaxed max-w-3xl">{model.shortDesc}</p>
                 </div>
               </div>
               
               <div className="lg:ml-8">
-                <ModelActions likes={model.likes} />
+                <ModelActions likes={detail.model.stats.reproductions} />
               </div>
             </div>
           </div>
@@ -496,7 +497,7 @@ export default function ModelPage({ params }: ModelPageProps) {
                       <Download className="h-4 w-4 text-muted-foreground" />
                     </div>
                   </div>
-                  <div className="text-xl font-semibold text-foreground">{formatNumber(model.downloads)}</div>
+                  <div className="text-xl font-semibold text-foreground">{formatNumber(detail.model.stats.runs30d)}</div>
                   <div className="text-xs text-muted-foreground mt-1">Downloads</div>
                 </CardContent>
               </Card>
@@ -514,7 +515,7 @@ export default function ModelPage({ params }: ModelPageProps) {
                       <Star className="h-4 w-4 text-muted-foreground" />
                     </div>
                   </div>
-                  <div className="text-xl font-semibold text-foreground">{formatNumber(model.likes)}</div>
+                  <div className="text-xl font-semibold text-foreground">{formatNumber(detail.model.stats.reproductions)}</div>
                   <div className="text-xs text-muted-foreground mt-1">Stars</div>
                 </CardContent>
               </Card>
@@ -532,7 +533,7 @@ export default function ModelPage({ params }: ModelPageProps) {
                       <Trophy className="h-4 w-4 text-muted-foreground" />
                     </div>
                   </div>
-                  <div className="text-xl font-semibold text-foreground">{formatNumber(model.citations)}</div>
+                  <div className="text-xl font-semibold text-foreground">{formatNumber(detail.model.stats.reproductions)}</div>
                   <div className="text-xs text-muted-foreground mt-1">Citations</div>
                 </CardContent>
               </Card>
@@ -550,7 +551,7 @@ export default function ModelPage({ params }: ModelPageProps) {
                       <BarChart3 className="h-4 w-4 text-muted-foreground" />
                     </div>
                   </div>
-                  <div className="text-xl font-semibold text-foreground">{model.accuracy}%</div>
+                  <div className="text-xl font-semibold text-foreground">{detail.model.badges.verifiedRuns}</div>
                   <div className="text-xs text-muted-foreground mt-1">Accuracy</div>
                 </CardContent>
               </Card>
@@ -567,7 +568,7 @@ export default function ModelPage({ params }: ModelPageProps) {
                       <Shield className="h-4 w-4 text-muted-foreground" />
                     </div>
                   </div>
-                  <div className="text-xl font-semibold text-foreground">{model.reproducibilityScore}%</div>
+                  <div className="text-xl font-semibold text-foreground">{model.badges.verifiedRuns}</div>
                   <div className="text-xs text-muted-foreground mt-1">Reproducible</div>
                 </CardContent>
               </Card>
@@ -584,7 +585,7 @@ export default function ModelPage({ params }: ModelPageProps) {
                       <Target className="h-4 w-4 text-muted-foreground" />
                     </div>
                   </div>
-                  <div className="text-xl font-semibold text-foreground">#{model.benchmarkRank}</div>
+                   <div className="text-xl font-semibold text-foreground">v{latestVersion?.semver}</div>
                   <div className="text-xs text-muted-foreground mt-1">Global Rank</div>
                 </CardContent>
               </Card>
@@ -637,7 +638,7 @@ export default function ModelPage({ params }: ModelPageProps) {
                 asChild 
                 className="px-4 py-2 rounded-xl"
               >
-                <Link href={model.codeUrl} target="_blank" className="flex items-center">
+                  <Link href={`https://github.com/${model.owner.handle}/${model.slug}`} target="_blank" className="flex items-center">
                   <Code className="h-4 w-4 mr-2 flex-shrink-0" />
                   <span>View Code</span>
                   <ExternalLink className="h-3 w-3 ml-1 flex-shrink-0" />
@@ -652,7 +653,7 @@ export default function ModelPage({ params }: ModelPageProps) {
                 asChild 
                 className="px-4 py-2 rounded-xl"
               >
-                <Link href={model.paperUrl} target="_blank" className="flex items-center">
+                  <Link href={`https://runix-science.vercel.app/models/${model.slug}`} target="_blank" className="flex items-center">
                   <FileText className="h-4 w-4 mr-2 flex-shrink-0" />
                   <span>Read Paper</span>
                   <ExternalLink className="h-3 w-3 ml-1 flex-shrink-0" />
@@ -672,43 +673,18 @@ export default function ModelPage({ params }: ModelPageProps) {
           >
             <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
               <div className="mb-12">
-                <TabsList className="grid w-full grid-cols-3 lg:grid-cols-6 bg-muted border p-1 rounded-xl sticky top-0 z-10">
-                  <TabsTrigger value="overview" className="rounded-lg px-3 py-1.5 text-sm data-[state=active]:bg-background">
-                    <Brain className="h-5 w-5 mr-2" />
-                    <span className="hidden sm:inline">Overview</span>
-                  </TabsTrigger>
-                  <TabsTrigger value="quickstart" className="rounded-lg px-3 py-1.5 text-sm data-[state=active]:bg-background">
-                    <Zap className="h-5 w-5 mr-2" />
-                    <span className="hidden sm:inline">Quick Start</span>
-                  </TabsTrigger>
-                  <TabsTrigger value="benchmarks" className="rounded-lg px-3 py-1.5 text-sm data-[state=active]:bg-background">
-                    <Trophy className="h-5 w-5 mr-2" />
-                    <span className="hidden sm:inline">Benchmarks</span>
-                  </TabsTrigger>
-                  <TabsTrigger value="api" className="rounded-lg px-3 py-1.5 text-sm data-[state=active]:bg-background">
-                    <Terminal className="h-5 w-5 mr-2" />
-                    <span className="hidden sm:inline">API Docs</span>
-                  </TabsTrigger>
-                  <TabsTrigger value="validation" className="rounded-lg px-3 py-1.5 text-sm data-[state=active]:bg-background">
-                    <Shield className="h-5 w-5 mr-2" />
-                    <span className="hidden sm:inline">Validation</span>
-                  </TabsTrigger>
-                  <TabsTrigger value="changelog" className="rounded-lg px-3 py-1.5 text-sm data-[state=active]:bg-background">
-                    <Clock className="h-5 w-5 mr-2" />
-                    <span className="hidden sm:inline">Changelog</span>
-                  </TabsTrigger>
+                <TabsList className="grid w-full grid-cols-3 lg:grid-cols-5 bg-muted border p-1 rounded-xl sticky top-0 z-10">
+                  <TabsTrigger value="overview" className="rounded-lg px-3 py-1.5 text-sm data-[state=active]:bg-background">Overview</TabsTrigger>
+                  <TabsTrigger value="quickstart" className="rounded-lg px-3 py-1.5 text-sm data-[state=active]:bg-background">Quick Start</TabsTrigger>
+                  <TabsTrigger value="benchmarks" className="rounded-lg px-3 py-1.5 text-sm data-[state=active]:bg-background">Benchmarks</TabsTrigger>
+                  <TabsTrigger value="versions" className="rounded-lg px-3 py-1.5 text-sm data-[state=active]:bg-background">Versions</TabsTrigger>
+                  <TabsTrigger value="artifacts" className="rounded-lg px-3 py-1.5 text-sm data-[state=active]:bg-background">Artifacts</TabsTrigger>
                 </TabsList>
               </div>
             
               <AnimatePresence mode="wait">
-                <motion.div
-                  key={activeTab}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -20 }}
-                  transition={{ duration: 0.3 }}
-                >
-                  <TabsContent value="overview" className="space-y-10">
+                <motion.div key={activeTab} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} transition={{ duration: 0.3 }}>
+                   <TabsContent value="overview" className="space-y-10">
                     <Card className="bg-card border rounded-2xl overflow-hidden shadow-elevation-1">
                       <CardHeader className="pb-6">
                         <CardTitle className="flex items-center gap-3 text-xl font-semibold">
@@ -720,11 +696,7 @@ export default function ModelPage({ params }: ModelPageProps) {
                       </CardHeader>
                       <CardContent className="p-6">
                   <div className="prose max-w-none">
-                          {model.longDescription.split('\n\n').map((paragraph: string, index: number) => (
-                            <p key={index} className="mb-6 text-muted-foreground leading-relaxed text-base">
-                        {paragraph}
-                      </p>
-                    ))}
+                            <p className="mb-6 text-muted-foreground leading-relaxed text-base">{String((detail.card?.json as any)?.['intended_use'] ?? 'Research only')}</p>
                   </div>
                 </CardContent>
               </Card>
@@ -741,7 +713,7 @@ export default function ModelPage({ params }: ModelPageProps) {
                 </CardHeader>
                 <CardContent>
                           <div className="space-y-4">
-                            {model.useCases.map((useCase: string, index: number) => (
+                             {[`Use in IDE`, `Run eval`, `Reproduce training`].map((useCase: string, index: number) => (
                               <motion.div 
                                 key={index} 
                                 className="flex items-start gap-3 p-3 bg-background/50 rounded-lg border"
@@ -768,7 +740,7 @@ export default function ModelPage({ params }: ModelPageProps) {
                         </CardHeader>
                         <CardContent>
                           <div className="space-y-4">
-                            {Object.entries(model.metrics).map(([key, value]: [string, string], index: number) => (
+                             {Object.entries(detail.model.badges).map(([key, value]: [string, any], index: number) => (
                               <motion.div 
                                 key={key} 
                                 className="flex justify-between items-center p-3 bg-background/50 rounded-lg border"
@@ -777,9 +749,9 @@ export default function ModelPage({ params }: ModelPageProps) {
                                 transition={{ delay: index * 0.1 }}
                               >
                                 <span className="text-sm text-muted-foreground capitalize font-medium">
-                                  {key.replace(/([A-Z])/g, ' $1')}:
+                                   {key.replace(/([A-Z])/g, ' $1')}:
                                 </span>
-                                <span className="text-sm font-bold text-foreground">{value}</span>
+                                 <span className="text-sm font-bold text-foreground">{String(value)}</span>
                               </motion.div>
                             ))}
                           </div>
@@ -800,14 +772,14 @@ export default function ModelPage({ params }: ModelPageProps) {
                 <CardContent>
                   <div className="space-y-4">
                           <div className="relative">
-                            <pre className="bg-muted/50 p-4 rounded-lg overflow-x-auto border">
-                        <code className="text-sm">{model.quickStart}</code>
+                           <pre className="bg-muted/50 p-4 rounded-lg overflow-x-auto border">
+                        <code className="text-sm">{`pip install ${model.slug}\n# See /api/models/${model.slug} for details`}</code>
                       </pre>
                             <Button
                               variant="outline"
                               size="sm"
                               className="absolute top-2 right-2"
-                              onClick={() => handleCopyCode(model.quickStart)}
+                              onClick={() => handleCopyCode(`pip install ${model.slug}`)}
                             >
                               {copySuccess ? <CheckCircle className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
                             </Button>
@@ -817,7 +789,7 @@ export default function ModelPage({ params }: ModelPageProps) {
               </Card>
             </TabsContent>
 
-                  <TabsContent value="benchmarks" className="space-y-6">
+                   <TabsContent value="benchmarks" className="space-y-6">
                     <Card className="bg-card border rounded-2xl shadow-elevation-1">
                   <CardHeader>
                         <CardTitle className="flex items-center gap-2 text-lg">
@@ -828,17 +800,15 @@ export default function ModelPage({ params }: ModelPageProps) {
                   </CardHeader>
                   <CardContent>
                     <div className="space-y-4">
-                          {model.benchmarks.map((benchmark: any, index: number) => (
+                          {(detail.evals || []).map((benchmark: any, index: number) => (
                             <div key={index} className="flex items-center justify-between p-4 bg-muted/30 rounded-lg border">
                               <div>
                                 <div className="font-medium">{benchmark.dataset}</div>
                                 <div className="text-sm text-muted-foreground">{benchmark.metric}</div>
                               </div>
                               <div className="text-right">
-                                <div className="text-lg font-semibold text-foreground">{benchmark.score}</div>
-                                <div className="text-sm text-muted-foreground">
-                                  Rank #{benchmark.rank} of {benchmark.participants}
-                                </div>
+                                 <div className="text-lg font-semibold text-foreground">{benchmark.value}</div>
+                                 <div className="text-sm text-muted-foreground">{benchmark.split}</div>
                               </div>
                         </div>
                       ))}
@@ -855,57 +825,20 @@ export default function ModelPage({ params }: ModelPageProps) {
                   </CardHeader>
                   <CardContent>
                         <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                          {Object.entries(model.scientificMetrics).map(([key, value]: [string, number]) => (
-                            <div key={key} className="text-center p-3 bg-muted/30 rounded-lg border">
-                              <div className="text-lg font-semibold text-foreground">{value}</div>
-                              <div className="text-xs text-muted-foreground uppercase tracking-wide">
-                                {key.replace(/_/g, '-')}
-                              </div>
-                        </div>
-                      ))}
+                           {detail.versions.map((v) => (
+                             <div key={v.semver} className="text-center p-3 bg-muted/30 rounded-lg border">
+                               <div className="text-lg font-semibold text-foreground">{v.framework}</div>
+                               <div className="text-xs text-muted-foreground uppercase tracking-wide">{v.semver}</div>
+                             </div>
+                           ))}
                     </div>
                   </CardContent>
                 </Card>
             </TabsContent>
 
-            <TabsContent value="api" className="space-y-6">
-                    <Card className="bg-card border rounded-2xl shadow-elevation-1">
-                <CardHeader>
-                        <CardTitle className="flex items-center gap-2 text-lg">
-                          <Terminal className="h-5 w-5" />
-                          API Reference
-                        </CardTitle>
-                        <CardDescription>Complete API documentation for {model.name}</CardDescription>
-                </CardHeader>
-                <CardContent>
-                        <div className="space-y-6">
-                          {model.apiReference.map((api: any, index: number) => (
-                            <div key={index} className="border rounded-lg p-4 bg-muted/30">
-                              <h4 className="font-mono font-medium mb-2 text-foreground">{api.function}()</h4>
-                              <p className="text-sm text-muted-foreground mb-4">{api.description}</p>
-                              
-                              <div className="space-y-2 mb-4">
-                                <h5 className="font-medium text-sm">Parameters:</h5>
-                                {Object.entries(api.parameters).map(([param, desc]: [string, any]) => (
-                                  <div key={param} className="text-sm">
-                                    <code className="bg-muted px-1 rounded">{param}</code>
-                                    <span className="text-muted-foreground ml-2">{desc}</span>
-                                  </div>
-                                ))}
-                              </div>
-                              
-                              <div>
-                                <h5 className="font-medium text-sm mb-1">Returns:</h5>
-                                <p className="text-sm text-muted-foreground">{api.returns}</p>
-                              </div>
-                            </div>
-                          ))}
-                        </div>
-                      </CardContent>
-                    </Card>
-                  </TabsContent>
+            
 
-                  <TabsContent value="validation" className="space-y-6">
+            <TabsContent value="validation" className="space-y-6">
                     <Card className="bg-card border rounded-2xl shadow-elevation-1">
                       <CardHeader>
                         <CardTitle className="flex items-center gap-2 text-lg">
@@ -917,11 +850,11 @@ export default function ModelPage({ params }: ModelPageProps) {
                       <CardContent>
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                           <div className="text-center p-4 bg-accent/10 rounded-lg border">
-                            <div className="text-2xl font-semibold text-foreground mb-2">{model.reproducibilityScore}%</div>
+                            <div className="text-2xl font-semibold text-foreground mb-2">{model.badges.verifiedRuns}</div>
                             <div className="text-sm text-muted-foreground">Reproducibility Score</div>
                           </div>
                           <div className="text-center p-4 bg-primary/10 rounded-lg border">
-                            <div className="text-2xl font-semibold text-foreground mb-2">{model.validationTests}</div>
+                            <div className="text-2xl font-semibold text-foreground mb-2">{detail.evals?.length ?? 0}</div>
                             <div className="text-sm text-muted-foreground">Validation Tests</div>
                           </div>
                           <div className="text-center p-4 bg-green-500/10 rounded-lg border">
@@ -933,30 +866,7 @@ export default function ModelPage({ params }: ModelPageProps) {
               </Card>
             </TabsContent>
 
-            <TabsContent value="changelog" className="space-y-6">
-              <div className="space-y-4">
-                      {model.changelog.map((release: any, index: number) => (
-                        <Card key={index} className="bg-card border rounded-2xl shadow-elevation-1">
-                    <CardHeader>
-                      <div className="flex justify-between items-start">
-                        <CardTitle className="text-base font-semibold">Version {release.version}</CardTitle>
-                        <Badge variant="outline">{release.date}</Badge>
-                      </div>
-                    </CardHeader>
-                    <CardContent>
-                            <ul className="space-y-2">
-                              {release.changes.map((change: string, changeIndex: number) => (
-                                <li key={changeIndex} className="flex items-start gap-3">
-                                  <div className="w-1.5 h-1.5 bg-accent rounded-full mt-2 flex-shrink-0" />
-                                  <span className="text-sm text-muted-foreground">{change}</span>
-                          </li>
-                        ))}
-                      </ul>
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
-            </TabsContent>
+            {/* Optional: Changelog tab could be added once available */}
                 </motion.div>
               </AnimatePresence>
           </Tabs>
@@ -973,73 +883,25 @@ export default function ModelPage({ params }: ModelPageProps) {
             <Card className="bg-gradient-to-br from-card/40 to-card/20 border-border/50 shadow-sm">
               <CardHeader className="pb-6">
                 <CardTitle className="flex items-center gap-3 text-lg">
-                  <div className="p-2 bg-primary/10 rounded-lg">
-                    <Database className="h-5 w-5 text-primary" />
-                  </div>
+                  <div className="p-2 bg-primary/10 rounded-lg"><Shield className="h-5 w-5" /></div>
                   Model Information
-                </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-                <div className="flex justify-between items-center p-3 bg-background/50 rounded-lg">
-                  <span className="text-sm text-muted-foreground font-medium">Category:</span>
-                  <Badge className="bg-primary/10 text-primary border-primary/20">{model.category}</Badge>
-              </div>
-                <div className="flex justify-between items-center p-3 bg-background/50 rounded-lg">
-                  <span className="text-sm text-muted-foreground font-medium">Domain:</span>
-                  <span className="text-sm font-semibold text-foreground">{model.domain}</span>
-              </div>
-                <div className="flex justify-between items-center p-3 bg-background/50 rounded-lg">
-                  <span className="text-sm text-muted-foreground font-medium">Framework:</span>
-                  <Badge variant="outline" className="border-accent/30 text-accent">{model.framework}</Badge>
-              </div>
-                <div className="flex justify-between items-center p-3 bg-background/50 rounded-lg">
-                  <span className="text-sm text-muted-foreground font-medium">Language:</span>
-                  <span className="text-sm font-semibold text-foreground">{model.language}</span>
-              </div>
-                <div className="flex justify-between items-center p-3 bg-background/50 rounded-lg">
-                  <span className="text-sm text-muted-foreground font-medium">License:</span>
-                  <Badge variant="outline" className="border-green-500/30 text-green-600">{model.license}</Badge>
-              </div>
-                <div className="flex justify-between items-center p-3 bg-background/50 rounded-lg">
-                  <span className="text-sm text-muted-foreground font-medium">Model Size:</span>
-                  <span className="text-sm font-semibold text-foreground">{model.size}</span>
-              </div>
-                <div className="flex justify-between items-center p-3 bg-background/50 rounded-lg">
-                  <span className="text-sm text-muted-foreground font-medium">Compute:</span>
-                  <span className="text-sm font-semibold text-foreground">{model.computeReq}</span>
-              </div>
-            </CardContent>
-          </Card>
-
-            {/* Enhanced System Requirements */}
-            <Card className="bg-gradient-to-br from-card/40 to-card/20 border-border/50 shadow-sm">
-              <CardHeader className="pb-6">
-                <CardTitle className="flex items-center gap-3 text-lg">
-                  <div className="p-2 bg-accent/10 rounded-lg">
-                    <Monitor className="h-5 w-5 text-accent" />
-                  </div>
-                  System Requirements
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
-                {Object.entries(model.requirements).map(([key, value]: [string, string], index: number) => (
-                  <motion.div 
-                    key={key} 
-                    className="flex justify-between items-center p-3 bg-background/50 rounded-lg"
-                    initial={{ opacity: 0, x: -10 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: index * 0.1 }}
-                  >
-                    <span className="text-sm text-muted-foreground capitalize font-medium">
-                      {key.replace(/([A-Z])/g, ' $1')}:
-                    </span>
-                    <span className="text-sm font-semibold text-foreground">{value}</span>
-                  </motion.div>
-                ))}
+                <div className="flex justify-between items-center p-3 bg-background/50 rounded-lg">
+                  <span className="text-sm text-muted-foreground font-medium">License:</span>
+                  <Badge variant="outline">{model.license}</Badge>
+                </div>
+                <div className="flex justify-between items-center p-3 bg-background/50 rounded-lg">
+                  <span className="text-sm text-muted-foreground font-medium">Latest:</span>
+                  <span className="text-sm font-semibold text-foreground">{model.latest.semver} · {model.latest.digest.slice(0, 12)}</span>
+                </div>
               </CardContent>
             </Card>
 
-            {/* Enhanced Tags */}
+            {/* Placeholder for additional sidebar content if needed */}
+
+            {/* Tags (modalities + domains) */}
             <Card className="bg-gradient-to-br from-card/40 to-card/20 border-border/50 shadow-sm">
               <CardHeader className="pb-6">
                 <CardTitle className="flex items-center gap-3 text-lg">
@@ -1048,29 +910,17 @@ export default function ModelPage({ params }: ModelPageProps) {
                   </div>
                   Tags
                 </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="flex flex-wrap gap-2">
-                  {model.tags.map((tag: string, index: number) => (
-                    <motion.div
-                      key={tag}
-                      initial={{ opacity: 0, scale: 0.8 }}
-                      animate={{ opacity: 1, scale: 1 }}
-                      transition={{ delay: index * 0.1 }}
-                    >
-                      <Badge 
-                        variant="outline" 
-                        className="bg-gradient-to-r from-muted/50 to-muted/30 border-border/50 hover:bg-muted/70 transition-colors cursor-pointer"
-                      >
-                    {tag}
-                  </Badge>
-                    </motion.div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
+              </CardHeader>
+              <CardContent>
+                <div className="flex flex-wrap gap-2">
+                  {model.domain.concat(model.modalities).map((tag) => (
+                    <Badge key={tag} variant="outline">{tag}</Badge>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
 
-            {/* Enhanced Related Models */}
+            {/* Related: simple placeholder */}
             <Card className="bg-gradient-to-br from-card/40 to-card/20 border-border/50 shadow-sm">
               <CardHeader className="pb-6">
                 <CardTitle className="flex items-center gap-3 text-lg">
@@ -1079,37 +929,11 @@ export default function ModelPage({ params }: ModelPageProps) {
                   </div>
                   Related Models
                 </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-3">
-                  {model.relatedModels.map((relatedModel: any, index: number) => (
-                    <motion.div
-                      key={relatedModel.id}
-                      initial={{ opacity: 0, y: 10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: index * 0.1 }}
-                    >
-                      <Link 
-                        href={`/models/${relatedModel.id}`} 
-                        className="block p-4 rounded-xl border border-border/50 hover:border-accent/30 bg-background/50 hover:bg-background/80 transition-all group"
-                      >
-                        <div className="flex items-center justify-between mb-2">
-                          <div className="font-semibold group-hover:text-accent transition-colors">
-                            {relatedModel.name}
-                          </div>
-                          <Badge variant="outline" className="text-xs bg-accent/10 border-accent/30 text-accent">
-                            {Math.round(relatedModel.similarity * 100)}%
-                          </Badge>
-                        </div>
-                        <div className="text-sm text-muted-foreground">
-                          {relatedModel.description}
-                        </div>
-                </Link>
-                    </motion.div>
-                  ))}
-              </div>
-            </CardContent>
-          </Card>
+              </CardHeader>
+              <CardContent>
+                <div className="text-sm text-muted-foreground">Coming soon</div>
+              </CardContent>
+            </Card>
           </motion.div>
         </div>
       </div>

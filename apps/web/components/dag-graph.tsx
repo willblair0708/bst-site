@@ -26,7 +26,7 @@ interface DAGNode {
 }
 
 interface DAGGraphProps {
-  nodes: DAGNode[]
+  nodes?: DAGNode[]
   onNodeClick?: (node: DAGNode) => void
   onRunPipeline?: () => void
   className?: string

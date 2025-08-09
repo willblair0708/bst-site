@@ -149,14 +149,14 @@ export default function ExplorePage() {
               and contribute to advancing medical science.
             </p>
             <div className="flex items-center justify-center space-x-4">
-              <Link href="/trials">
+              <Link href="/explore/repos">
                 <Button variant="secondary" size="lg">
-                  Browse All Trials
+                  Browse Repos
                 </Button>
               </Link>
-              <Link href="/new/trial">
+              <Link href="/explore/templates">
                 <Button variant="outline" size="lg" className="text-white border-white hover:bg-white hover:text-blue-600">
-                  Start a Trial
+                  Create from Template
                 </Button>
               </Link>
             </div>

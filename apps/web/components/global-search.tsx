@@ -139,7 +139,14 @@ export function GlobalSearch() {
     
     // Simulate API call
     const searchTimer = setTimeout(() => {
-      const filtered = mockResults.filter(result =>
+      const shortcuts: SearchResult[] = [
+        { id: 's1', type: 'file', title: 'Runs', description: 'View all runs and receipts', url: '/runs' },
+        { id: 's2', type: 'file', title: 'Explore Repositories', description: 'Browse OTP-ready repos', url: '/explore/repos' },
+        { id: 's3', type: 'file', title: 'Workflows', description: 'Explore example pipelines', url: '/explore/workflows' },
+        { id: 's4', type: 'file', title: 'Templates', description: 'Create an OTP from template', url: '/explore/templates' },
+      ]
+      const haystack = [...shortcuts, ...mockResults]
+      const filtered = haystack.filter(result =>
         result.title.toLowerCase().includes(query.toLowerCase()) ||
         result.description.toLowerCase().includes(query.toLowerCase()) ||
         result.labels?.some(label => label.toLowerCase().includes(query.toLowerCase()))

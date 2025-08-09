@@ -12,6 +12,13 @@ export type AnalyticsEvent =
   | 'repo_card_clicked'
   | 'proof_runway_step_hovered'
   | 'verify_button_demo'
+  // Mission page events
+  | 'mission_view'
+  | 'cta_reproduce_click'
+  | 'cta_propose_program_click'
+  | 'cta_policy_template_click'
+  | 'case_receipt_open'
+  | 'pillar_card_click'
 
 interface AnalyticsProperties {
   [key: string]: string | number | boolean
@@ -37,6 +44,12 @@ export function trackEvent(event: AnalyticsEvent, properties?: AnalyticsProperti
 export function trackPageView(page: string) {
   if (typeof window !== 'undefined') {
     console.log('Page View:', page)
+    // Also emit mission_view if relevant
+    if (page === '/mission') {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      ;(window as any).mixpanel?.track?.('mission_view')
+      console.log('Analytics Event:', 'mission_view')
+    }
     // Track page views with your analytics provider
   }
 }

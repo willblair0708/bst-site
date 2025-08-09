@@ -3,6 +3,7 @@
 import React, { useEffect, useMemo, useState, useCallback } from "react"
 import Editor, { DiffEditor } from "@monaco-editor/react"
 import { Button } from "@/components/ui/button"
+import { AttachReceiptBadge } from "@/components/receipt/attach-receipt-badge"
 import { Save, FileText, Loader2, ChevronRight, GitCompare, AlertTriangle, WandSparkles, FileSearch, ListTree } from "lucide-react"
 import { motion } from "framer-motion"
 import ReactMarkdown from "react-markdown"
@@ -153,6 +154,11 @@ export function RepoEditor({ repoId, path, onDirtyChange, onSaved }: { repoId: s
               {splitMarkdown ? 'Hide Preview' : 'Split Preview'}
             </Button>
           )}
+          <AttachReceiptBadge onAttach={(receiptId) => {
+            if (!editorRef.current) return
+            const badge = `[🧾 receipt:${receiptId}]`
+            editorRef.current.trigger('keyboard', 'type', { text: badge })
+          }} />
           <Button size="sm" variant={showProblems ? 'secondary' : 'outline'} className="rounded-xl" onClick={() => setShowProblems((s) => !s)} title="Problems"><AlertTriangle className="w-4 h-4" /></Button>
           <Button size="sm" variant={showDiff ? 'secondary' : 'outline'} className="rounded-xl" onClick={() => setShowDiff((s) => !s)} title="Diff"><GitCompare className="w-4 h-4" /></Button>
           <Button size="sm" variant="outline" className="rounded-xl" onClick={save} disabled={!dirty || loading || !path}>
@@ -187,7 +193,9 @@ export function RepoEditor({ repoId, path, onDirtyChange, onSaved }: { repoId: s
               {splitMarkdown && (
                 <div className="w-1/2 border-l bg-card/40 overflow-auto p-3 prose prose-sm max-w-none">
                   {/* @ts-ignore */}
-                  <ReactMarkdown remarkPlugins={[remarkGfm]}>{content}</ReactMarkdown>
+                  <ReactMarkdown remarkPlugins={[remarkGfm]}>{
+                    content.replace(/\[🧾 receipt:([^\]]+)\]/g, (_m, id) => `[🧾 receipt:${id}](/runs/${id})`)
+                  }</ReactMarkdown>
                 </div>
               )}
             </>

@@ -499,17 +499,24 @@ export function GitHubHeader() {
                   visible: { opacity: 1, y: 0 }
                 }}
               >
-                <Avatar
-                  className={cn(
-                    'h-9 w-9 rounded-2xl border-2 border-primary-200/60 dark:border-primary-800/60',
-                    'ring-2 transition-all duration-200',
-                    activePillar.ring
-                  )}
+                <button
+                  type="button"
+                  aria-label="Profile"
+                  title="Profile"
+                  className="h-9 w-9 rounded-xl relative overflow-hidden border-0 focus:ring-0 flex items-center justify-center bg-accent-100/60 dark:bg-accent-100/20"
                 >
-                  <AvatarFallback className="text-[10px] font-bold bg-muted text-foreground rounded-2xl">
-                    {currentUser.name.split(' ').map(n => n[0]).join('')}
-                  </AvatarFallback>
-                </Avatar>
+                  <Avatar
+                    className={cn(
+                      'h-7 w-7 rounded-full border-2 border-primary-200/60 dark:border-primary-800/60',
+                      'ring-2 transition-all duration-200',
+                      activePillar.ring
+                    )}
+                  >
+                    <AvatarFallback className="text-[10px] font-bold bg-muted text-foreground rounded-full">
+                      {currentUser.name.split(' ').map(n => n[0]).join('')}
+                    </AvatarFallback>
+                  </Avatar>
+                </button>
               </motion.div>
             </motion.div>
 
